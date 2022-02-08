@@ -1,6 +1,11 @@
 # iSee Cockpit
 
+
 ## Environment Prepare
+
+Create a fork from the iSee Repo
+
+Clone the forked repo
 
 Install `node_modules`:
 
