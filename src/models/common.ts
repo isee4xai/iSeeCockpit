@@ -15,6 +15,16 @@ const DATA_FILEDS = {
         'Transparency',
         'Trust',
     ],
+    QUESTION_CATEGORY: [
+        'Goodness',
+        'Satisfaction',
+        'Mental Model',
+        'Curiosity',
+        'Trust',
+        'Performance',
+        'Custom'
+    ],
+    QUESTION_METRIC: ['free-text', 'integer', 'radio', 'check', 'Likert'],
 };
 
 

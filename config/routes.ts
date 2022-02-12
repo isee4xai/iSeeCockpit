@@ -22,7 +22,7 @@
     path: '/questionnaires',
     name: 'Questionnaires',
     icon: 'setting',
-    component: './Questionnaires',
+    component: './CreateQuestionnaires',
   },
   // {
   //   path: '/design',
