@@ -2,17 +2,22 @@
 /* eslint-disable */
 
 export interface Persona {
+    id?: string;
     uuid?: string;
     name?: string;
-    person?: Person;
-    intent?: string;
-    intent_questions?: string[];
-};
-
-export interface Person {
     domain_level?: string;
     ai_level?: string;
+    intent?: string;
+    intent_questions?: string[];
+    status?: string
 };
+
+    // person?: Person;
+
+// export interface Person {
+//     domain_level?: string;
+//     ai_level?: string;
+// };
 
 
     // tags?: { key?: string; label?: string }[];

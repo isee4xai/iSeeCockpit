@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   Button,
@@ -13,40 +13,55 @@ import {
   Tag,
   PageHeader,
   Switch,
+  Input,
+  Modal,
 } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import {
   CheckOutlined,
   CloseOutlined,
+  PlusOutlined,
   SettingOutlined,
   UploadOutlined,
   UserSwitchOutlined,
 } from '@ant-design/icons';
 import AssetmentField from '@/components/iSee/AssetmentFieldSet';
-import PersonaField from '@/components/iSee/PersonaFieldSet';
+import { Persona } from '@/models/usecase';
+import PersonaTabs from '@/components/iSee/persona/PersonaTabs';
+import DATA_FILEDS from '@/models/common';
 const { Option } = Select;
 const { Panel } = Collapse;
 
-const DATA_FILEDS = {
-  AITask: ['Classifier', 'Something', 'Something 2'],
-  AIMethod: ['ANN', 'SVM', 'CNN'],
-  Datatype: ['Tabular', 'Image', 'Textual'],
-  ModelOutcome: ['Binary', 'Multi-Class', 'Range'],
-  AssetmentType: ['Accuracy', 'F1 Score'],
-  IntentType: [
-    'Debugging',
-    'Education',
-    'Effectiveness',
-    'Efficiency',
-    'Persuasiveness',
-    'Satisfaction',
-    'Scruitablity',
-    'Transparency',
-    'Trust',
-  ],
-};
+const sample_personas: Persona[] = [{ id: "123", name: "Doctor", status: "Completed" }]
 
 const Admin: React.FC = () => {
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [personas, setPersonas] = useState(sample_personas);
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const onFinish = (values: any) => {
+    values.id = Math.floor(Math.random() * 100000) + 1;
+    values.status = "In-Complete";
+
+    setPersonas([...personas, values]);
+    console.log('Success:', values);
+    handleOk();
+    message.success('Succesfully Added Persona');
+  };
+
+
   const uploadprops = {
     name: 'file',
     action: '',
@@ -65,12 +80,6 @@ const Admin: React.FC = () => {
   const genExtra = () => (
     <div>
       <Tag color="red">Pending</Tag>
-      {/* <SettingOutlined
-        onClick={event => {
-          // If you don't want click extra trigger collapse, you can prevent this:
-          event.stopPropagation();
-        }}
-      /> */}
     </div>
   );
 
@@ -95,14 +104,12 @@ const Admin: React.FC = () => {
       />
 
       <Collapse
-        // defaultActiveKey={['1']}
-        // onChange={callback}
         expandIconPosition={'right'}
       >
         <Panel
           header={
             <div>
-              <SettingOutlined /> AI Model Settings
+              <h3><SettingOutlined /> AI Model Settings</h3>
             </div>
           }
           key="1"
@@ -212,37 +219,67 @@ const Admin: React.FC = () => {
         <Panel
           header={
             <div>
-              <UserSwitchOutlined /> User Personas
+              <h3>
+                <UserSwitchOutlined /> User Personas
+              </h3>
             </div>
           }
           key="2"
-          extra={genExtra()}
-        >
-          <Card bordered={false}>
-            <Form
-              name="basic"
-              // layout="vertical"
-              labelCol={{ span: 0 }}
-              // wrapperCol={{ span: 10 }}
-              initialValues={{ remember: true }}
-              // onFinish={onFinish}
-              // onFinishFailed={onFinishFailed}
-              onFieldsChange={(_, allFields) => {
-                console.log(allFields);
-              }}
-              autoComplete="off"
-            >
-              <Row gutter={20}>
-                <Col span={10} className="gutter-row">
-                  <PersonaField intents={DATA_FILEDS.IntentType} />
-                </Col>
-              </Row>
-            </Form>
+          extra={genExtra()} >
+          <Card
+            bordered={false}
+            actions={[
+              <Button
+                type="primary"
+                onClick={showModal}
+                htmlType="button"
+                icon={<PlusOutlined />}
+              >
+                Add New Persona
+              </Button>,
+            ]}
+          >
+            <PersonaTabs setPersonas={setPersonas} personas={personas}></PersonaTabs>
           </Card>
+
+          {/* </Card> */}
         </Panel>
-        <Panel header="Explanation Strategies" key="3" extra={genExtra()} />
       </Collapse>
-    </PageHeaderWrapper>
+
+
+      <Modal
+        title="Create new Usecase"
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={[
+          <Button key="back" onClick={handleCancel}>
+            Cancel
+          </Button>,
+          <Button form="create" key="submit" htmlType="submit" type="primary">
+            Create
+          </Button>,
+        ]}
+      >
+        <Form
+          id="create"
+          name="create"
+          layout="vertical"
+          labelCol={{ span: 0 }}
+          initialValues={{ remember: true }}
+          onFinish={onFinish}
+          autoComplete="off"
+        >
+          <Form.Item
+            label="Name of the Persona"
+            name="name"
+            rules={[{ required: true, message: 'Input is required!' }]}
+          >
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+    </PageHeaderWrapper >
   );
 };
 
