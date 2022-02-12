@@ -1,6 +1,8 @@
 // @ts-ignore
 /* eslint-disable */
 
+import { Questionnaire } from "./questionnaire";
+
 export interface Persona {
     id?: string;
     uuid?: string;
@@ -9,7 +11,8 @@ export interface Persona {
     ai_level?: string;
     intent?: string;
     intent_questions?: string[];
-    status?: string
+    status?: string;
+    evaluation_questionnaire?: Questionnaire;    //todo?
 };
 
     // person?: Person;

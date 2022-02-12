@@ -8,6 +8,7 @@ import {
     Tabs,
     Tag,
 } from 'antd';
+import QuestionnaireForm from '../question/QuestionnaireForm';
 
 import PersonaForm from './PersonaForm';
 
@@ -24,7 +25,7 @@ const PersonaTabs: React.FC<PersonaType> = (props) => {
     const genExtra2 = (persona: Persona, index: number) => (
 
         <div>
-            {persona.status == "In-Complete" && <Tag color="red">In-Complete</Tag>}
+            {persona.status == "Incomplete" && <Tag color="red">Incomplete</Tag>}
             {persona.status == "Completed" && <Tag color="success">Completed</Tag>}
 
             <Popconfirm
@@ -67,7 +68,8 @@ const PersonaTabs: React.FC<PersonaType> = (props) => {
                                         <PersonaForm persona={persona} />
                                     </Tabs.TabPane>
                                     <Tabs.TabPane tab="Questionaire" key="2">
-                                        Questionaire Here
+                                        <QuestionnaireForm
+                                            questionnaire={persona.evaluation_questionnaire || {}} />
                                     </Tabs.TabPane>
                                     <Tabs.TabPane tab="Explanation Strategy" key="3">
                                         Explanation Strategy here

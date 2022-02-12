@@ -19,10 +19,10 @@
     component: './designuser/CreateUsecase',
   },
   {
-    path: '/usecase/example',
-    name: 'Sample Questionaire',
+    path: '/questionnaires',
+    name: 'Questionnaires',
     icon: 'setting',
-    component: './designuser/Sample',
+    component: './CreateQuestionnaires',
   },
   // {
   //   path: '/design',

@@ -32,7 +32,30 @@ import DATA_FILEDS from '@/models/common';
 const { Option } = Select;
 const { Panel } = Collapse;
 
-const sample_personas: Persona[] = [{ id: "123", name: "Doctor", status: "Completed" }]
+const sample_personas: Persona[] = [{
+  id: "123", name: "Doctor", status: "Completed"
+},
+{
+  id: "234", name: "Patient", status: "Completed",
+  intent: 'Trust',
+  intent_questions: ['How confident is the AI model?', "How does this outcome affect my health?", "Are there adverse effects of taking AI's decision?"],
+  // todo
+  evaluation_questionnaire: {
+    questions: [
+      {
+        question_category: "Trust",
+        question_text: "Are you now able to trust the AI model?",
+        question_metric: "radio",
+        metric_values: ["Yes", "No"]
+      },
+      {
+        question_category: "Trust",
+        question_text: "Next time, would you like the explanation with the AI model's decision?",
+        question_metric: "radio",
+        metric_values: ["Yes", "No"]
+      }]
+  }
+}]
 
 const Admin: React.FC = () => {
 
@@ -53,8 +76,7 @@ const Admin: React.FC = () => {
 
   const onFinish = (values: any) => {
     values.id = Math.floor(Math.random() * 100000) + 1;
-    values.status = "In-Complete";
-
+    values.status = "Incomplete";
     setPersonas([...personas, values]);
     console.log('Success:', values);
     handleOk();
@@ -248,7 +270,7 @@ const Admin: React.FC = () => {
 
 
       <Modal
-        title="Create new Usecase"
+        title="Create new Persona"
         visible={isModalVisible}
         onCancel={handleCancel}
         footer={[
