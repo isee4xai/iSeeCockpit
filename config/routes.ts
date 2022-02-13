@@ -19,6 +19,12 @@
     component: './designuser/CreateUsecase',
   },
   {
+    path: '/usecase/analytics',
+    name: 'Usecase Analytics',
+    icon: 'setting',
+    component: './CreateAnalytics',
+  },
+  {
     path: '/questionnaires',
     name: 'Questionnaires',
     icon: 'setting',
