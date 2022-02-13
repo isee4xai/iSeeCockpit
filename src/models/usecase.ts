@@ -4,15 +4,16 @@
 import { Questionnaire } from "./questionnaire";
 
 export interface Persona {
-    id?: string;
+    id: string;
+    completed: boolean;
+    name: string;
+
     uuid?: string;
-    name?: string;
     domain_level?: string;
     ai_level?: string;
     intent?: string;
     intent_questions?: string[];
-    status?: string;
-    evaluation_questionnaire?: Questionnaire;    //todo?
+    evaluation: Questionnaire;    //todo?
 };
 
     // person?: Person;

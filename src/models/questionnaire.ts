@@ -6,9 +6,11 @@ export interface Questionnaire {
 };
 
 export interface Question {
-    question_text?: string;
-    question_metric?: string;
-    question_category?: string;
+    id?: string;
+    text?: string;
+    metric?: string;
+    category?: string;
     metric_values?: string[];
     required?: boolean;
+    completed?: boolean;
 };
