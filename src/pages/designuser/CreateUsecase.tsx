@@ -33,34 +33,43 @@ const { Option } = Select;
 const { Panel } = Collapse;
 
 const sample_personas: Persona[] = [{
-  id: "123", name: "Doctor", status: "Completed"
+  id: "123", name: "Doctor", completed: false,
+  evaluation: {
+    questions: [
+    ]
+  }
 },
 {
-  id: "234", name: "Patient", status: "Completed",
+  id: "234", name: "Patient", completed: true,
   intent: 'Trust',
   intent_questions: ['How confident is the AI model?', "How does this outcome affect my health?", "Are there adverse effects of taking AI's decision?"],
   // todo
-  evaluation_questionnaire: {
+  evaluation: {
     questions: [
       {
-        question_category: "Trust",
-        question_text: "Are you now able to trust the AI model?",
-        question_metric: "radio",
+        id: "124",
+        category: "Trust",
+        text: "Are you now able to trust the AI model?",
+        metric: "Radio",
         metric_values: ["Yes", "No"]
       },
       {
-        question_category: "Trust",
-        question_text: "Next time, would you like the explanation with the AI model's decision?",
-        question_metric: "radio",
-        metric_values: ["Yes", "No"]
+        id: "125",
+        category: "Trust",
+        text: "Next time, would you like the explanation with the AI model's decision?",
+        metric: "Radio",
+        metric_values: ["Yes", "No"],
+        completed: true
       }]
   }
 }]
 
 const Admin: React.FC = () => {
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [personas, setPersonas] = useState(sample_personas);
+
+  // New Persona Popu Functions
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -74,15 +83,25 @@ const Admin: React.FC = () => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values: any) => {
-    values.id = Math.floor(Math.random() * 100000) + 1;
-    values.status = "Incomplete";
-    setPersonas([...personas, values]);
-    console.log('Success:', values);
+  const onFinishPersona = (values: any) => {
+
+    // We need to update this blank model if we change the object
+    let blank_obj: Persona = {
+      id: "persona-" + Math.floor(Math.random() * 100000) + 1,
+      completed: false,
+      evaluation: {
+        questions: []
+      },
+      name: values.name
+    }
+
+    setPersonas([...personas, blank_obj]);
+    console.log('Success:', blank_obj);
     handleOk();
     message.success('Succesfully Added Persona');
   };
 
+  // - End
 
   const uploadprops = {
     name: 'file',
@@ -268,7 +287,7 @@ const Admin: React.FC = () => {
         </Panel>
       </Collapse>
 
-
+      {/* New Persona Popup  */}
       <Modal
         title="Create new Persona"
         visible={isModalVisible}
@@ -277,18 +296,18 @@ const Admin: React.FC = () => {
           <Button key="back" onClick={handleCancel}>
             Cancel
           </Button>,
-          <Button form="create" key="submit" htmlType="submit" type="primary">
+          <Button form="createpersona" key="submit" htmlType="submit" type="primary">
             Create
           </Button>,
         ]}
       >
         <Form
-          id="create"
-          name="create"
+          id="createpersona"
+          name="createpersona"
           layout="vertical"
           labelCol={{ span: 0 }}
           initialValues={{ remember: true }}
-          onFinish={onFinish}
+          onFinish={onFinishPersona}
           autoComplete="off"
         >
           <Form.Item
