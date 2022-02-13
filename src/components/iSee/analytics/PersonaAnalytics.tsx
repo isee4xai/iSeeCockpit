@@ -1,10 +1,9 @@
 import { Card, Form, Button, Row, Col, Descriptions } from 'antd';
-import { Pie } from '@ant-design/plots';
+import { Pie, Column } from '@ant-design/plots';
 
 import Meta from 'antd/lib/card/Meta';
 
-const usage_by_persona = {
-    outerHeight: 200,
+const pie_config = {
     appendPadding: 10,
     angleField: 'value',
     colorField: 'key',
@@ -29,80 +28,103 @@ const usage_by_persona = {
     }
 };
 
-const feedbacks =
-    [{
-        question: 'Are you able to trust AI model decisions?',
-        category: 'Trust',
-        values:
-            [{
-                key: "Yes",
-                value: 4
-            }, {
-                key: "No",
-                value: 4
-            },]
+const evaluation = {
+    id: "987",
+    comment: "",
+    assessment: "",
+    feedback:
+        [{
+            question: 'Are you able to trust AI model decisions?',
+            category: 'Trust',
+            values:
+                [{
+                    key: "Yes",
+                    value: 4
+                }, {
+                    key: "No",
+                    value: 4
+                },]
+        },
+        {
+            question: 'From the explanation, I understand how the AI model works.',
+            category: 'Mental Model',
+            values:
+                [{
+                    key: "I agree strongly",
+                    value: 4
+                },
+                {
+                    key: "I agree somewhat",
+                    value: 5
+                },
+                {
+                    key: "I’m neutral about it",
+                    value: 2
+                },
+                {
+                    key: "I disagree somewhat",
+                    value: 1
+                },
+                {
+                    key: "I disagree strongly",
+                    value: 1
+                },]
+        },
+        {
+            question: 'The explanation of the AI model sufficiently detailed.',
+            category: 'Curiosity',
+            values:
+                [{
+                    key: "I agree",
+                    value: 2
+                },
+                {
+                    key: "I’m neutral about it",
+                    value: 2
+                },
+                {
+                    key: "I disagree",
+                    value: 10
+                },]
+        },
+        {
+            question: 'The explanation helps me understand how the AI model works.',
+            category: 'Curiosity',
+            values:
+                [{
+                    key: "Yes",
+                    value: 14
+                }, {
+                    key: "No",
+                    value: 4
+                },]
+        },
+        ]
+};
+
+const column_config = {
+    xField: 'key',
+    yField: 'value',
+    label: {
+        position: 'middle',
+        style: {
+            fill: '#FFFFFF',
+            opacity: 1,
+        },
     },
-    {
-        question: 'From the explanation, I understand how the AI model works.',
-        category: 'Mental Model',
-        values:
-            [{
-                key: "I agree strongly",
-                value: 4
-            },
-            {
-                key: "I agree somewhat",
-                value: 5
-            },
-            {
-                key: "I’m neutral about it",
-                value: 2
-            },
-            {
-                key: "I disagree somewhat",
-                value: 1
-            },
-            {
-                key: "I disagree strongly",
-                value: 1
-            },]
-    },
-    {
-        question: 'The explanation of the AI model sufficiently detailed.',
-        category: 'Curiosity',
-        values:
-            [{
-                key: "I agree",
-                value: 2
-            },
-            {
-                key: "I’m neutral about it",
-                value: 2
-            },
-            {
-                key: "I disagree",
-                value: 10
-            },]
-    },
-    {
-        question: 'The explanation helps me understand how the AI model works.',
-        category: 'Curiosity',
-        values:
-            [{
-                key: "Yes",
-                value: 14
-            }, {
-                key: "No",
-                value: 4
-            },]
-    },
-    ];
+    xAxis: {
+        label: {
+            autoHide: true,
+            autoRotate: false,
+        },
+    }
+};
 
 const PersonaAnalytics: React.FC = () => {
     return (
         <Card>
             <Row gutter={20}>
-                {feedbacks.map((feedback, index) => (
+                {evaluation.feedback.map((item, index) => (
                     <Col
                         key={index}
                         span={8}
@@ -114,10 +136,18 @@ const PersonaAnalytics: React.FC = () => {
                         <Card
                             title={"Question " + (index + 1)}
                         >
-                            <Descriptions.Item label={feedback.question}>{feedback.question}</Descriptions.Item>
-                            <Meta description={"(" + feedback.category + ")"} />
-                            <Pie height={200} {...usage_by_persona}
-                                data={feedback.values} />
+                            <Descriptions.Item label={item.question}>{item.question}</Descriptions.Item>
+                            <Meta description={"(" + item.category + ")"} />
+                            {item.values.length > 4 ?
+                                (<Column
+                                    {...column_config}
+                                    height={200}
+                                    data={item.values} />) :
+                                (<Pie
+                                    {...pie_config}
+                                    height={200}
+                                    data={item.values} />)
+                            }
                         </Card>
 
                         <br />
