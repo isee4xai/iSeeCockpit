@@ -1,5 +1,5 @@
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { Form, Button, Select, Input, Switch } from 'antd';
+import { Form, Button, Select, Input, Switch, Radio, Row, Col } from 'antd';
 import DATA_FILEDS from '@/models/common';
 import { Question } from '@/models/questionnaire';
 
@@ -34,6 +34,7 @@ const QuestionForm: React.FC<QuestionType> = (props) => {
         <Form
             name="basic"
             form={form}
+            key={"formidq-" + props.question.id}
             layout="vertical"
             initialValues={props.question}
             // onFinish={onFinish}
@@ -44,21 +45,117 @@ const QuestionForm: React.FC<QuestionType> = (props) => {
             }}
             autoComplete="off"
         >
-            <Form.Item
-                label="Questionnaire Category"
-                name="question_category"
-                tooltip="This is a required field"
-                rules={[{ required: true, message: 'Input is required!' }]}
-            >
-                <Select
-                >
-                    {DATA_FILEDS.QUESTION_CATEGORY.map((option) => (
-                        <Option key={option} value={option}>
-                            {option}
-                        </Option>
-                    ))}
-                </Select>
-            </Form.Item>
+            <Row gutter={24}>
+                <Col span={24}>
+                    <Form.Item
+                        label="Question Text"
+                        name="text"
+                        tooltip="This is a required field"
+                        rules={[{ required: true, message: 'Input is required!' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+
+                </Col>
+                <Col span={8}>
+                    <Form.Item
+                        label="Questionnaire Category"
+                        name="category"
+                        tooltip="This is a required field"
+                        rules={[{ required: true, message: 'Input is required!' }]}
+                    >
+                        <Select
+                        >
+                            {DATA_FILEDS.QUESTION_CATEGORY.map((option) => (
+                                <Option key={option} value={option}>
+                                    {option}
+                                </Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
+                    <Form.Item label="Required" name="required" valuePropName="required">
+                        <Switch />
+                    </Form.Item>
+                </Col>
+                <Col span={16}>
+                    <Form.Item
+                        label="Response Type"
+                        name="metric"
+                        tooltip="This is a required field"
+                        rules={[{ required: true, message: 'Input is required!' }]}
+                    >
+                        <Radio.Group defaultValue={DATA_FILEDS.QUESTION_METRIC[0]} buttonStyle="solid">
+                            {DATA_FILEDS.QUESTION_METRIC.map((option) => (
+                                <Radio.Button value={option}>{option}</Radio.Button>
+                            ))}
+                        </Radio.Group>
+
+                        {/* </Select> */}
+                    </Form.Item>
+
+
+                    <Form.Item
+                        shouldUpdate={(prevValues, currentValues) =>
+                            prevValues.metric !== currentValues.metric
+                        }
+                        noStyle
+                    >
+                        {({ getFieldValue }) =>
+                            getFieldValue('metric') === 'Radio' ||
+                                getFieldValue('metric') === 'Checkbox' ||
+                                getFieldValue('metric') === 'Likert' ? (
+                                <Form.List name="metric_values">
+                                    {(fields, { add, remove }) => (
+                                        <>
+                                            {fields?.map((field, index) => (
+                                                <Form.Item
+                                                    // {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
+                                                    label={index === 0 ? 'Response Values' : ''}
+                                                    required={true}
+                                                    key={field.key}
+                                                    name={[index, "metric_values"]}
+                                                >
+
+                                                    <Input
+                                                        placeholder="response value"
+                                                        style={{ width: '60%' }}
+                                                    />
+                                                    {/* </Form.Item> */}
+                                                    {fields.length > 0 ? (
+                                                        <Button
+                                                            className="dynamic-delete-button"
+                                                            // danger={true}
+                                                            icon={<MinusCircleOutlined />}
+                                                            onClick={() => remove(field.name)}
+                                                        >
+                                                        </Button>
+
+                                                    ) : null}
+                                                </Form.Item>
+                                            ))}
+                                            <Form.Item
+                                            // {...formItemLayoutWithOutLabel}
+                                            >
+                                                <Button
+                                                    type="dashed"
+                                                    onClick={() => add()}
+                                                    style={{ width: '60%' }}
+                                                    icon={<PlusOutlined />}
+                                                >
+                                                    Add Response Values
+                                                </Button>
+                                            </Form.Item>
+                                        </>
+                                    )}
+                                </Form.List>
+                            ) : null
+                        }
+                    </Form.Item>
+                </Col>
+
+            </Row>
+
+
             {/* <Button
                     // onClick={() => loadQuestions()}
                     icon={<DownloadOutlined />}
@@ -66,101 +163,11 @@ const QuestionForm: React.FC<QuestionType> = (props) => {
                     Load Existing Questions
                 </Button> */}
 
-            <Form.Item
-                label="Question Text"
-                name="question_text"
-                tooltip="This is a required field"
-                rules={[{ required: true, message: 'Input is required!' }]}
-            >
-                <Input />
-            </Form.Item>
 
-            <Form.Item
-                label="Response Type"
-                name="question_metric"
-                tooltip="This is a required field"
-                rules={[{ required: true, message: 'Input is required!' }]}
-            >
-                <Select>
-                    {DATA_FILEDS.QUESTION_METRIC.map((option) => (
-                        <Option key={option} value={option}>
-                            {option}
-                        </Option>
-                    ))}
-                </Select>
-            </Form.Item>
 
-            <Form.Item
-                shouldUpdate={(prevValues, currentValues) =>
-                    prevValues.question_metric !== currentValues.question_metric
-                }
-                noStyle
-            >
-                {({ getFieldValue }) =>
-                    getFieldValue('question_metric') === 'radio' ||
-                        getFieldValue('question_metric') === 'check' ||
-                        getFieldValue('question_metric') === 'Likert' ? (
-                        <Form.List name="metric_values">
-                            {(fields, { add, remove }) => (
-                                <>
-                                    {fields?.map((field, index) => (
-                                        <Form.Item
-                                            // {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
-                                            label={index === 0 ? 'Response Values' : ''}
-                                            required={true}
-                                            key={field.key}
-                                            name={[index, "response_value"]}
-                                        >
-                                            {/* <Form.Item
-                                                validateTrigger={['onChange', 'onBlur']}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        whitespace: true,
-                                                        message: 'At least two options are required!',
-                                                    },
-                                                ]}
-                                                noStyle
-                                            > */}
-                                            <Input
-                                                placeholder="response value"
-                                                style={{ width: '60%' }}
-                                            />
-                                            {/* </Form.Item> */}
-                                            {fields.length > 2 ? (
-                                                <Button
-                                                    className="dynamic-delete-button"
-                                                    // danger={true}
-                                                    icon={<MinusCircleOutlined />}
-                                                    onClick={() => remove(field.name)}
-                                                >
-                                                </Button>
 
-                                            ) : null}
-                                        </Form.Item>
-                                    ))}
-                                    <Form.Item
-                                    // {...formItemLayoutWithOutLabel}
-                                    >
-                                        <Button
-                                            type="dashed"
-                                            onClick={() => add()}
-                                            style={{ width: '60%' }}
-                                            icon={<PlusOutlined />}
-                                        >
-                                            Add Response Values
-                                        </Button>
-                                    </Form.Item>
-                                </>
-                            )}
-                        </Form.List>
-                    ) : null
-                }
-            </Form.Item>
 
-            <Form.Item label="Required" name="required" valuePropName="required">
-                <Switch />
-            </Form.Item>
+
         </Form >
     );
 };

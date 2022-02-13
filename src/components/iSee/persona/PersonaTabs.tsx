@@ -8,7 +8,8 @@ import {
     Tabs,
     Tag,
 } from 'antd';
-import QuestionnaireForm from '../question/QuestionnaireForm';
+import QuestionnaireTab from '../question/QuestionnaireTab';
+import IntentForm from './IntentForm';
 
 import PersonaForm from './PersonaForm';
 
@@ -25,8 +26,8 @@ const PersonaTabs: React.FC<PersonaType> = (props) => {
     const genExtra2 = (persona: Persona, index: number) => (
 
         <div>
-            {persona.status == "Incomplete" && <Tag color="red">Incomplete</Tag>}
-            {persona.status == "Completed" && <Tag color="success">Completed</Tag>}
+            {!persona.completed && <Tag color="red">Incomplete</Tag>}
+            {persona.completed && <Tag color="success">Completed</Tag>}
 
             <Popconfirm
                 title={'Are you sure to delete?'}
@@ -48,6 +49,11 @@ const PersonaTabs: React.FC<PersonaType> = (props) => {
         </div>
     );
 
+    function updatePersona(n_persona: Persona) {
+        console.log(n_persona)
+    }
+
+
     return (
 
 
@@ -65,11 +71,22 @@ const PersonaTabs: React.FC<PersonaType> = (props) => {
                                         key={"key-" + persona.id}
                                         tab={'Details'}
                                     >
-                                        <PersonaForm persona={persona} />
+                                        <PersonaForm persona={persona} updatePersona={updatePersona} />
                                     </Tabs.TabPane>
-                                    <Tabs.TabPane tab="Questionaire" key="2">
-                                        <QuestionnaireForm
-                                            questionnaire={persona.evaluation_questionnaire || {}} />
+
+                                    <Tabs.TabPane
+                                        key={"intentkey-" + persona.id}
+                                        tab={'Intent'}
+                                    >
+                                        <IntentForm persona={persona} updatePersona={updatePersona} />
+                                    </Tabs.TabPane>
+                                    <Tabs.TabPane tab="Questionaire" key={"tabpane-" + persona.id}>
+                                        <QuestionnaireTab
+                                            key={"qtab-" + persona.id}
+                                            persona={persona}
+                                            updatePersona={updatePersona}
+                                        // questionnaire={persona.evaluation_questionnaire || {}}
+                                        />
                                     </Tabs.TabPane>
                                     <Tabs.TabPane tab="Explanation Strategy" key="3">
                                         Explanation Strategy here
