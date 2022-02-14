@@ -151,7 +151,7 @@ const Welcome: React.FC = () => {
                   <Button type="text" href="usecase/manage">
                     <SettingOutlined color="green" />
                   </Button>,
-                  <Button type="text" href="usecase/manage">
+                  <Button type="text" href="usecase/analytics">
                     <LineChartOutlined />
                   </Button>,
                 ]}
