@@ -22,8 +22,8 @@ const CreateQuestionnaire: React.FC<QuestionnaireType> = (props) => {
 
   const addQuestion = () => {
     const newQuestion: Question = {
-      "question_text": "",
-      "question_metric": "",
+      "text": "",
+      "metric": "",
       "metric_values": [],
       "required": false,
     };
@@ -40,7 +40,7 @@ const CreateQuestionnaire: React.FC<QuestionnaireType> = (props) => {
 
   const removeQuestion = (values: any) => {
     const questionsTemp: Question[] = questionnaire.questions || [];
-    const newQuestions = questionsTemp.filter((item) => item.question_text !== values.question_text)
+    const newQuestions = questionsTemp.filter((item) => item.text !== values.text)
     const newQuestionnaire = {
       "name": questionnaire.name,
       "category": questionnaire.category,
@@ -108,7 +108,7 @@ const CreateQuestionnaire: React.FC<QuestionnaireType> = (props) => {
               <div>
                 {questionnaire.questions?.map((question, index) => (
                   <div
-                    key={question.question_text}>
+                    key={question.text}>
                     <Divider>
                       <Space>
                         Question {index + 1}

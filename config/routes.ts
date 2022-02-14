@@ -21,13 +21,13 @@
   {
     path: '/usecase/analytics',
     name: 'Usecase Analytics',
-    icon: 'setting',
+    icon: 'LineChartOutlined',
     component: './CreateAnalytics',
   },
   {
     path: '/questionnaires',
     name: 'Questionnaires',
-    icon: 'setting',
+    icon: 'question',
     component: './CreateQuestionnaires',
   },
   // {

@@ -33,8 +33,8 @@ const Welcome: React.FC = () => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [useCases, setUseCases] = useState([
-    { name: 'Usecase 1', goal: 'Testing', published: false, feed: 0, runs: 0 },
-    { name: 'Usecase 2', goal: 'Some goal here', published: true, feed: 120, runs: 4900 },
+    { name: 'Radiology Fracture Detection', goal: 'Determine if a radiology image contains a fracture', published: false, feed: 0, runs: 0 },
+    { name: 'Loan Application', goal: 'Determine if a loan application is approved or not', published: true, feed: 120, runs: 4900 },
   ]);
 
   const showModal = () => {
@@ -122,7 +122,7 @@ const Welcome: React.FC = () => {
         key="head1"
         // onBack={() => window.history.back()}
         title="Usecases"
-        subTitle="Displaying all the created usecases"
+        subTitle="Displaying all usecases"
         extra={[
           <Button type="primary" onClick={showModal} style={{ width: '100%' }}>
             <PlusOutlined /> Add New
@@ -156,7 +156,7 @@ const Welcome: React.FC = () => {
                   </Button>,
                 ]}
               >
-                <Meta description="Goal of the usecase" />
+                <Meta description={usecase.goal} />
                 <br />
                 <Row gutter={16}>
                   <Col span={12}>

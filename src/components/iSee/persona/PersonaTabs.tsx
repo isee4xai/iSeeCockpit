@@ -1,5 +1,5 @@
 import { Persona } from '@/models/usecase';
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, RocketFilled } from '@ant-design/icons';
 import {
     Button,
     Collapse,
@@ -89,7 +89,18 @@ const PersonaTabs: React.FC<PersonaType> = (props) => {
                                         />
                                     </Tabs.TabPane>
                                     <Tabs.TabPane tab="Explanation Strategy" key="3">
-                                        Explanation Strategy here
+                                        <Button
+                                            // danger={true}
+                                            // size="small"
+                                            type='primary'
+                                            style={{ marginLeft: 10 }}
+                                            // className="dynamic-delete-button"
+                                            onClick={event => {
+
+                                                event.stopPropagation();
+                                            }}
+                                            icon={<RocketFilled />}
+                                        >Generate Explanation Strategy</Button>
                                     </Tabs.TabPane>
                                 </Tabs>
 
