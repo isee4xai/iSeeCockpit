@@ -172,7 +172,7 @@ const CreateAnalytics: React.FC = () => {
             <PageHeader
                 key="head2"
                 ghost={false}
-                title="Usecase 1"
+                title="Radiology Fracture Detection"
                 subTitle={<Tag color="green">Published</Tag>}
             />
             <Card>

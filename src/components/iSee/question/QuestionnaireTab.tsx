@@ -1,4 +1,4 @@
-import { DeleteOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined, MinusCircleOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import { Form, Button, Space, Card, Empty, Divider, Popconfirm, Col, Row, Collapse, Tabs, Tag, Input, Select, message, Badge } from 'antd';
 import { Question, Questionnaire } from '@/models/questionnaire';
 import QuestionForm from './QuestionForm';
@@ -47,7 +47,7 @@ const QuestionnaireTab: React.FC<PersonaType> = (props) => {
         let blank_obj: Question = {
             id: "q-" + Math.floor(Math.random() * 100000) + 1,
             completed: false,
-            text: "Question Name",
+            text: "Question",
             metric: "Free-Text",
             required: false,
             category: values.category
@@ -73,6 +73,7 @@ const QuestionnaireTab: React.FC<PersonaType> = (props) => {
 
     const genExtra2 = (question: Question, index: number) => (
         <div>
+
             <Tag color="default">{question.category}</Tag>
 
             {!question.completed && <Tag color="red">Incomplete</Tag>}
@@ -85,6 +86,7 @@ const QuestionnaireTab: React.FC<PersonaType> = (props) => {
                     setQuestions(temp);
                     updateQuestions(temp)
                 }}
+
                 okText="Yes"
                 cancelText="No"
             >
@@ -92,9 +94,25 @@ const QuestionnaireTab: React.FC<PersonaType> = (props) => {
                     danger={true}
                     size="small"
                     className="dynamic-delete-button"
+                    onClick={event => {
+
+                        event.stopPropagation();
+                    }}
                     icon={<DeleteOutlined />}
-                />
+                ></Button>
             </Popconfirm>
+            <Button
+                // danger={true}
+                size="small"
+                type='primary'
+                style={{ marginLeft: 10 }}
+                // className="dynamic-delete-button"
+                onClick={event => {
+                    message.success("Saved Question")
+                    event.stopPropagation();
+                }}
+                icon={<SaveOutlined />}
+            >Save</Button>
         </div>
     );
 
@@ -161,28 +179,7 @@ const QuestionnaireTab: React.FC<PersonaType> = (props) => {
                     labelCol={{ span: 0 }}
                     // initialValues={{ remember: true }}
                     // onFinish=
-                    onFinish={(values) => {
-                        console.log('Success:', values);
-
-                        let blank_obj: Question = {
-                            id: "q-" + Math.floor(Math.random() * 100000) + 1,
-                            completed: false,
-                            text: "Question Name",
-                            metric: "Free-Text",
-                            required: false,
-                            category: values.category
-                        }
-
-                        const append = [...questions, blank_obj]
-                        setQuestions(append)
-                        console.log('Success:', blank_obj);
-                        console.log('append:', append);
-
-                        updateQuestions(append)
-                        handleOkQ();
-                        message.success('Succesfully Added Question');
-                    }}
-
+                    onFinish={onFinish}
                     autoComplete="off"
                 >
                     <Form.Item

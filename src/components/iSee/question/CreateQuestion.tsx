@@ -29,8 +29,8 @@ const CreateQuestion: React.FC<{ question: Question }> = (props) => {
   const onQuestionTextChange = (values: any) => {
     console.log('onQuestionTextChange:', values);
     const newQuestion: Question = {
-      "question_text": values.target.value,
-      "question_metric": question.question_metric,
+      "text": values.target.value,
+      "metric": question.metric,
       "metric_values": question.metric_values,
       "required": question.required
     }
@@ -40,8 +40,8 @@ const CreateQuestion: React.FC<{ question: Question }> = (props) => {
   const onQuestionMetricChange = (values: any) => {
     console.log('onQuestionMetricChange:', values);
     const newQuestion: Question = {
-      "question_text": question.question_text,
-      "question_metric": values,
+      "text": question.text,
+      "metric": values,
       "metric_values": question.metric_values,
       "required": question.required
     }
@@ -61,8 +61,8 @@ const CreateQuestion: React.FC<{ question: Question }> = (props) => {
   const onRequiredChange = (values: any) => {
     console.log('onRequiredChange:', values);
     const newQuestion: Question = {
-      "question_text": question.question_text,
-      "question_metric": question.question_metric,
+      "text": question.text,
+      "metric": question.metric,
       "metric_values": question.metric_values,
       "required": values
     }
@@ -74,8 +74,8 @@ const CreateQuestion: React.FC<{ question: Question }> = (props) => {
     const responsesTemp: string[] = question.metric_values || [];
     responsesTemp.push(newResponse);
     const newQuestion = {
-      "question_text": question.question_text,
-      "question_metric": question.question_metric,
+      "text": question.text,
+      "metric": question.metric,
       "metric_values": responsesTemp,
       "required": question.required
     }
@@ -86,8 +86,8 @@ const CreateQuestion: React.FC<{ question: Question }> = (props) => {
   const removeResponse = (value: any) => {
     const newResponses = question.metric_values?.filter((item) => item !== value)
     const newQuestion = {
-      "question_text": question.question_text,
-      "question_metric": question.question_metric,
+      "text": question.text,
+      "metric": question.metric,
       "metric_values": newResponses,
       "required": question.required
     }

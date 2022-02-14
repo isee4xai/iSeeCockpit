@@ -32,37 +32,39 @@ import DATA_FILEDS from '@/models/common';
 const { Option } = Select;
 const { Panel } = Collapse;
 
-const sample_personas: Persona[] = [{
-  id: "123", name: "Doctor", completed: false,
-  evaluation: {
-    questions: [
-    ]
-  }
-},
-{
-  id: "234", name: "Patient", completed: true,
-  intent: 'Trust',
-  intent_questions: ['How confident is the AI model?', "How does this outcome affect my health?", "Are there adverse effects of taking AI's decision?"],
-  // todo
-  evaluation: {
-    questions: [
-      {
-        id: "124",
-        category: "Trust",
-        text: "Are you now able to trust the AI model?",
-        metric: "Radio",
-        metric_values: ["Yes", "No"]
-      },
-      {
-        id: "125",
-        category: "Trust",
-        text: "Next time, would you like the explanation with the AI model's decision?",
-        metric: "Radio",
-        metric_values: ["Yes", "No"],
-        completed: true
-      }]
-  }
-}]
+// const sample_personas: Persona[] = [{
+//   id: "123", name: "Doctor", completed: false,
+//   evaluation: {
+//     questions: [
+//     ]
+//   }
+// },
+// {
+//   id: "234", name: "Patient", completed: true,
+//   intent: 'Trust',
+//   intent_questions: ['How confident is the AI model?', "How does this outcome affect my health?", "Are there adverse effects of taking AI's decision?"],
+//   // todo
+//   evaluation: {
+//     questions: [
+//       {
+//         id: "124",
+//         category: "Trust",
+//         text: "Are you now able to trust the AI model?",
+//         metric: "Radio",
+//         metric_values: ["Yes", "No"]
+//       },
+//       {
+//         id: "125",
+//         category: "Trust",
+//         text: "Next time, would you like the explanation with the AI model's decision?",
+//         metric: "Radio",
+//         metric_values: ["Yes", "No"],
+//         completed: true
+//       }]
+//   }
+// }]
+
+const sample_personas: Persona[] = []
 
 const Admin: React.FC = () => {
 
