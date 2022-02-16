@@ -121,7 +121,7 @@ const QuestionForm: React.FC<QuestionType> = (props) => {
                                                         style={{ width: '60%' }}
                                                     />
                                                     {/* </Form.Item> */}
-                                                    {fields.length > 0 ? (
+                                                    {fields.length > 2 ? (
                                                         <Button
                                                             className="dynamic-delete-button"
                                                             // danger={true}
