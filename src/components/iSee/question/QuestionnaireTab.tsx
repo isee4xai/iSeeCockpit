@@ -1,4 +1,4 @@
-import { DeleteOutlined, MinusCircleOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
+import { DeleteOutlined, DownloadOutlined, MinusCircleOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import { Form, Button, Space, Card, Empty, Divider, Popconfirm, Col, Row, Collapse, Tabs, Tag, Input, Select, message, Badge } from 'antd';
 import { Question, Questionnaire } from '@/models/questionnaire';
 import QuestionForm from './QuestionForm';
@@ -25,6 +25,43 @@ const QuestionnaireTab: React.FC<PersonaType> = (props) => {
 
     const [questions, setQuestions] = useState(persona.evaluation.questions || []);
 
+
+    // New Load Quesionts Popu Functions
+    const [isQuestionModal2Visible, setIsQuestionModal2Visible] = useState(false);
+
+    const showModalQ2 = () => {
+        setIsQuestionModal2Visible(true);
+    };
+
+    const handleOkQ2 = () => {
+        setIsQuestionModal2Visible(false);
+    };
+
+    const handleCancelQ2 = () => {
+        setIsQuestionModal2Visible(false);
+    };
+
+    const onFinish2 = (values: any) => {
+        console.log('Success:', values);
+
+        let blank_obj: Question = {
+            id: "q-" + Math.floor(Math.random() * 100000) + 1,
+            completed: false,
+            text: "Question",
+            metric: "Free-Text",
+            required: false,
+            category: values.category
+        }
+
+        const append = [...questions, blank_obj]
+        setQuestions(append)
+        console.log('Success:', blank_obj);
+        console.log('append:', append);
+
+        updateQuestions(append)
+        handleOkQ2();
+        message.success('Succesfully Added Question');
+    };
 
     // New Persona Popu Functions
     const [isQuestionModalVisible, setIsQuestionModalVisible] = useState(false);
@@ -123,19 +160,37 @@ const QuestionnaireTab: React.FC<PersonaType> = (props) => {
                     size="small"
                     title={'Evaluation Questions'}
                     extra={
-                        <Button
-                            // className="dynamic-delete-button"
-                            // color='primary'
-                            // ghost
-                            // danger={true}
-                            type="primary"
-                            // size="small"
-                            onClick={() => showModalQ()}
-                            icon={<PlusOutlined />}
-                            name='addQuestionButton'
-                        >
-                            Add Question
-                        </Button>
+                        <div>
+
+                            <Button
+                                // className="dynamic-delete-button"
+                                // color='primary'
+                                // ghost
+                                // danger={true}
+                                type="primary"
+                                // size="small"
+                                onClick={() => showModalQ2()}
+                                icon={<DownloadOutlined />}
+                                name='2addQuestionButton'
+                            >
+                                Load Questionaire
+                            </Button>
+                            &nbsp;
+                            <Button
+                                // className="dynamic-delete-button"
+                                // color='primary'
+                                // ghost
+                                // danger={true}
+                                type="primary"
+                                // size="small"
+                                onClick={() => showModalQ()}
+                                icon={<PlusOutlined />}
+                                name='addQuestionButton'
+                            >
+                                Add Question
+                            </Button>
+                        </div>
+
                     }
                 >
                     {
@@ -180,6 +235,46 @@ const QuestionnaireTab: React.FC<PersonaType> = (props) => {
                     // initialValues={{ remember: true }}
                     // onFinish=
                     onFinish={onFinish}
+                    autoComplete="off"
+                >
+                    <Form.Item
+                        label="Questionnaire Category"
+                        name="category"
+                        tooltip="This is a required field"
+                        rules={[{ required: true, message: 'Input is required!' }]}
+                    >
+                        <Select>
+                            {DATA_FILEDS.QUESTION_CATEGORY.map((option) => (
+                                <Select.Option key={option} value={option}>
+                                    {option}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
+                </Form>
+            </Modal>
+
+            <Modal
+                title="Load Questionnaire"
+                visible={isQuestionModal2Visible}
+                onCancel={handleCancelQ2}
+                footer={[
+                    <Button key="back" onClick={handleCancelQ2}>
+                        Cancel
+                    </Button>,
+                    <Button form="createQuestion22" key="submitQ" htmlType="submit" type="primary">
+                        Create
+                    </Button>,
+                ]}
+            >
+                <Form
+                    id="createQuestion22"
+                    name="createQuestion22"
+                    layout="vertical"
+                    labelCol={{ span: 0 }}
+                    // initialValues={{ remember: true }}
+                    // onFinish=
+                    onFinish={onFinish2}
                     autoComplete="off"
                 >
                     <Form.Item

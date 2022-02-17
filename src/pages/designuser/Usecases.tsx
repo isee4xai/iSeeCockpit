@@ -34,7 +34,7 @@ const Welcome: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [useCases, setUseCases] = useState([
     { name: 'Radiology Fracture Detection', goal: 'Determine if a radiology image contains a fracture', published: false, feed: 0, runs: 0 },
-    { name: 'Loan Application', goal: 'Determine if a loan application is approved or not', published: true, feed: 120, runs: 4900 },
+    { name: 'Loan Application', goal: 'Determine if a loan application is approved or not', published: true, feed: 120, runs: 130 },
   ]);
 
   const showModal = () => {
