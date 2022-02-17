@@ -132,7 +132,7 @@ const Admin: React.FC = () => {
         key="head2"
         ghost={false}
         // onBack={() => window.history.back()}
-        title="Usecase Name Here"
+        title="Radiology Fracture Detection"
         subTitle={<Tag color="red">Unpublished</Tag>}
         extra={[
           <div key="head3">

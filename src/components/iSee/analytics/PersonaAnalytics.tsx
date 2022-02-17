@@ -34,44 +34,36 @@ const evaluation = {
     assessment: "",
     feedback:
         [{
-            question: 'Are you able to trust AI model decisions?',
+            question: 'Are you more confident on the AI models decisions?',
             category: 'Trust',
             values:
                 [{
                     key: "Yes",
-                    value: 4
+                    value: 12
                 }, {
                     key: "No",
                     value: 4
                 },]
         },
         {
-            question: 'From the explanation, I understand how the AI model works.',
-            category: 'Mental Model',
+            question: 'How satisfied are you with the outcome?',
+            category: 'Satisfaction',
             values:
                 [{
-                    key: "I agree strongly",
-                    value: 4
+                    key: "Satisfied",
+                    value: 12
                 },
                 {
-                    key: "I agree somewhat",
+                    key: "Neutral",
                     value: 5
                 },
                 {
-                    key: "I’m neutral about it",
-                    value: 2
-                },
-                {
-                    key: "I disagree somewhat",
-                    value: 1
-                },
-                {
-                    key: "I disagree strongly",
+                    key: "Not Satisfied",
                     value: 1
                 },]
         },
         {
-            question: 'The explanation of the AI model sufficiently detailed.',
+            question: 'The explanation of the AI model was sufficiently detailed.',
             category: 'Curiosity',
             values:
                 [{
@@ -138,7 +130,7 @@ const PersonaAnalytics: React.FC = () => {
                         >
                             <Descriptions.Item label={item.question}>{item.question}</Descriptions.Item>
                             <Meta description={"(" + item.category + ")"} />
-                            {item.values.length > 4 ?
+                            {item.values.length > 2 ?
                                 (<Column
                                     {...column_config}
                                     height={200}
