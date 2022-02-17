@@ -36,7 +36,7 @@ const CreateQuestionnaires: React.FC = () => {
   };
 
   const [questionnaires, setQuestionnaires] = useState([{
-    name: 'Hoffman Satisfaction Scale',
+    name: 'Explanation Satisfaction Scale (Hoffman)',
     category: 'Satisfaction',
     questions: [
       {
@@ -139,7 +139,7 @@ const CreateQuestionnaires: React.FC = () => {
       },
     ]
   }, {
-    name: 'Explanation Goodness Checklist',
+    name: 'Explanation Goodness Checklist (Hoffman)',
     category: 'Goodness',
     questions: [
       {
@@ -186,7 +186,157 @@ const CreateQuestionnaires: React.FC = () => {
         required: true,
       },
     ]
-  }]);
+  },
+  {
+    name: 'Cahour-Forzy Trust Scale;',
+    category: 'Trust',
+    questions: [
+      {
+        question_text: 'What is your confidence in the [tool]? Do you have a feeling of trust in it?',
+        question_metric: 'Likert',
+        metric_values: [
+          '1 (I do not trust it at all.)',
+          '2',
+          '3',
+          '4',
+          '5',
+          '6',
+          '7 (I trust it completely)',
+        ],
+        required: true,
+      }, {
+        question_text: 'Are the actions of the [tool] predictable?',
+        question_metric: 'Likert',
+        metric_values: [
+          '1 (It is not at all predictable.)',
+          '2',
+          '3',
+          '4',
+          '5',
+          '6',
+          '7 (It is completely predictable)',
+        ],
+        required: true,
+      }, {
+        question_text: 'Is the [tool] reliable? Do you think it is safe?',
+        question_metric: 'Likert',
+        metric_values: [
+          '1 (It is not at all safe.)',
+          '2',
+          '3',
+          '4',
+          '5',
+          '6',
+          '7 (It is completely safe. )',
+        ],
+        required: true,
+      }, {
+        question_text: 'Is the [tool] efficient at what it does?',
+        question_metric: 'Likert',
+        metric_values: [
+          '1 (It is not at all efficient.)',
+          '2',
+          '3',
+          '4',
+          '5',
+          '6',
+          '7 (It is completely efficient)',
+        ],
+        required: true,
+      },
+    ]
+  },
+  {
+    name: 'Trust Scale (Hoffman)',
+    category: 'Trust',
+    questions: [
+      {
+        question_text: 'I am confident in the [tool]. I feel that it works well.',
+        question_metric: 'Likert',
+        metric_values: [
+          'I agree strongly',
+          'I agree somewhat',
+          'I’m neutral about it',
+          'I disagree somewhat',
+          'I disagree strongly',
+        ],
+        required: true,
+      },
+      {
+        question_text: 'The outputs of the [tool] are very predictable.',
+        question_metric: 'Likert',
+        metric_values: [
+          'I agree strongly',
+          'I agree somewhat',
+          'I’m neutral about it',
+          'I disagree somewhat',
+          'I disagree strongly',
+        ],
+        required: true,
+      },
+      {
+        question_text: 'I feel safe that when I rely on the [tool] I will get the right answers.',
+        question_metric: 'Likert',
+        metric_values: [
+          'I agree strongly',
+          'I agree somewhat',
+          'I’m neutral about it',
+          'I disagree somewhat',
+          'I disagree strongly',
+        ],
+        required: true,
+      },
+      {
+        question_text: 'The [tool] is efficient in that it works very quickly.',
+        question_metric: 'Likert',
+        metric_values: [
+          'I agree strongly',
+          'I agree somewhat',
+          'I’m neutral about it',
+          'I disagree somewhat',
+          'I disagree strongly',
+        ],
+        required: true,
+      },
+      {
+        question_text: 'I am wary of the [tool].',
+        question_metric: 'Likert',
+        metric_values: [
+          'I agree strongly',
+          'I agree somewhat',
+          'I’m neutral about it',
+          'I disagree somewhat',
+          'I disagree strongly',
+        ],
+        required: true,
+      },
+      {
+        question_text: ' The [tool] can perform the task better than a novice human user.',
+        question_metric: 'Likert',
+        metric_values: [
+          'I agree strongly',
+          'I agree somewhat',
+          'I’m neutral about it',
+          'I disagree somewhat',
+          'I disagree strongly',
+        ],
+        required: true,
+      },
+      {
+        question_text: 'I like using the system for decision making.',
+        question_metric: 'Likert',
+        metric_values: [
+          'I agree strongly',
+          'I agree somewhat',
+          'I’m neutral about it',
+          'I disagree somewhat',
+          'I disagree strongly',
+        ],
+        required: true,
+      }
+    ]
+  }
+  ]);
 
   const onFinish = (values: any) => {
     values.questions = [];

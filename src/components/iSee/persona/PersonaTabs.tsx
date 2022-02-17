@@ -80,7 +80,7 @@ const PersonaTabs: React.FC<PersonaType> = (props) => {
                                     >
                                         <IntentForm persona={persona} updatePersona={updatePersona} />
                                     </Tabs.TabPane>
-                                    <Tabs.TabPane tab="Questionaire" key={"tabpane-" + persona.id}>
+                                    <Tabs.TabPane tab="Questionnaire" key={"tabpane-" + persona.id}>
                                         <QuestionnaireTab
                                             key={"qtab-" + persona.id}
                                             persona={persona}
