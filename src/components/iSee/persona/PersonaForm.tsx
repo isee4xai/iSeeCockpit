@@ -42,7 +42,7 @@ const PersonaForm: React.FC<PersonaType> = (props) => {
                     </Form.Item>
 
                     <Form.Item
-                        label="Domain Level"
+                        label="Domain Knowledge Level"
                         name='domain_level'
                         rules={[{ required: false, message: 'Input is required!' }]}
                     >
@@ -56,7 +56,7 @@ const PersonaForm: React.FC<PersonaType> = (props) => {
                     </Form.Item>
 
                     <Form.Item
-                        label="Knowledge Level"
+                        label="AI Knowledge Level"
                         name='knowledge_level'
                         rules={[{ required: false, message: 'Input is required!' }]}
                     >
