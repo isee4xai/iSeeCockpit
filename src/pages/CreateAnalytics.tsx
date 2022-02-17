@@ -8,28 +8,13 @@ import { UserSwitchOutlined } from "@ant-design/icons";
 
 const personas: Persona[] =
     [{
-        id: "123", name: "Doctor", status: "Completed"
+        id: "123", name: "Loan Applicant", status: "Completed"
     },
     {
-        id: "234", name: "Patient", status: "Completed",
-        intent: 'Trust',
-        intent_questions: ['How confident is the AI model?', "How does this outcome affect my health?", "Are there adverse effects of taking AI's decision?"],
-        // todo
-        evaluation_questionnaire: {
-            questions: [
-                {
-                    question_category: "Trust",
-                    question_text: "Are you now able to trust the AI model?",
-                    question_metric: "radio",
-                    metric_values: ["Yes", "No"]
-                },
-                {
-                    question_category: "Trust",
-                    question_text: "Next time, would you like the explanation with the AI model's decision?",
-                    question_metric: "radio",
-                    metric_values: ["Yes", "No"]
-                }]
-        }
+        id: "234", name: "Loan Officer", status: "Completed",
+    },
+    {
+        id: "345", name: "Govenment", status: "Completed"
     }];
 
 const overall_usage = {
@@ -132,15 +117,15 @@ const overall_feedback = {
 
 const usage_by_persona_data =
     [{
-        persona: "Doctor",
+        persona: "Loan Applicant",
         value: 23
     },
     {
-        persona: "Patient",
+        persona: "Loan officer",
         value: 12
     },
     {
-        persona: "Radiologist",
+        persona: "Govenment",
         value: 2
     }];
 const usage_by_persona = {
@@ -172,7 +157,7 @@ const CreateAnalytics: React.FC = () => {
             <PageHeader
                 key="head2"
                 ghost={false}
-                title="Radiology Fracture Detection"
+                title="Loan Application Approval"
                 subTitle={<Tag color="green">Published</Tag>}
             />
             <Card>
