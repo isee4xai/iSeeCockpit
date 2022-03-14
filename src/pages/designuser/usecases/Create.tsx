@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Card,
   Button,
@@ -15,22 +15,30 @@ import {
   Switch,
   Input,
   Modal,
+  Space,
+  Result,
 } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import {
   CheckOutlined,
   CloseOutlined,
   PlusOutlined,
+  SaveFilled,
+  SaveOutlined,
   SettingOutlined,
   UploadOutlined,
   UserSwitchOutlined,
 } from '@ant-design/icons';
 import AssetmentField from '@/components/iSee/AssetmentFieldSet';
-import { Persona } from '@/models/usecase';
+import { Persona } from '@/models/persona';
+import { Usecase, UsecaseSettings } from '@/models/usecase';
 import PersonaTabs from '@/components/iSee/persona/PersonaTabs';
 import DATA_FILEDS from '@/models/common';
+import { useParams } from 'umi';
 const { Option } = Select;
 const { Panel } = Collapse;
+import { history } from 'umi';
+import { api_create_persona, api_get, api_update_settings } from '@/services/isee/usecases';
 
 // const sample_personas: Persona[] = [{
 //   id: "123", name: "Doctor", completed: false,
@@ -66,9 +74,43 @@ const { Panel } = Collapse;
 
 const sample_personas: Persona[] = []
 
-const Admin: React.FC = () => {
+export type Params = {
+  match: {
+    params: {
+      id: string
+    }
+  }
+};
+
+
+const Create: React.FC<Params> = (props) => {
 
   const [personas, setPersonas] = useState(sample_personas);
+  const [pageStatus, setPageStatus] = useState("");
+  // const { id } = useParams();
+
+  const [settings, setSettings] = useState<UsecaseSettings>();
+  const [settingsForm] = Form.useForm();
+
+  const [usecase, setUsecase] = useState({ id: "new" });
+
+  useEffect(() => {
+    async function get() {
+      const res_usecase = await api_get(props.match.params.id);
+
+      setUsecase(res_usecase);
+      if (!res_usecase) {
+        setPageStatus("404");
+      } else {
+        setPageStatus("200");
+        console.log(res_usecase.settings)
+        settingsForm.setFieldsValue(res_usecase.settings)
+        setSettings(res_usecase.settings)
+        setPersonas(res_usecase.personas)
+      }
+    }
+    get();
+  }, []);
 
   // New Persona Popu Functions
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -85,20 +127,20 @@ const Admin: React.FC = () => {
     setIsModalVisible(false);
   };
 
-  const onFinishPersona = (values: any) => {
+  async function onFinishPersona(values: any) {
 
     // We need to update this blank model if we change the object
-    let blank_obj: Persona = {
+    let new_persona: Persona = {
       id: "persona-" + Math.floor(Math.random() * 100000) + 1,
       completed: false,
-      evaluation: {
-        questions: []
-      },
+      intents: [
+      ],
       name: values.name
     }
 
-    setPersonas([...personas, blank_obj]);
-    console.log('Success:', blank_obj);
+    setPersonas([...personas, new_persona]);
+    console.log('Success Create Persona:', new_persona);
+    await api_create_persona(usecase.id, new_persona)
     handleOk();
     message.success('Succesfully Added Persona');
   };
@@ -120,63 +162,102 @@ const Admin: React.FC = () => {
     },
   };
 
+  async function saveSettings() {
+    const updateSettings = settingsForm.getFieldsValue();
+    setSettings(updateSettings);
+
+    await api_update_settings(usecase.id, updateSettings)
+    console.log("Updating Settings", usecase)
+    message.success('Succesfully saved AI Model Settings');
+  }
+
   const genExtra = () => (
-    <div>
+    <Space size="middle">
+      <Button
+        type="primary"
+        onClick={() => saveSettings()}
+
+        htmlType="button"
+        className='r-10'
+        icon={<SaveOutlined />}
+      >
+        Save AI Model Settings
+      </Button>
       <Tag color="red">Pending</Tag>
-    </div>
+    </Space>
   );
 
-  return (
-    <PageHeaderWrapper>
-      <PageHeader
-        key="head2"
-        ghost={false}
-        // onBack={() => window.history.back()}
-        title="Radiology Fracture Detection"
-        subTitle={<Tag color="red">Unpublished</Tag>}
-        extra={[
-          <div key="head3">
-            Publish &nbsp;&nbsp;
-            <Switch
-              checkedChildren={<CheckOutlined />}
-              unCheckedChildren={<CloseOutlined />}
-              defaultChecked={false}
-            />
-          </div>,
-        ]}
-      />
-
-      <Collapse
-        expandIconPosition={'right'}
+  const genPersona = () => (
+    <Space size="middle">
+      <Button
+        type="primary"
+        onClick={showModal}
+        htmlType="button"
+        className='r-10'
+        icon={<PlusOutlined />}
       >
-        <Panel
-          header={
-            <div>
-              <h3><SettingOutlined /> AI Model Settings</h3>
-            </div>
+        Create New Persona
+      </Button>
+      <Tag color="red">Pending</Tag>
+    </Space>
+  );
+
+
+  return (
+
+    <>
+      {pageStatus == "404" &&
+        <Result
+          status="404"
+          title="404"
+          subTitle="Sorry, we couldn't find the Usecase"
+          extra={
+            <Button type="primary" onClick={() => history.push('/')}>
+              Back Home
+            </Button>
           }
-          key="1"
-          extra={genExtra()}
-        >
-          <Card
-            bordered={false}
-            actions={[
-              <Button type="primary" htmlType="submit">
-                Save AI Model
-              </Button>,
+        />
+      }
+      {pageStatus == "200" &&
+        <PageHeaderWrapper>
+          <PageHeader
+            key="head2"
+            ghost={false}
+            // onBack={() => window.history.back()}
+            title={usecase.name}
+            subTitle={<Tag color="red">Unpublished</Tag>}
+            extra={[
+              <div key="head3">
+                Publish &nbsp;&nbsp;
+                <Switch
+                  checkedChildren={<CheckOutlined />}
+                  unCheckedChildren={<CloseOutlined />}
+                  defaultChecked={false}
+                />
+              </div>,
             ]}
+          />
+
+          <Card title={<h4><SettingOutlined /> AI Model Settings</h4>}
+            extra={genExtra()}
+            headStyle={{ backgroundColor: "#fafafa", border: "1px solid #d9d9d9" }}
+          // actions={[
+          //   <Button type="primary" htmlType="submit">
+          //     Save AI Model Settings
+          //   </Button>,
+          // ]}
           >
             <Form
               name="basic"
               // layout="vertical"
               labelCol={{ span: 0 }}
               // wrapperCol={{ span: 10 }}
-              initialValues={{ remember: true }}
               // onFinish={onFinish}
               // onFinishFailed={onFinishFailed}
-              onFieldsChange={(_, allFields) => {
-                console.log(allFields);
-              }}
+              // onFieldsChange={(_, allFields) => {
+              //   console.log(allFields);
+              // }}
+              form={settingsForm}
               autoComplete="off"
             >
               <Row gutter={20}>
@@ -228,7 +309,7 @@ const Admin: React.FC = () => {
 
                   <Form.Item
                     label="Model Outcomes"
-                    name="model_outcomes"
+                    name="model_outcome"
                     tooltip="This is a required field"
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
@@ -258,72 +339,57 @@ const Admin: React.FC = () => {
               </Row>
             </Form>
           </Card>
-        </Panel>
-        <Panel
-          header={
-            <div>
-              <h3>
-                <UserSwitchOutlined /> User Personas
-              </h3>
-            </div>
-          }
-          key="2"
-          extra={genExtra()} >
-          <Card
-            bordered={false}
-            actions={[
-              <Button
-                type="primary"
-                onClick={showModal}
-                htmlType="button"
-                icon={<PlusOutlined />}
-              >
-                Add New Persona
+
+          <Card title={<h4><UserSwitchOutlined /> User Personas</h4>}
+            extra={genPersona()}
+            headStyle={{ backgroundColor: "#fafafa", border: "1px solid #d9d9d9" }}
+          >
+
+            <PersonaTabs setPersonas={setPersonas} personas={personas}></PersonaTabs>
+
+
+          </Card>
+
+
+
+          {/* New Persona Popup  */}
+          <Modal
+            title="Create new Persona"
+            visible={isModalVisible}
+            onCancel={handleCancel}
+            footer={[
+              <Button key="back" onClick={handleCancel}>
+                Cancel
+              </Button>,
+              <Button form="createpersona" key="submit" htmlType="submit" type="primary">
+                Create
               </Button>,
             ]}
           >
-            <PersonaTabs setPersonas={setPersonas} personas={personas}></PersonaTabs>
-          </Card>
+            <Form
+              id="createpersona"
+              name="createpersona"
+              layout="vertical"
+              labelCol={{ span: 0 }}
+              initialValues={{ remember: true }}
+              onFinish={onFinishPersona}
+              autoComplete="off"
+            >
+              <Form.Item
+                label="Name of the Persona"
+                name="name"
+                rules={[{ required: true, message: 'Input is required!' }]}
+              >
+                <Input />
+              </Form.Item>
+            </Form>
+          </Modal>
 
-          {/* </Card> */}
-        </Panel>
-      </Collapse>
+        </PageHeaderWrapper >
+      }
+    </>
 
-      {/* New Persona Popup  */}
-      <Modal
-        title="Create new Persona"
-        visible={isModalVisible}
-        onCancel={handleCancel}
-        footer={[
-          <Button key="back" onClick={handleCancel}>
-            Cancel
-          </Button>,
-          <Button form="createpersona" key="submit" htmlType="submit" type="primary">
-            Create
-          </Button>,
-        ]}
-      >
-        <Form
-          id="createpersona"
-          name="createpersona"
-          layout="vertical"
-          labelCol={{ span: 0 }}
-          initialValues={{ remember: true }}
-          onFinish={onFinishPersona}
-          autoComplete="off"
-        >
-          <Form.Item
-            label="Name of the Persona"
-            name="name"
-            rules={[{ required: true, message: 'Input is required!' }]}
-          >
-            <Input />
-          </Form.Item>
-        </Form>
-      </Modal>
-
-    </PageHeaderWrapper >
   );
 };
 
-export default Admin;
+export default Create;

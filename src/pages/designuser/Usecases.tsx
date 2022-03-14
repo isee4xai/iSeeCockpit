@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import {
   Card,
@@ -22,6 +22,10 @@ import {
   SettingOutlined,
 } from '@ant-design/icons';
 import Meta from 'antd/lib/card/Meta';
+import { v4 as uuidv4 } from 'uuid';
+
+import { Usecase } from '@/models/usecase';
+import { api_create, api_get_all } from '@/services/isee/usecases';
 
 const Welcome: React.FC = () => {
   const style = {
@@ -32,10 +36,29 @@ const Welcome: React.FC = () => {
   };
 
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [useCases, setUseCases] = useState([
-    { name: 'Radiology Fracture Detection', goal: 'Determine if a radiology image contains a fracture', published: false, feed: 0, runs: 0 },
-    { name: 'Loan Application', goal: 'Determine if a loan application is approved or not', published: true, feed: 120, runs: 130 },
-  ]);
+
+  const [useCases, setUseCases] = useState([]);
+
+  useEffect(() => {
+    async function get_all() {
+      const data = await api_get_all()
+      setUseCases(data);
+    }
+    get_all();
+  }, []);
+
+  async function get_all() {
+    const data = await api_get_all()
+    setUseCases(data);
+  }
+
+  async function create(usecase: Usecase) {
+    console.log('Create Usecase:', usecase);
+    handleOk();
+    const data = await api_create(usecase)
+    get_all();
+    message.success('Succesfully Added Usecase');
+  }
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -50,13 +73,25 @@ const Welcome: React.FC = () => {
   };
 
   const onFinish = (values: any) => {
-    values.runs = 0;
-    values.feed = 0;
-    values.published = false;
-    setUseCases([...useCases, values]);
-    console.log('Success:', values);
-    handleOk();
-    message.success('Succesfully Added Usecase');
+    let blank_obj: Usecase = {
+      id: uuidv4(),
+      published: false,
+      stats: {
+        runs: 0,
+        feedback: 0
+      },
+      settings: {
+        ai_task: "",
+        ai_method: "",
+        data_type: "",
+        model_outcome: "",
+        ml_model: "",
+      },
+      name: values.name,
+      goal: values.goal,
+      personas: [],
+    }
+    create(blank_obj);
   };
 
   return (
@@ -131,7 +166,7 @@ const Welcome: React.FC = () => {
       />
       <Card>
         <Row gutter={20}>
-          {useCases.map((usecase, index) => (
+          {useCases.map((usecase: Usecase, index: number) => (
             <Col
               key={index}
               span={8}
@@ -148,10 +183,10 @@ const Welcome: React.FC = () => {
                   (usecase.published && <Tag color="green">Published</Tag>)
                 }
                 actions={[
-                  <Button type="text" href="usecase/manage">
+                  <Button type="text" href={"usecase/manage/" + usecase.id}>
                     <SettingOutlined color="green" />
                   </Button>,
-                  <Button type="text" href="usecase/analytics">
+                  <Button type="text" href={"usecase/analytics/" + usecase.id}>
                     <LineChartOutlined />
                   </Button>,
                 ]}
@@ -160,10 +195,10 @@ const Welcome: React.FC = () => {
                 <br />
                 <Row gutter={16}>
                   <Col span={12}>
-                    <Statistic title="Feedback" value={usecase.feed} prefix={<LikeOutlined />} />
+                    <Statistic title="Feedback" value={usecase.stats.feedback} prefix={<LikeOutlined />} />
                   </Col>
                   <Col span={12}>
-                    <Statistic title="Runs" value={usecase.runs} prefix={<RocketOutlined />} />
+                    <Statistic title="Runs" value={usecase.stats.runs} prefix={<RocketOutlined />} />
                   </Col>
                 </Row>
               </Card>

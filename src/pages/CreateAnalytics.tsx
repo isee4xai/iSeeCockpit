@@ -1,4 +1,4 @@
-import { Persona } from "@/models/usecase";
+import { Persona } from "@/models/persona";
 import { PageHeaderWrapper } from "@ant-design/pro-layout";
 import { Area, Gauge, Pie } from '@ant-design/plots';
 
@@ -8,13 +8,13 @@ import { UserSwitchOutlined } from "@ant-design/icons";
 
 const personas: Persona[] =
     [{
-        id: "123", name: "Loan Applicant", status: "Completed"
+        id: "123", name: "Loan Applicant", completed: true
     },
     {
-        id: "234", name: "Loan Officer", status: "Completed",
+        id: "234", name: "Loan Officer", completed: true,
     },
     {
-        id: "345", name: "Govenment", status: "Completed"
+        id: "345", name: "Govenment", completed: true
     }];
 
 const overall_usage = {

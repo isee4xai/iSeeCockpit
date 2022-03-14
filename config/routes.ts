@@ -13,10 +13,10 @@
   { path: '/welcome', name: 'Welcome', icon: 'smile', component: './Welcome' },
   { path: '/usecases', name: 'Usecases', icon: 'home', component: './designuser/Usecases' },
   {
-    path: '/usecase/manage',
+    path: '/usecase/manage/:id',
     name: 'Manage Usecase',
     icon: 'setting',
-    component: './designuser/CreateUsecase',
+    component: './designuser/usecases/Create',
   },
   {
     path: '/usecase/analytics',

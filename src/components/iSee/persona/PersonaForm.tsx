@@ -32,7 +32,7 @@ const PersonaForm: React.FC<PersonaType> = (props) => {
             autoComplete="off"
         >
             <Row gutter={20}>
-                <Col span={12} className="gutter-row">
+                <Col span={8} className="gutter-row">
                     <Form.Item
                         label="Persona Name"
                         name={'name'}
@@ -40,7 +40,9 @@ const PersonaForm: React.FC<PersonaType> = (props) => {
                     >
                         <Input placeholder="E.g. Doctor" />
                     </Form.Item>
+                </Col>
 
+                <Col span={8} className="gutter-row">
                     <Form.Item
                         label="Domain Knowledge Level"
                         name='domain_level'
@@ -54,6 +56,9 @@ const PersonaForm: React.FC<PersonaType> = (props) => {
                             ))}
                         </Radio.Group>
                     </Form.Item>
+                </Col>
+
+                <Col span={8} className="gutter-row">
 
                     <Form.Item
                         label="AI Knowledge Level"

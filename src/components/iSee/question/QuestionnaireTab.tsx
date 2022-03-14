@@ -5,7 +5,7 @@ import QuestionForm from './QuestionForm';
 import Modal from 'antd/lib/modal/Modal';
 import { useState } from 'react';
 import DATA_FILEDS from '@/models/common';
-import { Persona } from '@/models/usecase';
+import { Persona } from '@/models/persona';
 
 // export type QuestionnaireType = {
 //     questionnaire: Questionnaire,
@@ -14,16 +14,16 @@ import { Persona } from '@/models/usecase';
 // };
 
 export type PersonaType = {
-    persona: Persona,
+    evaluation: Questionnaire,
     updatePersona?: any
 };
 
 const { Panel } = Collapse;
 
 const QuestionnaireTab: React.FC<PersonaType> = (props) => {
-    const { persona, updatePersona } = props;
+    const { evaluation, updatePersona } = props;
 
-    const [questions, setQuestions] = useState(persona.evaluation.questions || []);
+    const [questions, setQuestions] = useState(evaluation.questions || []);
 
 
     // New Load Quesionts Popu Functions
@@ -101,8 +101,8 @@ const QuestionnaireTab: React.FC<PersonaType> = (props) => {
     };
 
     const updateQuestions = (temp: Question[]) => {
-        let temp_persona = persona;
-        persona.evaluation.questions = temp
+        let temp_persona = evaluation;
+        evaluation.questions = temp
         updatePersona(temp_persona)
     };
 
@@ -217,19 +217,20 @@ const QuestionnaireTab: React.FC<PersonaType> = (props) => {
             <Modal
                 title="Create new Question"
                 visible={isQuestionModalVisible}
+                key={"eval-modal-" + evaluation.id}
                 onCancel={handleCancelQ}
                 footer={[
                     <Button key="back" onClick={handleCancelQ}>
                         Cancel
                     </Button>,
-                    <Button form="createQuestion2" key="submitQ" htmlType="submit" type="primary">
+                    <Button form={"eval-" + evaluation.id} htmlType="submit" type="primary">
                         Create
                     </Button>,
                 ]}
             >
                 <Form
-                    id="createQuestion2"
-                    name="createQuestion2"
+                    id={"eval-" + evaluation.id}
+                    name={"eval-" + evaluation.id}
                     layout="vertical"
                     labelCol={{ span: 0 }}
                     // initialValues={{ remember: true }}
