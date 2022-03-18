@@ -3,26 +3,10 @@ import { Form, Button, Select, Input, Switch, Radio, Row, Col } from 'antd';
 import DATA_FILEDS from '@/models/common';
 import { Question } from '@/models/questionnaire';
 
-// const formItemLayout = {
-//     labelCol: {
-//         xs: { span: 24 },
-//         sm: { span: 8 },
-//     },
-//     wrapperCol: {
-//         xs: { span: 24 },
-//         sm: { span: 16 },
-//     },
-// };
-// const formItemLayoutWithOutLabel = {
-//     wrapperCol: {
-//         xs: { span: 24, offset: 0 },
-//         sm: { span: 16, offset: 8 },
-//     },
-// };
-
 
 export type QuestionType = {
-    question: Question
+    question: Question,
+    changeQuestion: any
 };
 
 
@@ -40,8 +24,10 @@ const QuestionForm: React.FC<QuestionType> = (props) => {
             // onFinish={onFinish}
             // onFinishFailed={onFinishFailed}
             onFieldsChange={(_, allFields) => {
+                let updates_q = form.getFieldsValue();
+                updates_q.id = props.question.id;
                 console.log(allFields);
-                // form.setFieldsValue({ name: "abcd" })
+                props.changeQuestion(updates_q)
             }}
             autoComplete="off"
         >
@@ -113,7 +99,7 @@ const QuestionForm: React.FC<QuestionType> = (props) => {
                                                     label={index === 0 ? 'Response Values' : ''}
                                                     required={true}
                                                     key={field.key}
-                                                    name={[index, "metric_values"]}
+                                                    name={[index, 'assesment_val']}
                                                 >
 
                                                     <Input
@@ -121,7 +107,7 @@ const QuestionForm: React.FC<QuestionType> = (props) => {
                                                         style={{ width: '60%' }}
                                                     />
                                                     {/* </Form.Item> */}
-                                                    {fields.length > 2 ? (
+                                                    {fields.length > 0 ? (
                                                         <Button
                                                             className="dynamic-delete-button"
                                                             // danger={true}

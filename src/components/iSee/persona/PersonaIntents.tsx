@@ -1,5 +1,5 @@
-import { Intent } from '@/models/intent';
-import { Persona } from '@/models/persona';
+import { Persona, PersonaIntent } from '@/models/persona';
+import { api_persona_add_intent_question, api_persona_new_intent } from '@/services/isee/usecases';
 import { DeleteOutlined, PlusOutlined, RocketFilled, SaveOutlined, UserSwitchOutlined } from '@ant-design/icons';
 import {
     Button,
@@ -25,13 +25,14 @@ const { Option, OptGroup } = Select;
 
 export type PersonaType = {
     persona: Persona,
+    usecaseId: string,
     updatePersona: any
 };
 
-const PersonaTab: React.FC<PersonaType> = (props) => {
-    const { persona, updatePersona } = props
+const PersonaIntents: React.FC<PersonaType> = (props) => {
+    const { persona, updatePersona, usecaseId } = props
 
-    const genIntentStatus = (intent: Intent) => (
+    const genIntentStatus = (intent: PersonaIntent) => (
 
         <div>
             {!intent.completed && <Tag color="red">Incomplete Intent</Tag>}
@@ -80,7 +81,7 @@ const PersonaTab: React.FC<PersonaType> = (props) => {
     );
 
 
-    const onFinishNewIntent = (values: any) => {
+    const onFinishNewIntent = async (values: any) => {
         let newintent = values.name.split("#");
         let intent_cat = newintent[0]
         let intent_question = newintent[1]
@@ -96,7 +97,7 @@ const PersonaTab: React.FC<PersonaType> = (props) => {
         });
 
         if (!exists) {
-            const blank_intent: Intent = {
+            const blank_intent: PersonaIntent = {
                 id: "intent-" + Math.floor(Math.random() * 100000) + 1,
                 name: intent_cat,
                 completed: false,
@@ -104,6 +105,9 @@ const PersonaTab: React.FC<PersonaType> = (props) => {
                 questions: [intent_question]
             }
             persona.intents?.push(blank_intent);
+            await api_persona_new_intent(usecaseId, persona.id, blank_intent);
+        } else {
+            await api_persona_add_intent_question(usecaseId, persona.id, intent_cat, intent_question);
         }
 
         // setPersonas([...personas, blank_obj]);
@@ -203,6 +207,9 @@ const PersonaTab: React.FC<PersonaType> = (props) => {
                                     key={"qtab-" + persona.id}
                                     evaluation={intent.evaluation}
                                     updatePersona={updatePersona}
+                                    intent_cat={intent.name}
+                                    persona={persona}
+                                    usecaseId={usecaseId}
                                 // questionnaire={persona.evaluation_questionnaire || {}}
                                 />
                             </Tabs.TabPane>
@@ -214,7 +221,7 @@ const PersonaTab: React.FC<PersonaType> = (props) => {
 
             {/* New Persona Popup  */}
             <Modal
-                title={"Add New Intent Question " + persona.name}
+                title={"Add New Intent Question " + persona.details.name}
                 visible={isModalVisible}
                 onCancel={handleCancel}
                 key={"intent-modal-" + persona.id}
@@ -271,4 +278,4 @@ const PersonaTab: React.FC<PersonaType> = (props) => {
     );
 };
 
-export default PersonaTab;
+export default PersonaIntents;

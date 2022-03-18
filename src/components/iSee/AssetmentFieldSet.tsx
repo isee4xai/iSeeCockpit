@@ -7,7 +7,7 @@ export type AssessmentType = {
 
 const AssetmentField: React.FC<AssessmentType> = (props) => {
   return (
-    <Form.List name="fields">
+    <Form.List name="assessments">
       {(fields, { add, remove }) => {
         return (
           <Card

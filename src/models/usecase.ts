@@ -25,5 +25,5 @@ export interface UsecaseSettings {
     model_outcome?: string;
     ml_model?: string;
     assessments?: [string];
-
+    completed?: boolean;
 }

@@ -9,18 +9,20 @@ import {
     Popconfirm,
     Tag,
 } from 'antd';
-import PersonaForm from './PersonaForm';
-import PersonaTab from './PersonaTab';
+import { useState } from 'react';
+import PersonaDetailsForm from './PersonaDetailsForm';
+import PersonaIntents from './PersonaIntents';
 
 const { Panel } = Collapse;
 
 export type PersonaType = {
+    usecaseId: string;
     personas: Persona[],
     setPersonas: any
 };
 
 const PersonaTabs: React.FC<PersonaType> = (props) => {
-    const { personas, setPersonas } = props
+    const { personas, setPersonas, usecaseId } = props
 
     const COLORS = ["#52c41a", "#fa8c16", "#722ed1", "#eb2f96"]
 
@@ -74,25 +76,16 @@ const PersonaTabs: React.FC<PersonaType> = (props) => {
                     <Collapse>
 
                         {personas.map((persona, index) => (
-                            <Panel header={getHeader(persona.name, index)} key={"panel-" + persona.id}
+                            <Panel header={getHeader(persona.details.name, index)} key={"panel-" + persona.id}
                                 style={{ borderColor: getColor(index) }}
-
                                 extra={genExtra2(persona, index)}>
 
-                                <Card title="Details" type="inner"
-                                    extra={<Button
-                                        type="primary"
-                                        // onClick={showModal}
-                                        htmlType="button"
-                                        icon={<SaveOutlined />}
-                                    >
-                                        Save Details
-                                    </Button>}
-                                >
-                                    <PersonaForm persona={persona} updatePersona={updatePersona} />
-                                </Card>
+                                <PersonaDetailsForm
+                                    persona={persona}
+                                    usecaseId={usecaseId}
+                                />
 
-                                <PersonaTab persona={persona} updatePersona={updatePersona}></PersonaTab>
+                                <PersonaIntents usecaseId={usecaseId} persona={persona} updatePersona={updatePersona}></PersonaIntents>
                             </Panel>
                         ))}
                     </Collapse>

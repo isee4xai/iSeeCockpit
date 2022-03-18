@@ -86,6 +86,7 @@ const Welcome: React.FC = () => {
         data_type: "",
         model_outcome: "",
         ml_model: "",
+        completed: false
       },
       name: values.name,
       goal: values.goal,

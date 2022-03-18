@@ -17,6 +17,7 @@ import {
   Modal,
   Space,
   Result,
+  notification,
 } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import {
@@ -89,7 +90,11 @@ const Create: React.FC<Params> = (props) => {
   const [pageStatus, setPageStatus] = useState("");
   // const { id } = useParams();
 
+  const usecaseId = props.match.params.id
+
   const [settings, setSettings] = useState<UsecaseSettings>();
+  const [isSettingChanged, SetIsSettingChanged] = useState(false);
+
   const [settingsForm] = Form.useForm();
 
   const [usecase, setUsecase] = useState({ id: "new" });
@@ -133,9 +138,13 @@ const Create: React.FC<Params> = (props) => {
     let new_persona: Persona = {
       id: "persona-" + Math.floor(Math.random() * 100000) + 1,
       completed: false,
+      details: {
+        name: values.name,
+        domain_level: 'Medium',
+        ai_level: 'Medium',
+      },
       intents: [
       ],
-      name: values.name
     }
 
     setPersonas([...personas, new_persona]);
@@ -163,12 +172,20 @@ const Create: React.FC<Params> = (props) => {
   };
 
   async function saveSettings() {
-    const updateSettings = settingsForm.getFieldsValue();
+    let updateSettings: UsecaseSettings = settingsForm.getFieldsValue();
+
+    if (updateSettings.ai_method != '' && updateSettings.ai_task != '' && updateSettings.data_type != '' && updateSettings.model_outcome != '') {
+      updateSettings.completed = true;
+    } else {
+      updateSettings.completed = false;
+    }
+
     setSettings(updateSettings);
 
     await api_update_settings(usecase.id, updateSettings)
     console.log("Updating Settings", usecase)
     message.success('Succesfully saved AI Model Settings');
+    SetIsSettingChanged(false);
   }
 
   const genExtra = () => (
@@ -176,14 +193,16 @@ const Create: React.FC<Params> = (props) => {
       <Button
         type="primary"
         onClick={() => saveSettings()}
-
+        disabled={!isSettingChanged}
         htmlType="button"
         className='r-10'
         icon={<SaveOutlined />}
       >
         Save AI Model Settings
       </Button>
-      <Tag color="red">Pending</Tag>
+
+      {(!settings?.completed && <Tag color="red">Pending</Tag>) ||
+        (settings?.completed && <Tag color="green">Completed</Tag>)}
     </Space>
   );
 
@@ -228,6 +247,31 @@ const Create: React.FC<Params> = (props) => {
             subTitle={<Tag color="red">Unpublished</Tag>}
             extra={[
               <div key="head3">
+                <Button
+                  type="primary"
+                  danger
+                  onClick={() => {
+                    const saved_usecases = localStorage.getItem("USECASES");
+
+                    let arr = JSON.parse(saved_usecases) || [];
+                    const ucindex = arr.findIndex((obj => obj.id == usecase.id));
+
+                    notification.open({
+                      message: 'JSON Object',
+                      description:
+                        JSON.stringify(arr[ucindex]),
+                      onClick: () => {
+                        console.log('Export Clicked!');
+                      },
+                    });
+                  }
+                  }
+                  htmlType="button"
+                  className='r-10'
+                  icon={<SaveOutlined />}
+                >
+                  Export JSON
+                </Button> &nbsp;&nbsp;
                 Publish &nbsp;&nbsp;
                 <Switch
                   checkedChildren={<CheckOutlined />}
@@ -254,9 +298,9 @@ const Create: React.FC<Params> = (props) => {
               // wrapperCol={{ span: 10 }}
               // onFinish={onFinish}
               // onFinishFailed={onFinishFailed}
-              // onFieldsChange={(_, allFields) => {
-              //   console.log(allFields);
-              // }}
+              onFieldsChange={(_, allFields) => {
+                SetIsSettingChanged(true);
+              }}
               form={settingsForm}
               autoComplete="off"
             >
@@ -345,12 +389,9 @@ const Create: React.FC<Params> = (props) => {
             headStyle={{ backgroundColor: "#fafafa", border: "1px solid #d9d9d9" }}
           >
 
-            <PersonaTabs setPersonas={setPersonas} personas={personas}></PersonaTabs>
-
+            <PersonaTabs usecaseId={usecaseId} setPersonas={setPersonas} personas={personas}></PersonaTabs>
 
           </Card>
-
-
 
           {/* New Persona Popup  */}
           <Modal
