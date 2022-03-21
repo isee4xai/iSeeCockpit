@@ -1,39 +1,46 @@
-import { Persona } from '@/models/usecase';
-import { DeleteOutlined, RocketFilled } from '@ant-design/icons';
+import { Persona } from '@/models/persona';
+import { api_delete_persona } from '@/services/isee/usecases';
+import { DeleteOutlined, PlusOutlined, RocketFilled, SaveOutlined, UserOutlined, UserSwitchOutlined } from '@ant-design/icons';
 import {
+    Avatar,
     Button,
+    Card,
     Collapse,
     Empty,
+    message,
     Popconfirm,
-    Tabs,
     Tag,
 } from 'antd';
-import QuestionnaireTab from '../question/QuestionnaireTab';
-import IntentForm from './IntentForm';
-
-import PersonaForm from './PersonaForm';
+import { useState } from 'react';
+import PersonaDetailsForm from './PersonaDetailsForm';
+import PersonaIntents from './PersonaIntents';
 
 const { Panel } = Collapse;
 
 export type PersonaType = {
+    usecaseId: string;
     personas: Persona[],
     setPersonas: any
 };
 
 const PersonaTabs: React.FC<PersonaType> = (props) => {
-    const { personas, setPersonas } = props
+    const { personas, setPersonas, usecaseId } = props
+
+    const COLORS = ["#52c41a", "#fa8c16", "#722ed1", "#eb2f96"]
 
     const genExtra2 = (persona: Persona, index: number) => (
 
         <div>
-            {!persona.completed && <Tag color="red">Incomplete</Tag>}
-            {persona.completed && <Tag color="success">Completed</Tag>}
+            {!persona.completed && <Tag color="red">Incomplete Persona</Tag>}
+            {persona.completed && <Tag color="success">Completed Persona</Tag>}
 
             <Popconfirm
                 title={'Are you sure to delete?'}
-                onConfirm={() => {
+                onConfirm={async () => {
                     console.log(persona)
+                    await api_delete_persona(usecaseId, persona.id)
                     setPersonas(personas.filter(p => p.id !== persona.id));
+                    message.error("Deleted Persona " + persona.details.name)
                 }}
                 okText="Yes"
                 cancelText="No"
@@ -49,14 +56,30 @@ const PersonaTabs: React.FC<PersonaType> = (props) => {
         </div>
     );
 
-    function updatePersona(n_persona: Persona) {
-        console.log(n_persona)
+    function getColor(val: number) {
+        var delta = COLORS.length - 1;
+        if (val > delta)
+            return COLORS[0];
+        return COLORS[val];
     }
 
+    const getHeader = (name: string, index: number) => (
+        <>    <Avatar style={{ backgroundColor: getColor(index) }} icon={<UserOutlined />} />
+            <strong style={{ margin: "5px" }}>{name}</strong></>
+    );
+
+    function updatePersona(n_persona: Persona) {
+        console.log(n_persona);
+        // const persona_index = personas.findIndex((obj => obj.id == n_persona.id));
+        // personas[persona_index] = n_persona
+
+        // console.log(personas[persona_index])
+
+        // setPersonas(personas);
+
+    }
 
     return (
-
-
         <div>
 
             {
@@ -64,50 +87,19 @@ const PersonaTabs: React.FC<PersonaType> = (props) => {
                     <Collapse>
 
                         {personas.map((persona, index) => (
-                            <Panel header={persona.name} key={"panel-" + persona.id}
+                            <Panel header={getHeader(persona.details.name, index)} key={"panel-" + persona.id}
+                                style={{ borderColor: getColor(index) }}
                                 extra={genExtra2(persona, index)}>
-                                <Tabs type="card" size="middle" tabPosition='top' >
-                                    <Tabs.TabPane
-                                        key={"key-" + persona.id}
-                                        tab={'Details'}
-                                    >
-                                        <PersonaForm persona={persona} updatePersona={updatePersona} />
-                                    </Tabs.TabPane>
 
-                                    <Tabs.TabPane
-                                        key={"intentkey-" + persona.id}
-                                        tab={'Intent'}
-                                    >
-                                        <IntentForm persona={persona} updatePersona={updatePersona} />
-                                    </Tabs.TabPane>
-                                    <Tabs.TabPane tab="Questionnaire" key={"tabpane-" + persona.id}>
-                                        <QuestionnaireTab
-                                            key={"qtab-" + persona.id}
-                                            persona={persona}
-                                            updatePersona={updatePersona}
-                                        // questionnaire={persona.evaluation_questionnaire || {}}
-                                        />
-                                    </Tabs.TabPane>
-                                    <Tabs.TabPane tab="Explanation Strategy" key="3">
-                                        <Button
-                                            // danger={true}
-                                            // size="small"
-                                            type='primary'
-                                            style={{ marginLeft: 10 }}
-                                            // className="dynamic-delete-button"
-                                            onClick={event => {
+                                <PersonaDetailsForm
+                                    persona={persona}
+                                    usecaseId={usecaseId}
+                                />
 
-                                                event.stopPropagation();
-                                            }}
-                                            icon={<RocketFilled />}
-                                        >Generate Explanation Strategy</Button>
-                                    </Tabs.TabPane>
-                                </Tabs>
-
+                                <PersonaIntents usecaseId={usecaseId} persona={persona} updatePersona={updatePersona}></PersonaIntents>
                             </Panel>
                         ))}
                     </Collapse>
-
                 ) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Personas" />
             }
         </div>

@@ -2,27 +2,12 @@ import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Form, Button, Select, Input, Switch, Radio, Row, Col } from 'antd';
 import DATA_FILEDS from '@/models/common';
 import { Question } from '@/models/questionnaire';
-
-// const formItemLayout = {
-//     labelCol: {
-//         xs: { span: 24 },
-//         sm: { span: 8 },
-//     },
-//     wrapperCol: {
-//         xs: { span: 24 },
-//         sm: { span: 16 },
-//     },
-// };
-// const formItemLayoutWithOutLabel = {
-//     wrapperCol: {
-//         xs: { span: 24, offset: 0 },
-//         sm: { span: 16, offset: 8 },
-//     },
-// };
+import QuestionResponseField from './QuestionResponseField';
 
 
 export type QuestionType = {
-    question: Question
+    question: Question,
+    changeQuestion: any
 };
 
 
@@ -40,8 +25,10 @@ const QuestionForm: React.FC<QuestionType> = (props) => {
             // onFinish={onFinish}
             // onFinishFailed={onFinishFailed}
             onFieldsChange={(_, allFields) => {
+                let updates_q = form.getFieldsValue();
+                updates_q.id = props.question.id;
                 console.log(allFields);
-                // form.setFieldsValue({ name: "abcd" })
+                props.changeQuestion(updates_q)
             }}
             autoComplete="off"
         >
@@ -74,7 +61,7 @@ const QuestionForm: React.FC<QuestionType> = (props) => {
                         </Select>
                     </Form.Item>
                     <Form.Item label="Required" name="required" valuePropName="required">
-                        <Switch />
+                        <Switch checked={props.question.required} />
                     </Form.Item>
                 </Col>
                 <Col span={16}>
@@ -104,50 +91,7 @@ const QuestionForm: React.FC<QuestionType> = (props) => {
                             getFieldValue('metric') === 'Radio' ||
                                 getFieldValue('metric') === 'Checkbox' ||
                                 getFieldValue('metric') === 'Likert' ? (
-                                <Form.List name="metric_values">
-                                    {(fields, { add, remove }) => (
-                                        <>
-                                            {fields?.map((field, index) => (
-                                                <Form.Item
-                                                    // {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
-                                                    label={index === 0 ? 'Response Values' : ''}
-                                                    required={true}
-                                                    key={field.key}
-                                                    name={[index, "metric_values"]}
-                                                >
-
-                                                    <Input
-                                                        placeholder="response value"
-                                                        style={{ width: '60%' }}
-                                                    />
-                                                    {/* </Form.Item> */}
-                                                    {fields.length > 2 ? (
-                                                        <Button
-                                                            className="dynamic-delete-button"
-                                                            // danger={true}
-                                                            icon={<MinusCircleOutlined />}
-                                                            onClick={() => remove(field.name)}
-                                                        >
-                                                        </Button>
-
-                                                    ) : null}
-                                                </Form.Item>
-                                            ))}
-                                            <Form.Item
-                                            // {...formItemLayoutWithOutLabel}
-                                            >
-                                                <Button
-                                                    type="dashed"
-                                                    onClick={() => add()}
-                                                    style={{ width: '60%' }}
-                                                    icon={<PlusOutlined />}
-                                                >
-                                                    Add Response Values
-                                                </Button>
-                                            </Form.Item>
-                                        </>
-                                    )}
-                                </Form.List>
+                                <QuestionResponseField></QuestionResponseField>
                             ) : null
                         }
                     </Form.Item>

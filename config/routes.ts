@@ -10,13 +10,13 @@
       { component: './404' },
     ],
   },
-  { path: '/welcome', name: 'Welcome', icon: 'smile', component: './Welcome' },
+  // { path: '/welcome', name: 'Welcome', icon: 'smile', component: './Welcome' },
   { path: '/usecases', name: 'Usecases', icon: 'home', component: './designuser/Usecases' },
   {
-    path: '/usecase/manage',
-    name: 'Manage Usecase',
-    icon: 'setting',
-    component: './designuser/CreateUsecase',
+    path: '/usecase/manage/:id',
+    // name: 'Manage Usecase',
+    // icon: 'setting',
+    component: './designuser/usecases/Create',
   },
   {
     path: '/usecase/analytics',
@@ -40,6 +40,6 @@
   //     { component: './404' },
   //   ],
   // },
-  { path: '/', redirect: '/welcome' },
+  { path: '/', redirect: '/usecases' },
   { component: './404' },
 ];

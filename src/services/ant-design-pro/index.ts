@@ -4,7 +4,9 @@
 // API 唯一标识：
 import * as api from './api';
 import * as login from './login';
+import * as usecaseapi from '../isee/apiusecases';
 export default {
   api,
   login,
+  usecaseapi
 };
