@@ -161,7 +161,7 @@ const Welcome: React.FC = () => {
         subTitle="Displaying all usecases"
         extra={[
           <Button type="primary" onClick={showModal} style={{ width: '100%' }}>
-            <PlusOutlined /> Add New
+            <PlusOutlined /> Create New
           </Button>,
         ]}
       />

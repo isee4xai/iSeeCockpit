@@ -1,4 +1,5 @@
 import { Persona } from '@/models/persona';
+import { api_delete_persona } from '@/services/isee/usecases';
 import { DeleteOutlined, PlusOutlined, RocketFilled, SaveOutlined, UserOutlined, UserSwitchOutlined } from '@ant-design/icons';
 import {
     Avatar,
@@ -6,6 +7,7 @@ import {
     Card,
     Collapse,
     Empty,
+    message,
     Popconfirm,
     Tag,
 } from 'antd';
@@ -34,9 +36,11 @@ const PersonaTabs: React.FC<PersonaType> = (props) => {
 
             <Popconfirm
                 title={'Are you sure to delete?'}
-                onConfirm={() => {
+                onConfirm={async () => {
                     console.log(persona)
+                    await api_delete_persona(usecaseId, persona.id)
                     setPersonas(personas.filter(p => p.id !== persona.id));
+                    message.error("Deleted Persona " + persona.details.name)
                 }}
                 okText="Yes"
                 cancelText="No"
@@ -65,7 +69,14 @@ const PersonaTabs: React.FC<PersonaType> = (props) => {
     );
 
     function updatePersona(n_persona: Persona) {
-        console.log(n_persona)
+        console.log(n_persona);
+        // const persona_index = personas.findIndex((obj => obj.id == n_persona.id));
+        // personas[persona_index] = n_persona
+
+        // console.log(personas[persona_index])
+
+        // setPersonas(personas);
+
     }
 
     return (

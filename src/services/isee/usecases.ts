@@ -52,18 +52,39 @@ export async function api_update_settings(id: string,
     return id || false;
 }
 
-export async function api_create_persona(id: string,
+export async function api_create_persona(usecaseId: string,
     persona: Persona) {
 
-    console.log(id)
+    console.log(usecaseId)
     console.log(persona)
     const saved_usecases = localStorage.getItem(KEY);
     let arr = JSON.parse(saved_usecases) || [];
-    const ucindex = arr.findIndex((obj => obj.id == id));
+    const ucindex = arr.findIndex((obj => obj.id == usecaseId));
     arr[ucindex].personas.push(persona);
     localStorage.setItem(KEY, JSON.stringify(arr));
 
-    return id;
+    return usecaseId;
+}
+
+export async function api_delete_persona(usecaseId: string,
+    personaId: string) {
+
+    console.log(usecaseId)
+    const saved_usecases = localStorage.getItem(KEY);
+    let arr = JSON.parse(saved_usecases) || [];
+    const ucindex = arr.findIndex((obj => obj.id == usecaseId));
+
+
+    let filteredPersonas = arr[ucindex].personas.filter(persona => persona.id !== personaId)
+
+    console.log(filteredPersonas)
+
+    arr[ucindex].personas = filteredPersonas;
+
+
+    localStorage.setItem(KEY, JSON.stringify(arr));
+
+    return usecaseId;
 }
 
 
@@ -131,6 +152,27 @@ export async function api_persona_add_intent_question(
     return usecaseId;
 }
 
+export async function api_persona_delete_intent(
+    usecaseId: string, personaId: string, intentId: string) {
+
+    console.log(usecaseId)
+    console.log(personaId)
+    const saved_usecases = localStorage.getItem(KEY);
+    let arr = JSON.parse(saved_usecases) || [];
+    const ucindex = arr.findIndex((obj => obj.id == usecaseId));
+    let personas = arr[ucindex].personas;
+    const persona_index = personas.findIndex((obj => obj.id == personaId));
+
+    let filteredIntents = arr[ucindex].personas[persona_index].intents.filter(intent => intent.id !== intentId)
+
+    console.log(filteredIntents)
+
+    arr[ucindex].personas[persona_index].intents = filteredIntents;
+
+    localStorage.setItem(KEY, JSON.stringify(arr));
+
+    return usecaseId;
+}
 
 
 export async function api_persona_save_intent_evaluation(

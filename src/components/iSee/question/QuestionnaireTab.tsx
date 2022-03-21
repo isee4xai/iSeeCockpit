@@ -127,7 +127,8 @@ const QuestionnaireTab: React.FC<PersonaType> = (props) => {
                 onConfirm={() => {
                     let temp = questions.filter(p => p.id !== question.id)
                     setQuestions(temp);
-                    updateQuestions(temp)
+                    updateQuestions(temp);
+                    setIsChangedQuestion(true);
                 }}
 
                 okText="Yes"

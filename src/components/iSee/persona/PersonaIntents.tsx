@@ -1,5 +1,5 @@
 import { Persona, PersonaIntent } from '@/models/persona';
-import { api_persona_add_intent_question, api_persona_new_intent } from '@/services/isee/usecases';
+import { api_persona_add_intent_question, api_persona_delete_intent, api_persona_new_intent } from '@/services/isee/usecases';
 import { DeleteOutlined, PlusOutlined, RocketFilled, SaveOutlined, UserSwitchOutlined } from '@ant-design/icons';
 import {
     Button,
@@ -31,6 +31,8 @@ export type PersonaType = {
 
 const PersonaIntents: React.FC<PersonaType> = (props) => {
     const { persona, updatePersona, usecaseId } = props
+    const [personaState, setPersonaState] = useState(persona);
+
 
     const genIntentStatus = (intent: PersonaIntent) => (
 
@@ -40,10 +42,25 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
 
             <Popconfirm
                 title={'Are you sure to delete?'}
-                // onConfirm={() => {
-                //     console.log(persona)
-                //     setPersonas(personas.filter(p => p.id !== persona.id));
-                // }}
+                onConfirm={async () => {
+                    console.log(persona)
+
+                    let temp = personaState.intents?.filter(i => i.id !== intent.id);
+
+                    let personaTemp = personaState
+                    personaTemp.intents = [];
+
+                    setPersonaState(personaTemp)
+
+                    console.log(personaTemp)
+
+
+                    await api_persona_delete_intent(usecaseId, personaState.id, intent.id);
+
+                    updatePersona(personaState);
+
+                    message.error("Deleted Persona Intent - " + intent.name)
+                }}
                 okText="Yes"
                 cancelText="No"
             >
@@ -89,7 +106,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
         console.log('persona:', persona);
 
         let exists = false;
-        persona.intents?.forEach(intent => {
+        personaState.intents?.forEach(intent => {
             if (intent.name == intent_cat) {
                 intent.questions?.push(intent_question);
                 exists = true
@@ -104,10 +121,10 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                 evaluation: { id: "eval-" + Math.floor(Math.random() * 100000) + 1, name: "eval", questions: [] },
                 questions: [intent_question]
             }
-            persona.intents?.push(blank_intent);
-            await api_persona_new_intent(usecaseId, persona.id, blank_intent);
+            personaState.intents?.push(blank_intent);
+            await api_persona_new_intent(usecaseId, personaState.id, blank_intent);
         } else {
-            await api_persona_add_intent_question(usecaseId, persona.id, intent_cat, intent_question);
+            await api_persona_add_intent_question(usecaseId, personaState.id, intent_cat, intent_question);
         }
 
         // setPersonas([...personas, blank_obj]);
@@ -144,27 +161,27 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                 onClick={showModal}
                 htmlType="button"
                 icon={<PlusOutlined />}
-                key={"intent-card-" + persona.id}
+                key={"intent-card-" + personaState.id}
             >
                 Add New Intent Question
             </Button>
             }
         >
 
-            {persona.intents?.length == 0 ? (
+            {personaState.intents?.length == 0 ? (
                 <Form.Item>
                     <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Persona Intents Added" />
                 </Form.Item>
             ) : null}
 
-            <Collapse key={"intent-collapse-" + persona.id}>
+            <Collapse key={"intent-collapse-" + personaState.id}>
 
-                {persona.intents?.map((intent, index) => (
+                {personaState.intents?.map((intent, index) => (
                     <Panel header={getHeader(intent.name)} key={"panel-intent-" + intent.id}
                         extra={genIntentStatus(intent)}>
                         <Tabs type="card" size="middle" tabPosition='top' >
                             <Tabs.TabPane
-                                key={"intentkey-" + persona.id}
+                                key={"intentkey-" + personaState.id}
                                 tab={'Intent Questions'}
                             >
                                 <Row gutter={20}>
@@ -202,15 +219,15 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                                     icon={<RocketFilled />}
                                 >Generate Explanation Strategy</Button>
                             </Tabs.TabPane>
-                            <Tabs.TabPane tab="Evaluation Questionaire" key={"tabpane-" + persona.id}>
+                            <Tabs.TabPane tab="Evaluation Questionaire" key={"tabpane-" + personaState.id}>
                                 <QuestionnaireTab
-                                    key={"qtab-" + persona.id}
+                                    key={"qtab-" + personaState.id}
                                     evaluation={intent.evaluation}
                                     updatePersona={updatePersona}
                                     intent_cat={intent.name}
                                     persona={persona}
                                     usecaseId={usecaseId}
-                                // questionnaire={persona.evaluation_questionnaire || {}}
+                                // questionnaire={personaState.evaluation_questionnaire || {}}
                                 />
                             </Tabs.TabPane>
                         </Tabs>
@@ -221,24 +238,24 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
 
             {/* New Persona Popup  */}
             <Modal
-                title={"Add New Intent Question " + persona.details.name}
+                title={"Add New Intent Question " + personaState.details.name}
                 visible={isModalVisible}
                 onCancel={handleCancel}
-                key={"intent-modal-" + persona.id}
+                key={"intent-modal-" + personaState.id}
                 footer={[
                     <Button key="back" onClick={handleCancel}>
                         Cancel
                     </Button>,
-                    <Button form={"intent-addIntent-" + persona.id} key="submit" htmlType="submit" type="primary">
+                    <Button form={"intent-addIntent-" + personaState.id} key="submit" htmlType="submit" type="primary">
                         Add Intent Question
                     </Button>,
                 ]}
             >
                 <Form
-                    id={"intent-addIntent-" + persona.id}
-                    name={"intent-addIntent-" + persona.id}
+                    id={"intent-addIntent-" + personaState.id}
+                    name={"intent-addIntent-" + personaState.id}
                     layout="vertical"
-                    key={"intent-modal-form-" + persona.id}
+                    key={"intent-modal-form-" + personaState.id}
                     labelCol={{ span: 0 }}
                     initialValues={{ remember: true }}
                     onFinish={onFinishNewIntent}

@@ -257,7 +257,7 @@ const Create: React.FC<Params> = (props) => {
                     const ucindex = arr.findIndex((obj => obj.id == usecase.id));
 
                     notification.open({
-                      message: 'JSON Object',
+                      message: 'iSee JSON Export',
                       description:
                         JSON.stringify(arr[ucindex]),
                       onClick: () => {
