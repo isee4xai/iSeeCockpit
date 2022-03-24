@@ -48,3 +48,10 @@ npm run lint:fix
 ```bash
 npm test
 ```
+
+
+
+## LOCAL DOCKER
+docker build -f Dockerfile.dev -t iseecockpit:dev .
+
+docker-compose up -f docker-compose.dev.yml

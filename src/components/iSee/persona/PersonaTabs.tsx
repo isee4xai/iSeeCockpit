@@ -70,13 +70,6 @@ const PersonaTabs: React.FC<PersonaType> = (props) => {
 
     function updatePersona(n_persona: Persona) {
         console.log(n_persona);
-        // const persona_index = personas.findIndex((obj => obj.id == n_persona.id));
-        // personas[persona_index] = n_persona
-
-        // console.log(personas[persona_index])
-
-        // setPersonas(personas);
-
     }
 
     return (

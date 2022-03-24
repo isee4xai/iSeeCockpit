@@ -118,10 +118,6 @@ const Welcome: React.FC = () => {
           // wrapperCol={{ span: 8 }}
           initialValues={{ remember: true }}
           onFinish={onFinish}
-          // onFinishFailed={onFinishFailed}
-          // onFieldsChange={(_, allFields) => {
-          //   console.log(allFields);
-          // }}
           autoComplete="off"
         >
           <Form.Item

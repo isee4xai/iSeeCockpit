@@ -6,6 +6,7 @@
   "scripts": {
     "analyze": "cross-env ANALYZE=1 umi build",
     "build": "umi build",
+    "buildrun": "npm run build && cd dist/ && http-server",
     "deploy": "npm run build && npm run gh-pages",
     "dev": "npm run start:dev",
     "gh-pages": "gh-pages -d dist",
@@ -53,7 +54,6 @@
     "@ant-design/pro-form": "^1.52.0",
     "@ant-design/pro-layout": "^6.32.0",
     "@ant-design/pro-table": "^2.61.0",
-    "@types/react-router-dom": "^5.3.3",
     "@umijs/route-utils": "^2.0.0",
     "antd": "^4.17.0",
     "classnames": "^2.3.0",
@@ -66,7 +66,6 @@
     "react-dev-inspector": "^1.7.0",
     "react-dom": "^17.0.0",
     "react-helmet-async": "^1.2.0",
-    "react-router-dom": "^6.2.2",
     "umi": "^3.5.0",
     "uuid": "^8.3.2"
   },

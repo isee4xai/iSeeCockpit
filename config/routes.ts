@@ -10,11 +10,12 @@
       { component: './404' },
     ],
   },
-  // { path: '/welcome', name: 'Welcome', icon: 'smile', component: './Welcome' },
+  { path: '/welcome', name: 'Welcome', icon: 'smile', component: './Welcome', hideInMenu: true },
   { path: '/usecases', name: 'Usecases', icon: 'home', component: './designuser/Usecases' },
   {
     path: '/usecase/manage/:id',
-    // name: 'Manage Usecase',
+    hideInMenu: true,
+    name: 'Manage Usecase',
     // icon: 'setting',
     component: './designuser/usecases/Create',
     exact: false
