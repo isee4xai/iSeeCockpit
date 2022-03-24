@@ -17,6 +17,7 @@
     // name: 'Manage Usecase',
     // icon: 'setting',
     component: './designuser/usecases/Create',
+    exact: false
   },
   {
     path: '/usecase/analytics',

@@ -139,6 +139,7 @@ const Welcome: React.FC = () => {
           >
             <Select>
               <Select.Option value="finance">Finance</Select.Option>
+              <Select.Option value="healthcare">Healthcare</Select.Option>
               <Select.Option value="technology">Technology</Select.Option>
             </Select>
           </Form.Item>
@@ -178,6 +179,7 @@ const Welcome: React.FC = () => {
             >
               <Card
                 style={style}
+                key={"card" + index}
                 title={usecase.name}
                 extra={
                   (!usecase.published && <Tag color="red">Unpublished</Tag>) ||
@@ -196,10 +198,10 @@ const Welcome: React.FC = () => {
                 <br />
                 <Row gutter={16}>
                   <Col span={12}>
-                    <Statistic title="Feedback" value={usecase.stats.feedback} prefix={<LikeOutlined />} />
+                    <Statistic title="Feedback" value={usecase.stats?.feedback} prefix={<LikeOutlined />} />
                   </Col>
                   <Col span={12}>
-                    <Statistic title="Runs" value={usecase.stats.runs} prefix={<RocketOutlined />} />
+                    <Statistic title="Runs" value={usecase.stats?.runs} prefix={<RocketOutlined />} />
                   </Col>
                 </Row>
               </Card>
