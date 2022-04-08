@@ -24,4 +24,4 @@ jobs:
       with:
           push: true
           file: Dockerfile.prod
-          tags: isee4xai/cockpit:latest
+          tags: isee4xai/cockpit:prod
