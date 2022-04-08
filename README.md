@@ -1,6 +1,5 @@
 # iSee Cockpit
 
-
 ## Environment Prepare
 
 Create a fork from the iSee Repo
@@ -47,4 +46,23 @@ npm run lint:fix
 
 ```bash
 npm test
+```
+
+## LOCAL DOCKER
+
+```bash
+
+docker build -f Dockerfile.dev -t isee4xai/cockpit:dev .
+
+docker-compose  --file docker-compose.dev.yml up -d --build
+```
+
+## Deployment Docker Setup
+
+```bash
+docker build -f Dockerfile.prod -t isee4xai/cockpit:prod .
+```
+
+```bash
+docker-compose  --file docker-compose.prod.yml up -d --build
 ```

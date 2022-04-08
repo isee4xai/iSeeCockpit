@@ -8,6 +8,7 @@ import {
     Collapse,
     Empty,
     Form,
+    Image,
     List,
     message,
     Modal,
@@ -79,6 +80,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
 
     // New Persona Popu Functions
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [loadStrat, setLoadStrat] = useState(false);
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -139,17 +141,30 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
         {
             "name": "About",
             "questions": [
-                'I want to know about the result',
-                'Tell me more about why this happened?'
+                'What is the AI model which decided the outcome?',
+                'What data is this outcome based upon?'
             ]
         },
         {
             "name": "Actionable",
             "questions": [
-                'I dont know what to put here',
-                'I might know what to put here'
+                'How can I change the outcome?',
+                'What should I change to change the outcome?'
             ]
 
+        },
+        {
+            "name": "Debugging",
+            "questions": [
+                "Why was this outcome generated?",
+            ]
+        },
+        {
+            "name": "Performance",
+            "questions": [
+                "How confident was the outcome?",
+                "How accurate is the AI model?"
+            ]
         }
     ];
 
@@ -206,18 +221,39 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                                 </Row>
                             </Tabs.TabPane>
                             <Tabs.TabPane tab="Explanation Strategy" key="3">
-                                <Button
-                                    // danger={true}
-                                    // size="small"
-                                    type='primary'
-                                    style={{ marginLeft: 10 }}
-                                    // className="dynamic-delete-button"
-                                    onClick={event => {
+                                {loadStrat &&
+                                    <Image
+                                        width={600}
+                                        preview={false}
+                                        src="/strat.png"
+                                    />
+                                }
 
-                                        event.stopPropagation();
-                                    }}
-                                    icon={<RocketFilled />}
-                                >Generate Explanation Strategy</Button>
+                                {!loadStrat &&
+                                    <Button
+                                        // danger={true}
+                                        // size="small"
+                                        type='primary'
+                                        style={{ marginLeft: 10 }}
+                                        // className="dynamic-delete-button"
+                                        onClick={async (event) => {
+
+                                            event.stopPropagation();
+                                            message.config({
+                                                top: 400,
+                                            });
+                                            const hide = message.loading('Retrieving explanation strategies from iSee CBR...', 0,);
+                                            // Dismiss manually and asynchronously
+                                            setTimeout(hide, 2000);
+                                            await new Promise(r => setTimeout(r, 2000));
+
+                                            setLoadStrat(true)
+
+                                        }}
+                                        icon={<RocketFilled />}
+                                    >Generate Explanation Strategy</Button>
+                                }
+
                             </Tabs.TabPane>
                             <Tabs.TabPane tab="Evaluation Questionaire" key={"tabpane-" + personaState.id}>
                                 <QuestionnaireTab

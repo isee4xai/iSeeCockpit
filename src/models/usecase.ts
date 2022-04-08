@@ -9,8 +9,8 @@ export interface Usecase {
     name: string;
     goal?: string;
     status?: string;
-    settings: UsecaseSettings,
-    stats: {
+    settings?: UsecaseSettings,
+    stats?: {
         runs: number,
         feedback: number
     };

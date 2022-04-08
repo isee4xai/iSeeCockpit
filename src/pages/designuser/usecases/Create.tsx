@@ -97,7 +97,7 @@ const Create: React.FC<Params> = (props) => {
 
   const [settingsForm] = Form.useForm();
 
-  const [usecase, setUsecase] = useState({ id: "new" });
+  const [usecase, setUsecase] = useState<Usecase>({ id: "0", name: "", published: false });
 
   useEffect(() => {
     async function get() {
@@ -251,10 +251,10 @@ const Create: React.FC<Params> = (props) => {
                   type="primary"
                   danger
                   onClick={() => {
-                    const saved_usecases = localStorage.getItem("USECASES");
+                    const saved_usecases = localStorage.getItem("USECASES") + "";
 
                     let arr = JSON.parse(saved_usecases) || [];
-                    const ucindex = arr.findIndex((obj => obj.id == usecase.id));
+                    const ucindex = arr.findIndex(((obj: any) => obj.id == usecase.id));
 
                     notification.open({
                       message: 'iSee JSON Export',
@@ -369,7 +369,7 @@ const Create: React.FC<Params> = (props) => {
                   <Form.Item
                     label="ML Model"
                     name="model"
-                    tooltip="This is a required field"
+                    tooltip="Please upload the model using any of the following file formats: json, h5, csv and pkl"
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
                     <Upload {...uploadprops}>
