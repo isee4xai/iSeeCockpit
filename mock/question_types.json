@@ -1,0 +1,72 @@
+{
+    "questions": [
+        {
+            "text": "This is a free text question",
+            "category": "Goodness",
+            "required": false,
+            "metric": "Free-Text",
+            "id": "q-789801"
+        },
+        {
+            "text": "This is a numeric question",
+            "category": "Curiosity",
+            "required": false,
+            "metric": "Number",
+            "id": "q-559181"
+        },
+        {
+            "text": "This is a radio question",
+            "category": "Performance",
+            "required": false,
+            "metric": "Radio",
+            "metric_values": [
+                {
+                    "val": "Yes"
+                },
+                {
+                    "val": "No"
+                },
+                {
+                    "val": "Maybe"
+                }
+            ],
+            "id": "q-5661"
+        },
+        {
+            "text": "This is a checkbox question (e.g. modes of transport used)",
+            "category": "Mental Model",
+            "required": false,
+            "metric": "Checkbox",
+            "metric_values": [
+                {
+                    "val": "Car"
+                },
+                {
+                    "val": "Bus"
+                },
+                {
+                    "val": "Train"
+                },
+                {
+                    "val": "Bike"
+                }
+            ],
+            "id": "q-979001"
+        },
+        {
+            "text": "This is a likert",
+            "category": "Trust",
+            "required": false,
+            "metric": "Likert",
+            "metric_values": [
+                {
+                    "val": "We will check it later"
+                },
+                {
+                    "val": "later"
+                }
+            ],
+            "id": "q-15941"
+        }
+    ]
+}
