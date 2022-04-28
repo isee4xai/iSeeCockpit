@@ -9,3 +9,28 @@
     padding-right: 8px;
   }
 }
+
+.container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 4px;
+  background-color: white;
+  cursor: text;
+
+  & .checkbox-holder {
+    display: block;
+    margin: 0;
+    font-size: 0;
+    cursor: move;
+    transition: 0.3s;
+  }
+}
+
+&.react-draggable-dragging,
+.container:hover {
+  & .checkbox-holder {
+    margin: 0 0.2rem 0 0;
+    font-size: 1rem;
+  }
+}
