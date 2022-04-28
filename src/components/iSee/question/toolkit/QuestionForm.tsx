@@ -91,7 +91,6 @@ const QuestionForm: React.FC<{
       <div className="Questionnaire-body">
         <div className="Questionnaire-top-body">
           <Select
-            labelInValue
             defaultValue={state.category}
             placeholder="Choose a category"
             style={{ width: 'calc(50% - .5rem)' }}
@@ -124,7 +123,6 @@ const QuestionForm: React.FC<{
             placeholder="Choose a type"
             style={{ width: 'calc(50% - .5rem)' }}
             onChange={handleTypeChange}
-            labelInValue
           >
             <Select.Option value="Free-Text">
               <FieldStringOutlined /> - Free-Text
