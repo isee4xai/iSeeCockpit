@@ -37,6 +37,7 @@
     name: 'Questionnaires toolkit',
     icon: 'question',
     component: './QuestionnairesNew',
+  },
   // {
   //   path: '/design',
   //   icon: 'crown',
