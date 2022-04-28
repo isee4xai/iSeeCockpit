@@ -1,7 +1,9 @@
 import './RadioInput.less';
 import { useEffect, useState } from 'react';
 import { Radio, Space, Input } from 'antd';
-import { PlusCircleOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, HolderOutlined } from '@ant-design/icons';
+import Draggable from 'react-draggable';
+import useDrag from './useDrag';
 
 const RadioInput: React.FC<{
   options?: string[];
@@ -10,7 +12,9 @@ const RadioInput: React.FC<{
   const [add, setAdd] = useState<boolean>(false);
   const [edit, setEdit] = useState<number>(-1);
 
-  const [optionsList, setOptionList] = useState(options || []);
+  const [optionsList, handleStartDrag, handleDrag, handleStopDrag, setOptionList] = useDrag(
+    options || [],
+  );
 
   const handleAdd = () => setAdd(true);
   const handleEdit = (idx: number) => setEdit(idx);
@@ -37,18 +41,39 @@ const RadioInput: React.FC<{
     <>
       <Radio.Group value={null}>
         <Space direction="vertical" size={0}>
-          {optionsList.map((option, idx) => (
-            <Radio key={idx} className="radio-item" value={option} onClick={() => handleEdit(idx)}>
-              {edit === idx ? (
-                <Input
-                  defaultValue={option}
-                  onBlur={(event) => handleEditComplete(idx, event.target.value)}
-                  autoFocus
-                />
-              ) : (
-                option
-              )}
-            </Radio>
+          {optionsList.map((option, idx, tab) => (
+            <Draggable
+              axis="y"
+              bounds={{ top: -5 - 38 * idx, bottom: 5 + (tab.length - idx - 1) * 38 }}
+              key={`${idx}-${option}-${Date.now()}`}
+              onStart={handleStartDrag}
+              onStop={handleStopDrag}
+              onDrag={(event) => {
+                setEdit(-1);
+                handleDrag(event);
+              }}
+              handle={'.likert-holder'}
+            >
+              <div key={idx} className="container" drag-index={idx} style={{ padding: '4px 0' }}>
+                <HolderOutlined className="likert-holder" />
+                <Radio
+                  key={idx}
+                  className="radio-item"
+                  value={option}
+                  onClick={() => handleEdit(idx)}
+                >
+                  {edit === idx ? (
+                    <Input
+                      defaultValue={option}
+                      onBlur={(event) => handleEditComplete(idx, event.target.value)}
+                      autoFocus
+                    />
+                  ) : (
+                    option
+                  )}
+                </Radio>
+              </div>
+            </Draggable>
           ))}
         </Space>
       </Radio.Group>
