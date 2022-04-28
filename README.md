@@ -52,7 +52,7 @@ npm test
 
 ```bash
 
-docker build -f Dockerfile.dev -t isee4xai/cockpit:dev .
+docker build -f Dockerfile.dev -t isee4xai_cockpit_dev .
 
 docker-compose  --file docker-compose.dev.yml up -d --build
 ```

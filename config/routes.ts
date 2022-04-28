@@ -32,6 +32,11 @@
     icon: 'question',
     component: './CreateQuestionnaires',
   },
+  {
+    path: '/questionnaires-toolkit',
+    name: 'Questionnaires toolkit',
+    icon: 'question',
+    component: './QuestionnairesNew',
   // {
   //   path: '/design',
   //   icon: 'crown',
