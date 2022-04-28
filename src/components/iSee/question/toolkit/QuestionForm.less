@@ -1,0 +1,43 @@
+.QuestionForm-container {
+  width: 50%;
+  margin: 0 auto 2rem auto;
+  background-color: white;
+  animation: questionnaire 0.3s forwards ease-out;
+
+  & .QuestionForm-header {
+    padding: 1rem;
+  }
+  & .Questionnaire-body {
+    padding: 1rem;
+
+    & .Questionnaire-top-body {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    & .Questionanire-dynamic-body {
+      padding: 3rem 0;
+    }
+  }
+  & .Questionnaire-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 1rem;
+
+    & > * {
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+@keyframes questionnaire {
+  0% {
+    transform: translateX(80%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
