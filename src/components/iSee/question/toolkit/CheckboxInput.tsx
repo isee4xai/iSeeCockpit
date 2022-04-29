@@ -27,7 +27,9 @@ const CheckboxInput: React.FC<{
 
   const handleEditComplete = (idx: number, value: string) => {
     const oldState = optionsList.slice();
-    oldState[idx] = value;
+
+    if (value.trim() === '') oldState.splice(idx, 1);
+    else oldState[idx] = value;
 
     setOptionList(oldState);
     setEdit(-1);
@@ -59,6 +61,7 @@ const CheckboxInput: React.FC<{
                 <Checkbox className="checkbox-item" value={option} onClick={() => handleEdit(idx)}>
                   {edit === idx ? (
                     <Input
+                      allowClear
                       defaultValue={option}
                       onBlur={(event) => handleEditComplete(idx, event.target.value)}
                       autoFocus
@@ -76,6 +79,7 @@ const CheckboxInput: React.FC<{
         <PlusSquareOutlined style={{ color: '#BFBFBF', fontSize: 16 }} />
         {add ? (
           <Input
+            allowClear
             autoFocus
             onBlur={(e) => handleAddComplete(e.target.value)}
             style={{ width: 'max-content' }}
