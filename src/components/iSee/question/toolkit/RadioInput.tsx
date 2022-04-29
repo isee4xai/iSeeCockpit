@@ -45,9 +45,10 @@ const RadioInput: React.FC<{
         <Space direction="vertical" size={0}>
           {optionsList.map((option, idx, tab) => (
             <Draggable
+              position={{ x: 0, y: 0 }}
               axis="y"
-              bounds={{ top: -5 - 38 * idx, bottom: 5 + (tab.length - idx - 1) * 38 }}
-              key={`${idx}-${option}-${Date.now()}`}
+              bounds={{ top: -5 - 38 * idx, bottom: 5 + (tab.length - idx - 1) * 38 }} // bound to the parent would be better
+              key={`${idx}-${option}`}
               onStart={handleStartDrag}
               onStop={handleStopDrag}
               onDrag={(event) => {
@@ -56,14 +57,9 @@ const RadioInput: React.FC<{
               }}
               handle={'.likert-holder'}
             >
-              <div key={idx} className="container" drag-index={idx} style={{ padding: '4px 0' }}>
+              <div className="container" drag-index={idx} style={{ padding: '4px 0' }}>
                 <HolderOutlined className="likert-holder" />
-                <Radio
-                  key={idx}
-                  className="radio-item"
-                  value={option}
-                  onClick={() => handleEdit(idx)}
-                >
+                <Radio className="radio-item" value={option} onClick={() => handleEdit(idx)}>
                   {edit === idx ? (
                     <Input
                       defaultValue={option}

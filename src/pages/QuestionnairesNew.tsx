@@ -1,12 +1,19 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Button } from 'antd';
 import QuestionForm from '@/components/iSee/question/toolkit/QuestionForm';
 import type { Question } from '@/models/questionnaire';
-import { PlusCircleOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, HolderOutlined } from '@ant-design/icons';
+import Draggable from 'react-draggable';
+import './QuestionnaireNew.less';
+
+import useDrag from '@/components/iSee/question/toolkit/useDrag';
 
 const CreateQuestionnaires: React.FC = () => {
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [questions, handleStartDrag, handleDrag, handleStopDrag, setQuestions] = useDrag<Question>(
+    [],
+    'question-container',
+  );
 
   const nextId = () => Date.now().toString();
 
@@ -15,12 +22,12 @@ const CreateQuestionnaires: React.FC = () => {
   };
 
   const handleQuestionChange = useCallback(
-    (newQuestion) => {
-      setQuestions((old) => {
-        const index = old.findIndex((q) => q.id === newQuestion.id);
+    (newQuestion: Question) => {
+      setQuestions((old: Question[]) => {
+        const index = old.findIndex((q: Question) => q.id === newQuestion.id);
         if (index === -1) return old;
 
-        const newList = old.slice();
+        const newList: Question[] = old.slice();
         newList.splice(index, 1, newQuestion);
         return newList;
       });
@@ -43,16 +50,36 @@ const CreateQuestionnaires: React.FC = () => {
   };
 
   return (
-    <PageContainer>
-      {questions.map((question) => (
-        <QuestionForm
-          key={question.id}
-          question={question}
-          onChange={handleQuestionChange}
-          onDuplication={handleDuplication}
-          onDelete={handleDelete}
-        />
-      ))}
+    <PageContainer className="PageContainer">
+      <div className="page-question-container">
+        <span className="space-4" />
+        {questions.map((question, idx) => (
+          <Draggable
+            key={question.id}
+            position={{ x: 0, y: 0 }}
+            axis="y"
+            bounds="parent"
+            onStart={handleStartDrag}
+            onDrag={handleDrag}
+            onStop={handleStopDrag}
+            handle={'.question-holder'}
+          >
+            <div className="question-container" drag-index={idx}>
+              <div className="question-holder">
+                <HolderOutlined />
+              </div>
+              <QuestionForm
+                key={question.id}
+                question={question}
+                onChange={handleQuestionChange}
+                onDuplication={handleDuplication}
+                onDelete={handleDelete}
+              />
+            </div>
+          </Draggable>
+        ))}
+        <span className="space-4" />
+      </div>
       <Button
         size="large"
         icon={<PlusCircleOutlined />}

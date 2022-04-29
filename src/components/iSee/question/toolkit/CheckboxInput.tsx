@@ -46,8 +46,9 @@ const CheckboxInput: React.FC<{
           {optionsList.map((option, idx, tab) => (
             <Draggable
               axis="y"
+              position={{ x: 0, y: 0 }}
               bounds={{ top: -5 - 38 * idx, bottom: 5 + (tab.length - idx - 1) * 38 }}
-              key={`${idx}-${option}-${Date.now()}`}
+              key={`${idx}-${option}`}
               onStart={handleStartDrag}
               onStop={handleStopDrag}
               onDrag={(event) => {
@@ -56,7 +57,7 @@ const CheckboxInput: React.FC<{
               }}
               handle={'.checkbox-holder'}
             >
-              <div key={idx} className="container" drag-index={idx} style={{ padding: '4px 0' }}>
+              <div className="container" drag-index={idx} style={{ padding: '4px 0' }}>
                 <HolderOutlined className="checkbox-holder" />
                 <Checkbox className="checkbox-item" value={option} onClick={() => handleEdit(idx)}>
                   {edit === idx ? (
