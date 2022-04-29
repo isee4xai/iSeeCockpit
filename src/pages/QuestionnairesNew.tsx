@@ -1,15 +1,31 @@
-import React, { useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Button } from 'antd';
+import { Button, Modal } from 'antd';
 import QuestionForm from '@/components/iSee/question/toolkit/QuestionForm';
-import type { Question } from '@/models/questionnaire';
-import { PlusCircleOutlined, HolderOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, HolderOutlined, CopyOutlined } from '@ant-design/icons';
 import Draggable from 'react-draggable';
 import './QuestionnaireNew.less';
+
+interface Question {
+  id?: string;
+  text?: string;
+  metric?: string;
+  category?: string;
+  metric_values?: {
+    val: string;
+  }[];
+  required?: boolean;
+  completed?: boolean;
+  validators?: {
+    min?: number;
+    max?: number;
+  }[];
+}
 
 import useDrag from '@/components/iSee/question/toolkit/useDrag';
 
 const CreateQuestionnaires: React.FC = () => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [questions, handleStartDrag, handleDrag, handleStopDrag, setQuestions] = useDrag<Question>(
     [],
     'question-container',
@@ -47,6 +63,22 @@ const CreateQuestionnaires: React.FC = () => {
 
   const handleDelete = (id: string | undefined) => {
     setQuestions((old) => old.filter((q) => q.id !== id));
+  };
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const addToClipboard = () => {
+    navigator.clipboard.writeText(JSON.stringify(questions));
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
   };
 
   return (
@@ -88,6 +120,32 @@ const CreateQuestionnaires: React.FC = () => {
       >
         Add a question
       </Button>
+      <Button onClick={showModal} type="primary" className="generate-json">
+        {' '}
+        Generate Json{' '}
+      </Button>
+      <Modal
+        title="Basic Modal"
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={
+          <>
+            <Button onClick={addToClipboard} icon={<CopyOutlined />}>
+              Copy to clipboard
+            </Button>
+            <Button type="primary" onClick={handleOk}>
+              OK
+            </Button>
+          </>
+        }
+      >
+        <pre>
+          <code onClick={(e) => console.dir(e.target)}>
+            {JSON.stringify({ questions }, null, 4).trim()}
+          </code>
+        </pre>
+      </Modal>
     </PageContainer>
   );
 };

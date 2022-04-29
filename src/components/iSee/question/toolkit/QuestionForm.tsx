@@ -1,6 +1,5 @@
 import './QuestionForm.less';
 import React, { useCallback, useEffect, useState } from 'react';
-import type { Question } from '@/models/questionnaire';
 import { Switch, Input, Select, Empty } from 'antd';
 import CheckboxInput from './CheckboxInput';
 import LikertInput from './LikertInput';
@@ -23,6 +22,22 @@ import {
   QuestionOutlined,
   SmileOutlined,
 } from '@ant-design/icons';
+
+interface Question {
+  id?: string;
+  text?: string;
+  metric?: string;
+  category?: string;
+  metric_values?: {
+    val: string;
+  }[];
+  required?: boolean;
+  completed?: boolean;
+  validators?: {
+    min?: number;
+    max?: number;
+  }[];
+}
 
 const QuestionForm: React.FC<{
   question: Question;
@@ -66,7 +81,7 @@ const QuestionForm: React.FC<{
   const handleOptionChange = useCallback((options: string[]) => {
     setState((old) => ({
       ...old,
-      metric_values: options,
+      metric_values: options.map((opt) => ({ val: opt })),
     }));
   }, []);
 
@@ -144,11 +159,20 @@ const QuestionForm: React.FC<{
         <div className="Questionanire-dynamic-body">
           {state.metric === 'Free-Text' || state.metric === 'Number' ? null : state.metric ===
             'Radio' ? (
-            <RadioInput onChange={handleOptionChange} options={question?.metric_values} />
+            <RadioInput
+              onChange={handleOptionChange}
+              options={question?.metric_values?.map((opt) => opt.val)}
+            />
           ) : state.metric === 'Checkbox' ? (
-            <CheckboxInput onChange={handleOptionChange} options={question?.metric_values} />
+            <CheckboxInput
+              onChange={handleOptionChange}
+              options={question?.metric_values?.map((opt) => opt.val)}
+            />
           ) : state.metric === 'Likert' ? (
-            <LikertInput onChange={handleOptionChange} options={question?.metric_values} />
+            <LikertInput
+              onChange={handleOptionChange}
+              options={question?.metric_values?.map((opt) => opt.val)}
+            />
           ) : (
             <Empty description={'Please, choose a question type !'} />
           )}
