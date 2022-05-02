@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Button, Modal } from 'antd';
+import { v4 as uuidv4 } from 'uuid';
 import QuestionForm from '@/components/iSee/question/toolkit/QuestionForm';
 import { PlusCircleOutlined, HolderOutlined, CopyOutlined } from '@ant-design/icons';
 import Draggable from 'react-draggable';
@@ -19,7 +20,7 @@ interface Question {
   validators?: {
     min?: number;
     max?: number;
-  }[];
+  };
 }
 
 import useDrag from '@/components/iSee/question/toolkit/useDrag';
@@ -31,7 +32,7 @@ const CreateQuestionnaires: React.FC = () => {
     'question-container',
   );
 
-  const nextId = () => Date.now().toString();
+  const nextId = () => `q-${uuidv4()}`;
 
   const handleAddbutton = () => {
     setQuestions([...questions, { id: nextId() }]);
@@ -125,7 +126,7 @@ const CreateQuestionnaires: React.FC = () => {
         Generate Json{' '}
       </Button>
       <Modal
-        title="Basic Modal"
+        title="Exported Json"
         visible={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}

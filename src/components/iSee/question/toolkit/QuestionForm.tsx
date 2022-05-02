@@ -1,6 +1,6 @@
 import './QuestionForm.less';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Switch, Input, Select, Empty } from 'antd';
+import { Switch, Input, Select, Empty, Space, InputNumber } from 'antd';
 import CheckboxInput from './CheckboxInput';
 import LikertInput from './LikertInput';
 import RadioInput from './RadioInput';
@@ -36,7 +36,7 @@ interface Question {
   validators?: {
     min?: number;
     max?: number;
-  }[];
+  };
 }
 
 const QuestionForm: React.FC<{
@@ -45,21 +45,7 @@ const QuestionForm: React.FC<{
   onDuplication: (id: string | undefined) => void;
   onDelete: (id: string | undefined) => void;
 }> = ({ question, onChange, onDuplication, onDelete }) => {
-  const [state, setState] = useState<Question>({
-    ...{
-      text: question?.text,
-      category: question?.category,
-      required: question?.required ?? false,
-      metric: question?.metric,
-      id: question.id,
-    },
-    ...((question?.category === 'Checkbox' ||
-      question?.category === 'Radio' ||
-      question?.category === 'Likert') && {
-      metric_values: question?.metric_values ?? [],
-    }),
-  });
-
+  const [state, setState] = useState<Question>({ ...question });
   const [title, setTitle] = useState<string>(state.text ?? '');
 
   const handleCategoryChange = (newCategory: string) => {
@@ -85,8 +71,15 @@ const QuestionForm: React.FC<{
     }));
   }, []);
 
+  const handleMaxInputChange = (max: number) => {
+    setState({ ...state, validators: { ...state.validators, max } });
+  };
+
+  const handleMinInputChange = (min: number) => {
+    setState({ ...state, validators: { ...state.validators, min } });
+  };
+
   useEffect(() => {
-    if (typeof onChange !== 'function') return;
     onChange(state);
   }, [state, onChange]);
 
@@ -157,8 +150,14 @@ const QuestionForm: React.FC<{
           </Select>
         </div>
         <div className="Questionanire-dynamic-body">
-          {state.metric === 'Free-Text' || state.metric === 'Number' ? null : state.metric ===
-            'Radio' ? (
+          {state.metric === 'Free-Text' ? null : state.metric === 'Number' ? (
+            <>
+              <Space>
+                <InputNumber placeholder={'min'} onChange={handleMinInputChange} />
+                <InputNumber placeholder={'max'} onChange={handleMaxInputChange} />
+              </Space>
+            </>
+          ) : state.metric === 'Radio' ? (
             <RadioInput
               onChange={handleOptionChange}
               options={question?.metric_values?.map((opt) => opt.val)}
