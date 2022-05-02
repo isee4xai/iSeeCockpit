@@ -1,6 +1,6 @@
 .QuestionForm-container {
   & .QuestionForm-header {
-    padding: 1rem;
+    padding: 1rem 1rem 0 1rem;
   }
   & .Questionnaire-body {
     padding: 1rem;
@@ -8,6 +8,10 @@
     & .Questionnaire-top-body {
       display: flex;
       justify-content: space-between;
+
+      & > * {
+        width: calc(50% - 0.5rem);
+      }
     }
 
     & .Questionanire-dynamic-body {
@@ -20,8 +24,12 @@
     justify-content: flex-end;
     padding: 1rem;
 
+    & > .footer-required-switch {
+      align-items: center;
+      margin-bottom: 0;
+    }
     & > * {
-      margin-right: 0.5rem;
+      margin-right: 0.8rem;
     }
   }
 

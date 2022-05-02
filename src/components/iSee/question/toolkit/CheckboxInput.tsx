@@ -7,8 +7,8 @@ import useDrag from './useDrag';
 
 const CheckboxInput: React.FC<{
   options?: string[];
-  onChange: (options: string[]) => void;
-}> = ({ options = [], onChange }) => {
+  onChange?: (options: string[]) => void;
+}> = ({ options = [], onChange = () => null }) => {
   const [add, setAdd] = useState<boolean>(false);
   const [edit, setEdit] = useState<number>(-1);
 

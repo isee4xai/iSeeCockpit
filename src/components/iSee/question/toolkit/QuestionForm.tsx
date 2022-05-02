@@ -1,6 +1,6 @@
 import './QuestionForm.less';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Switch, Input, Select, Empty, Space, InputNumber } from 'antd';
+import { Switch, Input, Select, Empty, Space, InputNumber, Form } from 'antd';
 import CheckboxInput from './CheckboxInput';
 import LikertInput from './LikertInput';
 import RadioInput from './RadioInput';
@@ -46,23 +46,6 @@ const QuestionForm: React.FC<{
   onDelete: (id: string | undefined) => void;
 }> = ({ question, onChange, onDuplication, onDelete }) => {
   const [state, setState] = useState<Question>({ ...question });
-  const [title, setTitle] = useState<string>(state.text ?? '');
-
-  const handleCategoryChange = (newCategory: string) => {
-    setState({ ...state, category: newCategory });
-  };
-
-  const handleTypeChange = (newType: string) => {
-    setState({ ...state, metric: newType });
-  };
-
-  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value);
-  };
-
-  const handleRequireChange = (required: boolean) => {
-    setState({ ...state, required });
-  };
 
   const handleOptionChange = useCallback((options: string[]) => {
     setState((old) => ({
@@ -71,92 +54,107 @@ const QuestionForm: React.FC<{
     }));
   }, []);
 
-  const handleMaxInputChange = (max: number) => {
-    setState({ ...state, validators: { ...state.validators, max } });
-  };
-
-  const handleMinInputChange = (min: number) => {
-    setState({ ...state, validators: { ...state.validators, min } });
-  };
-
   useEffect(() => {
     onChange(state);
   }, [state, onChange]);
 
+  const onFormChange = (values: any, allValues: any) => {
+    setState({ ...state, ...allValues });
+  };
+
   return (
-    <div className="QuestionForm-container">
-      <div className="QuestionForm-header">
+    <Form className="QuestionForm-container" onValuesChange={onFormChange}>
+      <Form.Item
+        className="QuestionForm-header"
+        name="text"
+        rules={[
+          {
+            required: true,
+            message: 'Please input your question!',
+          },
+        ]}
+      >
         <Input
-          size="large"
           allowClear
+          size="large"
           placeholder="Enter the question"
-          value={title}
-          onChange={handleTitleChange}
-          onBlur={(e) => setState({ ...state, text: e.target.value })}
+          defaultValue={state.text}
           addonBefore={<QuestionOutlined />}
         />
-      </div>
+      </Form.Item>
       <div className="Questionnaire-body">
         <div className="Questionnaire-top-body">
-          <Select
-            defaultValue={state.category}
-            placeholder="Choose a category"
-            style={{ width: 'calc(50% - .5rem)' }}
-            onChange={handleCategoryChange}
+          <Form.Item
+            name={'category'}
+            rules={[
+              {
+                required: true,
+                message: 'Please choose a category!',
+              },
+            ]}
           >
-            <Select.Option value="Goodness">
-              <LikeOutlined /> - Goodness
-            </Select.Option>
-            <Select.Option value="SatisFaction">
-              <SmileOutlined /> - Satisfaction
-            </Select.Option>
-            <Select.Option value="Mental Model">
-              <RadarChartOutlined /> - Mental Model
-            </Select.Option>
-            <Select.Option value="Curiosity">
-              <QuestionCircleOutlined /> - Curiosity
-            </Select.Option>
-            <Select.Option value="Trust">
-              <CheckOutlined /> - Trust
-            </Select.Option>
-            <Select.Option value="Performance">
-              <ThunderboltOutlined /> - Performance
-            </Select.Option>
-            <Select.Option value="Custom">
-              <SettingOutlined /> - Custom
-            </Select.Option>
-          </Select>
-          <Select
-            defaultValue={state.metric}
-            placeholder="Choose a type"
-            style={{ width: 'calc(50% - .5rem)' }}
-            onChange={handleTypeChange}
+            <Select defaultValue={state.category} placeholder="Choose a category">
+              <Select.Option value="Goodness">
+                <LikeOutlined /> - Goodness
+              </Select.Option>
+              <Select.Option value="SatisFaction">
+                <SmileOutlined /> - Satisfaction
+              </Select.Option>
+              <Select.Option value="Mental Model">
+                <RadarChartOutlined /> - Mental Model
+              </Select.Option>
+              <Select.Option value="Curiosity">
+                <QuestionCircleOutlined /> - Curiosity
+              </Select.Option>
+              <Select.Option value="Trust">
+                <CheckOutlined /> - Trust
+              </Select.Option>
+              <Select.Option value="Performance">
+                <ThunderboltOutlined /> - Performance
+              </Select.Option>
+              <Select.Option value="Custom">
+                <SettingOutlined /> - Custom
+              </Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name={'metric'}
+            rules={[
+              {
+                required: true,
+                message: 'Please choose a question type!',
+              },
+            ]}
           >
-            <Select.Option value="Free-Text">
-              <FieldStringOutlined /> - Free-Text
-            </Select.Option>
-            <Select.Option value="Number">
-              <FieldNumberOutlined /> - Number
-            </Select.Option>
-            <Select.Option value="Radio">
-              <CheckCircleOutlined /> - Radio
-            </Select.Option>
-            <Select.Option value="Checkbox">
-              <CheckSquareOutlined /> - Checkbox
-            </Select.Option>
-            <Select.Option value="Likert">
-              <DashboardOutlined /> - Likert
-            </Select.Option>
-          </Select>
+            <Select defaultValue={state.metric} placeholder="Choose a type">
+              <Select.Option value="Free-Text">
+                <FieldStringOutlined /> - Free-Text
+              </Select.Option>
+              <Select.Option value="Number">
+                <FieldNumberOutlined /> - Number
+              </Select.Option>
+              <Select.Option value="Radio">
+                <CheckCircleOutlined /> - Radio
+              </Select.Option>
+              <Select.Option value="Checkbox">
+                <CheckSquareOutlined /> - Checkbox
+              </Select.Option>
+              <Select.Option value="Likert">
+                <DashboardOutlined /> - Likert
+              </Select.Option>
+            </Select>
+          </Form.Item>
         </div>
         <div className="Questionanire-dynamic-body">
           {state.metric === 'Free-Text' ? null : state.metric === 'Number' ? (
-            <>
-              <Space>
-                <InputNumber placeholder={'min'} onChange={handleMinInputChange} />
-                <InputNumber placeholder={'max'} onChange={handleMaxInputChange} />
-              </Space>
-            </>
+            <Space>
+              <Form.Item name={['validators', 'min']}>
+                <InputNumber placeholder={'min'} />
+              </Form.Item>
+              <Form.Item name={['validators', 'max']}>
+                <InputNumber placeholder={'max'} />
+              </Form.Item>
+            </Space>
           ) : state.metric === 'Radio' ? (
             <RadioInput
               onChange={handleOptionChange}
@@ -178,13 +176,13 @@ const QuestionForm: React.FC<{
         </div>
       </div>
       <div className="Questionnaire-footer">
-        <span>Required</span>
-        <Switch
-          checkedChildren={<CheckOutlined />}
-          unCheckedChildren={<CloseOutlined />}
-          checked={state.required}
-          onChange={handleRequireChange}
-        />
+        <Form.Item name={'required'} label={'required'} className={'footer-required-switch'}>
+          <Switch
+            checkedChildren={<CheckOutlined />}
+            unCheckedChildren={<CloseOutlined />}
+            checked={state.required}
+          />
+        </Form.Item>
         <CopyOutlined
           style={{ fontSize: 22, color: 'grey' }}
           onClick={() => onDuplication(state.id)}
@@ -194,7 +192,7 @@ const QuestionForm: React.FC<{
           onClick={() => onDelete(state.id)}
         />
       </div>
-    </div>
+    </Form>
   );
 };
 

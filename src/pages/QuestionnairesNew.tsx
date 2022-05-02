@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Button, Modal } from 'antd';
+import { Button, Modal, Alert, notification } from 'antd';
 import { v4 as uuidv4 } from 'uuid';
 import QuestionForm from '@/components/iSee/question/toolkit/QuestionForm';
 import { PlusCircleOutlined, HolderOutlined, CopyOutlined } from '@ant-design/icons';
@@ -52,9 +52,21 @@ const CreateQuestionnaires: React.FC = () => {
     [setQuestions],
   );
 
+  const isQuestionValid = (question: Question) => {
+    if (!question.id || !question.text || !question.metric || !question.category) return false;
+    if (question.text.trim() === '') return false;
+
+    if (['Likert', 'Radio', 'Checkbox'].includes(question.metric)) {
+      if (!question.metric_values) return false;
+    }
+
+    return true;
+  };
+
+  const isQuestionnaireValid = () => questions.every((question) => isQuestionValid(question));
+
   const handleDuplication = (id: string | undefined) => {
     const index = questions.findIndex((q) => q.id === id);
-
     if (index === -1) return;
     const newList = questions.slice();
     newList.splice(index + 1, 0, { ...questions[index], id: nextId() });
@@ -71,7 +83,24 @@ const CreateQuestionnaires: React.FC = () => {
   };
 
   const addToClipboard = () => {
-    navigator.clipboard.writeText(JSON.stringify(questions));
+    navigator.clipboard.writeText(JSON.stringify(questions)).then(
+      () => {
+        notification.success({
+          message: `Success`,
+          duration: 3,
+          description: 'The questionnaire json has been added to the clipboard',
+          placement: 'bottomRight',
+        });
+      },
+      () => {
+        notification.error({
+          message: `Error`,
+          duration: 3,
+          description: 'An error occured, the json was not added to the clipboard',
+          placement: 'bottomRight',
+        });
+      },
+    );
   };
 
   const handleOk = () => {
@@ -83,9 +112,8 @@ const CreateQuestionnaires: React.FC = () => {
   };
 
   return (
-    <PageContainer className="PageContainer">
+    <PageContainer>
       <div className="page-question-container">
-        <span className="space-4" />
         {questions.map((question, idx) => (
           <Draggable
             key={question.id}
@@ -111,7 +139,6 @@ const CreateQuestionnaires: React.FC = () => {
             </div>
           </Draggable>
         ))}
-        <span className="space-4" />
       </div>
       <Button
         size="large"
@@ -141,6 +168,14 @@ const CreateQuestionnaires: React.FC = () => {
           </>
         }
       >
+        {!isQuestionnaireValid() && (
+          <Alert
+            message="Your form isn't valid, you may want to fill all fields before exporting!"
+            type="warning"
+            showIcon
+            className="alert-export"
+          />
+        )}
         <pre>
           <code onClick={(e) => console.dir(e.target)}>
             {JSON.stringify({ questions }, null, 4).trim()}
