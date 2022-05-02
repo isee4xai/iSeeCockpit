@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type React from 'react';
 
 const useDrag: <Type>(
@@ -14,8 +14,9 @@ const useDrag: <Type>(
   const [options, setOptions] = useState<Type[]>(baseOptions);
   const [handle, setHandle] = useState<HTMLElement>();
 
+  const scrollBy = 5;
+
   let initialY: number;
-  let initialZ: string;
 
   const getContainerfromChild: (child: HTMLElement) => HTMLElement = (child: HTMLElement) => {
     if (!child || child?.classList?.contains(containerClass)) return child;
@@ -25,22 +26,16 @@ const useDrag: <Type>(
   const handleStartDrag = (dragEvent: React.SyntheticEvent) => {
     setHandle(getContainerfromChild(dragEvent.target as HTMLElement) ?? handle);
 
-    console.log('drag - start ', handle);
-
     if (!handle) return;
 
     (handle as HTMLElement).style.transform = 'translate(0px,0px)';
-    initialZ = (handle?.parentNode as HTMLElement)?.style?.zIndex;
     initialY = handle.getBoundingClientRect().top;
     handle.style.zIndex = '99999';
   };
 
   const handleDrag = () => {
-    //param => dragEvent
-
-    console.log('im fine');
     if (!handle) return;
-    console.log('im not fine');
+
     const handlePosition = handle.getBoundingClientRect();
     const handleIndex = handle.getAttribute('drag-index');
 
@@ -52,16 +47,20 @@ const useDrag: <Type>(
       if (element.getAttribute('drag-index') === handleIndex) return;
       if (!elementDragIndex) return;
 
+      (element as HTMLElement).style.zIndex = '0';
       (element as HTMLElement).style.transition = '.3s';
-      let translation = 0;
+      let translation = '0';
 
       if (elementBounding.top < handlePosition.top && elementDragIndex > handleIndex) {
-        translation = -100;
+        // translation = -100;
+        translation = `calc(${handlePosition.top - handlePosition.bottom}px - 1rem)`;
       } else if (elementBounding.top > handlePosition.top && elementDragIndex < handleIndex) {
-        translation = 100;
+        translation = `calc(${-(handlePosition.top - handlePosition.bottom)}px + 1rem)`;
       }
-      (element as HTMLElement).style.transform = `translate(0, ${translation}%)`;
+      (element as HTMLElement).style.transform = `translate(0, ${translation})`;
     });
+
+    handle.style.zIndex = '99999';
   };
 
   const handleStopDrag = () => {
@@ -73,7 +72,6 @@ const useDrag: <Type>(
     const handleIndex = parseInt(handle.getAttribute('drag-index') ?? '');
     const newArray = options.slice();
 
-    if (handle) handle.style.zIndex = initialZ;
     if (handleIndex === null || isNaN(handleIndex)) return;
     if (handlePosition.top === initialY) return;
 
@@ -92,10 +90,29 @@ const useDrag: <Type>(
     document.querySelectorAll(`.${containerClass}`).forEach((element) => {
       (element as HTMLElement).style.transition = '0s';
       (element as HTMLElement).style.transform = 'translate(0px,0px)';
+      (element as HTMLElement).style.zIndex = '0';
     });
 
     setOptions(newArray);
+    setHandle(undefined);
   };
+
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      if (handle) {
+        const mouseY = event.clientY;
+        const windowHeight = window.innerHeight;
+
+        if (mouseY > windowHeight - 100) window.scrollBy(0, scrollBy);
+        if (mouseY < 100) window.scrollBy(0, -scrollBy);
+      }
+    };
+
+    addEventListener('mousemove', handleMouseMove);
+    return () => {
+      removeEventListener('mousemove', handleMouseMove);
+    };
+  }, [handle]);
 
   return [options, handleStartDrag, handleDrag, handleStopDrag, setOptions];
 };

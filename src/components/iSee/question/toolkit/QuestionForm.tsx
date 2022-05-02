@@ -1,6 +1,6 @@
 import './QuestionForm.less';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Switch, Input, Select, Empty, Space, InputNumber, Form } from 'antd';
+import { Switch, Input, Select, Empty, InputNumber, Form } from 'antd';
 import CheckboxInput from './CheckboxInput';
 import LikertInput from './LikertInput';
 import RadioInput from './RadioInput';
@@ -67,6 +67,7 @@ const QuestionForm: React.FC<{
       <Form.Item
         className="QuestionForm-header"
         name="text"
+        initialValue={state.text}
         rules={[
           {
             required: true,
@@ -78,13 +79,13 @@ const QuestionForm: React.FC<{
           allowClear
           size="large"
           placeholder="Enter the question"
-          defaultValue={state.text}
           addonBefore={<QuestionOutlined />}
         />
       </Form.Item>
       <div className="Questionnaire-body">
         <div className="Questionnaire-top-body">
           <Form.Item
+            initialValue={state.category}
             name={'category'}
             rules={[
               {
@@ -93,7 +94,7 @@ const QuestionForm: React.FC<{
               },
             ]}
           >
-            <Select defaultValue={state.category} placeholder="Choose a category">
+            <Select placeholder="Choose a category">
               <Select.Option value="Goodness">
                 <LikeOutlined /> - Goodness
               </Select.Option>
@@ -118,6 +119,7 @@ const QuestionForm: React.FC<{
             </Select>
           </Form.Item>
           <Form.Item
+            initialValue={state.metric}
             name={'metric'}
             rules={[
               {
@@ -126,7 +128,7 @@ const QuestionForm: React.FC<{
               },
             ]}
           >
-            <Select defaultValue={state.metric} placeholder="Choose a type">
+            <Select placeholder="Choose a type">
               <Select.Option value="Free-Text">
                 <FieldStringOutlined /> - Free-Text
               </Select.Option>
@@ -147,14 +149,14 @@ const QuestionForm: React.FC<{
         </div>
         <div className="Questionanire-dynamic-body">
           {state.metric === 'Free-Text' ? null : state.metric === 'Number' ? (
-            <Space>
+            <>
               <Form.Item name={['validators', 'min']}>
                 <InputNumber placeholder={'min'} />
               </Form.Item>
               <Form.Item name={['validators', 'max']}>
                 <InputNumber placeholder={'max'} />
               </Form.Item>
-            </Space>
+            </>
           ) : state.metric === 'Radio' ? (
             <RadioInput
               onChange={handleOptionChange}

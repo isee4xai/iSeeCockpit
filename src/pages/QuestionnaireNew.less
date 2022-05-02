@@ -28,9 +28,14 @@
       transition: 0.3s;
     }
 
+    & .space-4 {
+      padding: 4rem;
+    }
     &.react-draggable-dragging,
-    &:hover > .question-holder {
-      opacity: 1;
+    &:hover {
+      & .question-holder {
+        opacity: 1;
+      }
     }
   }
 }

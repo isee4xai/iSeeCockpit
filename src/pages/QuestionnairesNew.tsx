@@ -114,6 +114,7 @@ const CreateQuestionnaires: React.FC = () => {
   return (
     <PageContainer>
       <div className="page-question-container">
+        <span className="sapce-4" />
         {questions.map((question, idx) => (
           <Draggable
             key={question.id}
@@ -139,6 +140,7 @@ const CreateQuestionnaires: React.FC = () => {
             </div>
           </Draggable>
         ))}
+        <span className="sapce-4" />
       </div>
       <Button
         size="large"
