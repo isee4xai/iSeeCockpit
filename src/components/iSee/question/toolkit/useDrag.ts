@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type React from 'react';
 
 const useDrag: <Type>(
@@ -13,8 +13,6 @@ const useDrag: <Type>(
 ] = <Type>(baseOptions: Type[], containerClass = 'container') => {
   const [options, setOptions] = useState<Type[]>(baseOptions);
   const [handle, setHandle] = useState<HTMLElement>();
-
-  const scrollBy = 5;
 
   let initialY: number;
 
@@ -96,23 +94,6 @@ const useDrag: <Type>(
     setOptions(newArray);
     setHandle(undefined);
   };
-
-  useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      if (handle) {
-        const mouseY = event.clientY;
-        const windowHeight = window.innerHeight;
-
-        if (mouseY > windowHeight - 100) window.scrollBy(0, scrollBy);
-        if (mouseY < 100) window.scrollBy(0, -scrollBy);
-      }
-    };
-
-    addEventListener('mousemove', handleMouseMove);
-    return () => {
-      removeEventListener('mousemove', handleMouseMove);
-    };
-  }, [handle]);
 
   return [options, handleStartDrag, handleDrag, handleStopDrag, setOptions];
 };

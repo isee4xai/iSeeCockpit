@@ -18,7 +18,7 @@
     name: 'Manage Usecase',
     // icon: 'setting',
     component: './designuser/usecases/Create',
-    exact: false
+    exact: false,
   },
   {
     path: '/usecase/analytics',
@@ -35,7 +35,7 @@
   {
     path: '/questionnaires-toolkit',
     name: 'Questionnaires toolkit',
-    icon: 'question',
+    icon: 'EditOutlined',
     component: './QuestionnairesNew',
   },
   // {
