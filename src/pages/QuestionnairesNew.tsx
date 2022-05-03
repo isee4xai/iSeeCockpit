@@ -3,7 +3,12 @@ import { PageContainer } from '@ant-design/pro-layout';
 import { Button, Modal, Alert, notification } from 'antd';
 import { v4 as uuidv4 } from 'uuid';
 import QuestionForm from '@/components/iSee/question/toolkit/QuestionForm';
-import { PlusCircleOutlined, HolderOutlined, CopyOutlined } from '@ant-design/icons';
+import {
+  PlusCircleOutlined,
+  HolderOutlined,
+  CopyOutlined,
+  ImportOutlined,
+} from '@ant-design/icons';
 import Draggable from 'react-draggable';
 import './QuestionnaireNew.less';
 
@@ -24,9 +29,11 @@ interface Question {
 }
 
 import useDrag from '@/components/iSee/question/toolkit/useDrag';
+import TextArea from 'antd/lib/input/TextArea';
 
 const CreateQuestionnaires: React.FC = () => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modal, setModal] = useState({ visibility: false, type: 'export' });
+  const [importJson, setImportJson] = useState('');
   const [questions, handleStartDrag, handleDrag, handleStopDrag, setQuestions] = useDrag<Question>(
     [],
     'question-container',
@@ -36,6 +43,10 @@ const CreateQuestionnaires: React.FC = () => {
 
   const handleAddbutton = () => {
     setQuestions([...questions, { id: nextId() }]);
+  };
+
+  const handleImportButton = () => {
+    setModal({ visibility: true, type: 'import' });
   };
 
   const handleQuestionChange = useCallback(
@@ -57,7 +68,7 @@ const CreateQuestionnaires: React.FC = () => {
     if (question.text.trim() === '') return false;
 
     if (['Likert', 'Radio', 'Checkbox'].includes(question.metric)) {
-      if (!question.metric_values) return false;
+      if (!question.metric_values || question.metric_values.length === 0) return false;
     }
 
     return true;
@@ -78,12 +89,12 @@ const CreateQuestionnaires: React.FC = () => {
     setQuestions((old) => old.filter((q) => q.id !== id));
   };
 
-  const showModal = () => {
-    setIsModalVisible(true);
+  const handleExportButton = () => {
+    setModal({ visibility: true, type: 'export' });
   };
 
   const addToClipboard = () => {
-    navigator.clipboard.writeText(JSON.stringify(questions)).then(
+    navigator.clipboard.writeText(JSON.stringify({ questions }, null, 4)).then(
       () => {
         notification.success({
           message: `Success`,
@@ -104,11 +115,36 @@ const CreateQuestionnaires: React.FC = () => {
   };
 
   const handleOk = () => {
-    setIsModalVisible(false);
+    if (modal.type === 'import') {
+      try {
+        const json = JSON.parse(importJson);
+
+        if (json.questions && Array.isArray(json.questions)) {
+          setQuestions(json.questions);
+        }
+        setImportJson('');
+
+        notification.success({
+          message: `Success`,
+          duration: 3,
+          description: 'The questionnaire json has been imported',
+          placement: 'bottomRight',
+        });
+      } catch (e) {
+        console.debug(e);
+        notification.error({
+          message: `Error`,
+          duration: 3,
+          description: 'An error occured during the import, please check the json',
+          placement: 'bottomRight',
+        });
+      }
+    }
+    setModal({ ...modal, visibility: false });
   };
 
-  const handleCancel = () => {
-    setIsModalVisible(false);
+  const handleCloseModal = () => {
+    setModal({ ...modal, visibility: false });
   };
 
   return (
@@ -142,35 +178,47 @@ const CreateQuestionnaires: React.FC = () => {
         ))}
         <span className="sapce-4" />
       </div>
+      {questions.length === 0 && (
+        <Button
+          size="large"
+          icon={<ImportOutlined />}
+          onClick={handleImportButton}
+          style={{ transition: '.3s', display: 'block', width: '50%', margin: '1rem auto' }}
+        >
+          Import a questionnaire
+        </Button>
+      )}
       <Button
         size="large"
         icon={<PlusCircleOutlined />}
         onClick={handleAddbutton}
-        style={{ transition: '.3s', margin: 'auto', display: 'block', width: '50%' }}
+        style={{ transition: '.3s', display: 'block', width: '50%', margin: '1rem auto' }}
       >
         Add a question
       </Button>
-      <Button onClick={showModal} type="primary" className="generate-json">
+      <Button onClick={handleExportButton} type="primary" className="generate-json">
         {' '}
         Generate Json{' '}
       </Button>
       <Modal
-        title="Exported Json"
-        visible={isModalVisible}
+        title={modal.type === 'export' ? 'Export' : 'Import'}
+        visible={modal.visibility}
         onOk={handleOk}
-        onCancel={handleCancel}
+        onCancel={handleCloseModal}
         footer={
           <>
-            <Button onClick={addToClipboard} icon={<CopyOutlined />}>
-              Copy to clipboard
-            </Button>
+            {modal.type === 'export' && (
+              <Button onClick={addToClipboard} icon={<CopyOutlined />}>
+                Copy to clipboard
+              </Button>
+            )}
             <Button type="primary" onClick={handleOk}>
-              OK
+              {modal.type === 'export' ? 'Close' : 'Import'}
             </Button>
           </>
         }
       >
-        {!isQuestionnaireValid() && (
+        {modal.type === 'export' && !isQuestionnaireValid() && (
           <Alert
             message="Your form isn't valid, you may want to fill all fields before exporting!"
             type="warning"
@@ -180,7 +228,15 @@ const CreateQuestionnaires: React.FC = () => {
         )}
         <pre>
           <code onClick={(e) => console.dir(e.target)}>
-            {JSON.stringify({ questions }, null, 4).trim()}
+            {modal.type === 'export' ? (
+              JSON.stringify({ questions }, null, 2)
+            ) : (
+              <TextArea
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                  setImportJson(e.target.value);
+                }}
+              />
+            )}
           </code>
         </pre>
       </Modal>
