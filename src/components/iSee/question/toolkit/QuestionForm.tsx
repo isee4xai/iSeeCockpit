@@ -23,21 +23,7 @@ import {
   SmileOutlined,
 } from '@ant-design/icons';
 
-interface Question {
-  id?: string;
-  text?: string;
-  metric?: string;
-  category?: string;
-  metric_values?: {
-    val: string;
-  }[];
-  required?: boolean;
-  completed?: boolean;
-  validators?: {
-    min?: number;
-    max?: number;
-  };
-}
+import type { Question } from '@/models/questionnaire';
 
 const QuestionForm: React.FC<{
   question: Question;

@@ -10,7 +10,10 @@ export interface Question {
   text?: string;
   metric?: string;
   category?: string;
-  metric_values?: string[];
+  answer?: string | object;
+  metric_values?: {
+    val: string;
+  }[];
   required?: boolean;
   completed?: boolean;
   validators?: {

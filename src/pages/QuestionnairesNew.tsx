@@ -12,21 +12,7 @@ import {
 import Draggable from 'react-draggable';
 import './QuestionnaireNew.less';
 
-interface Question {
-  id?: string;
-  text?: string;
-  metric?: string;
-  category?: string;
-  metric_values?: {
-    val: string;
-  }[];
-  required?: boolean;
-  completed?: boolean;
-  validators?: {
-    min?: number;
-    max?: number;
-  };
-}
+import type { Question } from '@/models/questionnaire';
 
 import useDrag from '@/components/iSee/question/toolkit/useDrag';
 import TextArea from 'antd/lib/input/TextArea';
