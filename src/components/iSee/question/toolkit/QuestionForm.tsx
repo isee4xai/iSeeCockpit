@@ -1,6 +1,6 @@
 import './QuestionForm.less';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Switch, Input, Select, Empty, InputNumber, Form } from 'antd';
+import { Switch, Input, Select, Empty, InputNumber, Form, Popconfirm } from 'antd';
 import CheckboxInput from './CheckboxInput';
 import LikertInput from './LikertInput';
 import RadioInput from './RadioInput';
@@ -175,10 +175,15 @@ const QuestionForm: React.FC<{
           style={{ fontSize: 22, color: 'grey' }}
           onClick={() => onDuplication(state.id)}
         />
-        <DeleteOutlined
-          style={{ fontSize: 22, color: 'grey' }}
-          onClick={() => onDelete(state.id)}
-        />
+
+        <Popconfirm
+          title="Are you sure to delete this task?"
+          onConfirm={() => onDelete(state.id)}
+          okText="Yes"
+          cancelText="No"
+        >
+          <DeleteOutlined style={{ fontSize: 22, color: 'grey' }} />
+        </Popconfirm>
       </div>
     </Form>
   );
