@@ -42,7 +42,7 @@ const CheckboxInput: React.FC<{
   return (
     <>
       <Checkbox.Group value={undefined}>
-        <Space direction="vertical" size={0}>
+        <Space direction="vertical" size={0} className="option-group">
           {optionsList.map((option, idx, tab) => (
             <Draggable
               axis="y"
@@ -57,7 +57,7 @@ const CheckboxInput: React.FC<{
               }}
               handle={'.checkbox-holder'}
             >
-              <div className="container" drag-index={idx} style={{ padding: '4px 0' }}>
+              <div className="container" drag-index={idx}>
                 <HolderOutlined className="checkbox-holder" />
                 <Checkbox className="checkbox-item" value={option} onClick={() => handleEdit(idx)}>
                   {edit === idx ? (

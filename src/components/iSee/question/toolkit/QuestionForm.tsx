@@ -27,10 +27,11 @@ import type { Question } from '@/models/questionnaire';
 
 const QuestionForm: React.FC<{
   question: Question;
-  onChange: (question: Question) => void;
-  onDuplication: (id: string | undefined) => void;
-  onDelete: (id: string | undefined) => void;
-}> = ({ question, onChange, onDuplication, onDelete }) => {
+  onChange?: (question: Question) => void;
+  onDuplication?: (id: string | undefined) => void;
+  onDelete?: (id: string | undefined) => void;
+  noCategory?: boolean;
+}> = ({ question, onChange, onDuplication, onDelete, noCategory = false }) => {
   const [state, setState] = useState<Question>({ ...question });
 
   const handleOptionChange = useCallback((options: string[]) => {
@@ -41,7 +42,7 @@ const QuestionForm: React.FC<{
   }, []);
 
   useEffect(() => {
-    onChange(state);
+    if (onChange) onChange(state);
   }, [state, onChange]);
 
   const onFormChange = (values: any, allValues: any) => {
@@ -70,40 +71,42 @@ const QuestionForm: React.FC<{
       </Form.Item>
       <div className="Questionnaire-body">
         <div className="Questionnaire-top-body">
-          <Form.Item
-            initialValue={state.category}
-            name={'category'}
-            rules={[
-              {
-                required: true,
-                message: 'Please choose a category!',
-              },
-            ]}
-          >
-            <Select placeholder="Choose a category">
-              <Select.Option value="Goodness">
-                <LikeOutlined /> - Goodness
-              </Select.Option>
-              <Select.Option value="SatisFaction">
-                <SmileOutlined /> - Satisfaction
-              </Select.Option>
-              <Select.Option value="Mental Model">
-                <RadarChartOutlined /> - Mental Model
-              </Select.Option>
-              <Select.Option value="Curiosity">
-                <QuestionCircleOutlined /> - Curiosity
-              </Select.Option>
-              <Select.Option value="Trust">
-                <CheckOutlined /> - Trust
-              </Select.Option>
-              <Select.Option value="Performance">
-                <ThunderboltOutlined /> - Performance
-              </Select.Option>
-              <Select.Option value="Custom">
-                <SettingOutlined /> - Custom
-              </Select.Option>
-            </Select>
-          </Form.Item>
+          {!noCategory && (
+            <Form.Item
+              initialValue={state.category}
+              name={'category'}
+              rules={[
+                {
+                  required: true,
+                  message: 'Please choose a category!',
+                },
+              ]}
+            >
+              <Select placeholder="Choose a category">
+                <Select.Option value="Goodness">
+                  <LikeOutlined /> - Goodness
+                </Select.Option>
+                <Select.Option value="SatisFaction">
+                  <SmileOutlined /> - Satisfaction
+                </Select.Option>
+                <Select.Option value="Mental Model">
+                  <RadarChartOutlined /> - Mental Model
+                </Select.Option>
+                <Select.Option value="Curiosity">
+                  <QuestionCircleOutlined /> - Curiosity
+                </Select.Option>
+                <Select.Option value="Trust">
+                  <CheckOutlined /> - Trust
+                </Select.Option>
+                <Select.Option value="Performance">
+                  <ThunderboltOutlined /> - Performance
+                </Select.Option>
+                <Select.Option value="Custom">
+                  <SettingOutlined /> - Custom
+                </Select.Option>
+              </Select>
+            </Form.Item>
+          )}
           <Form.Item
             initialValue={state.metric}
             name={'metric'}
@@ -173,12 +176,12 @@ const QuestionForm: React.FC<{
         </Form.Item>
         <CopyOutlined
           style={{ fontSize: 22, color: 'grey' }}
-          onClick={() => onDuplication(state.id)}
+          onClick={() => onDuplication && onDuplication(state.id)}
         />
 
         <Popconfirm
-          title="Are you sure to delete this task?"
-          onConfirm={() => onDelete(state.id)}
+          title="Are you sure to delete this question?"
+          onConfirm={() => onDelete && onDelete(state.id)}
           okText="Yes"
           cancelText="No"
         >

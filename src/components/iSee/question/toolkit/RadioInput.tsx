@@ -42,7 +42,7 @@ const RadioInput: React.FC<{
   return (
     <>
       <Radio.Group value={null}>
-        <Space direction="vertical" size={0}>
+        <Space direction="vertical" size={0} className="option-group">
           {optionsList.map((option, idx, tab) => (
             <Draggable
               position={{ x: 0, y: 0 }}
@@ -57,7 +57,7 @@ const RadioInput: React.FC<{
               }}
               handle={'.likert-holder'}
             >
-              <div className="container" drag-index={idx} style={{ padding: '4px 0' }}>
+              <div className="container" drag-index={idx}>
                 <HolderOutlined className="likert-holder" />
                 <Radio className="radio-item" value={option} onClick={() => handleEdit(idx)}>
                   {edit === idx ? (

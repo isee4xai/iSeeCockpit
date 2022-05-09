@@ -1,161 +1,85 @@
-import React, { useState } from 'react';
-import { Button, Col, Form, Input, Row, Select, message, Empty, Divider, Space, Card, Popconfirm, } from 'antd';
-import { Question, Questionnaire } from '@/models/questionnaire';
-import CreateQuestion from './CreateQuestion';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import React, { useState, useCallback, Suspense } from 'react';
+import { Form, Input, Select, Button, Card } from 'antd';
+import { v4 as uuidv4 } from 'uuid';
+import type { Question, Questionnaire } from '@/models/questionnaire';
 import DATA_FILEDS from '@/models/common';
+const { Option } = Select;
 
-export type QuestionnaireType = {
-  questionnaire: Questionnaire
-};
+const QuestionnaireEditor = React.lazy(
+  () => import('@/components/iSee/question/toolkit/QuestionnaireEditor'),
+);
 
-const CreateQuestionnaire: React.FC<QuestionnaireType> = (props) => {
-  const { Option } = Select;
+const CreateQuestionnaire: React.FC<{ questionnaire: Questionnaire }> = (props) => {
+  const withId =
+    props.questionnaire.questions &&
+    props.questionnaire.questions.map((question: Question) => ({
+      ...question,
+      id: `q-${uuidv4()}`,
+    })); // generate an id for each question to update [hardcode les id]
+  const [questionnaire, setQuestionnaire] = useState({ ...props.questionnaire, questions: withId });
+  const [questions, setQuestions] = useState(withId);
+  const [form, setForm] = useState(props.questionnaire);
 
-  const [questionnaire, setQuestionnaire] = useState(props.questionnaire);
+  const handleQuestionnaireChange = useCallback(
+    (updatedQuestions) => {
+      setQuestions(updatedQuestions);
+    },
+    [setQuestions],
+  );
 
-  const onFinish = (values: any) => {
-    setQuestionnaire(values);
-    console.log('Success:', values);
-    message.success('Succesfully Updated Questionnaire!');
+  const handleFormChange = (values: any) => {
+    setForm({ ...form, ...values });
   };
 
-  const addQuestion = () => {
-    const newQuestion: Question = {
-      "text": "",
-      "metric": "",
-      "metric_values": [],
-      "required": false,
-    };
-    const questionsTemp: Question[] = questionnaire.questions || [];
-    questionsTemp.push(newQuestion);
-    const newQuestionnaire: Questionnaire = {
-      "name": questionnaire.name,
-      "category": questionnaire.category,
-      "questions": questionsTemp
-    }
-    setQuestionnaire(newQuestionnaire);
-    message.success('Added new Question!');
-  };
-
-  const removeQuestion = (values: any) => {
-    const questionsTemp: Question[] = questionnaire.questions || [];
-    const newQuestions = questionsTemp.filter((item) => item.text !== values.text)
-    const newQuestionnaire = {
-      "name": questionnaire.name,
-      "category": questionnaire.category,
-      "questions": newQuestions
-    };
-    setQuestionnaire(newQuestionnaire);
-    message.success('Removed Question!');
+  const handleSubmit = () => {
+    setQuestionnaire({ ...form, questions });
   };
 
   return (
-    <Form
-      name="basic"
-      labelCol={{ span: 8 }}
-      wrapperCol={{ span: 16 }}
-      initialValues={questionnaire}
-      onFinish={onFinish}
-    // onFinishFailed={onFinishFailed}
-    >
-      <Form.Item
-        label="Questionnaire Name"
-        name="name"
-        rules={[{ required: true, message: 'Input is required!' }]}
+    <>
+      <Form
+        name="basic"
+        labelCol={{ span: 8 }}
+        onValuesChange={handleFormChange}
+        wrapperCol={{ span: 16 }}
+        initialValues={questionnaire}
       >
-        <Input />
-      </Form.Item>
-
-      <Form.Item
-        label="Questionnaire Category"
-        name="category"
-        tooltip="This is a required field"
-        rules={[{ required: true, message: 'Input is required!' }]}
-      >
-        <Select
+        <Form.Item
+          label="Questionnaire Name"
+          name="name"
+          rules={[{ required: true, message: 'Input is required!' }]}
         >
-          {DATA_FILEDS.QUESTION_CATEGORY.map((option) => (
-            <Option key={option} value={option}>
-              {option}
-            </Option>
-          ))}
-        </Select>
-      </Form.Item>
+          <Input />
+        </Form.Item>
 
-      <Form.List
-        name="questions"
-      // initialValue={questions}
-      >
-        {(fields, { }, { errors }) => (
-          <>
-            <Card
-              size="small"
-              title={'Questions'}
-              extra={
-                <Button
-                  className="dynamic-delete-button"
-                  // danger={true}
-                  size="small"
-                  onClick={() => addQuestion()}
-                  icon={<PlusOutlined />}
-                  name='addQuestionButton'
-                >
-                  Add
-                </Button>
-              }
-            >
-              <div>
-                {questionnaire.questions?.map((question, index) => (
-                  <div
-                    key={question.text}>
-                    <Divider>
-                      <Space>
-                        Question {index + 1}
-                        <Popconfirm
-                          title={'Are you sure to delete?'}
-                          onConfirm={() => removeQuestion(question)}
-                          // onCancel={cancel}
-                          okText="Yes"
-                          cancelText="No"
-                        >
-                          <Button
-                            className="dynamic-delete-button"
-                            danger={true}
-                            icon={<MinusCircleOutlined />}
-                          >
-                          </Button>
-                        </Popconfirm>
-                      </Space>
-                    </Divider>
-                    <CreateQuestion question={question} />
-                  </div>
-                ))}
-                {questionnaire.questions?.length == 0 ? (
-                  <Form.Item >
-                    <Empty
-                      image={Empty.PRESENTED_IMAGE_SIMPLE}
-                      description="No Questions" />
-                  </Form.Item>
-                ) : null}
-                {/* <Form.ErrorList errors={errors} /> */}
-              </div>
-            </Card>
-          </>
-        )
-        }
-
-      </Form.List>
-      <Row>
-        <Col span={24} style={{ textAlign: 'right' }}>
-          <Button
-            type="primary"
-            htmlType="submit">
-            Save
-          </Button>
-        </Col>
-      </Row>
-    </Form>
+        <Form.Item
+          label="Questionnaire Category"
+          name="category"
+          tooltip="This is a required field"
+          rules={[{ required: true, message: 'Input is required!' }]}
+        >
+          <Select>
+            {DATA_FILEDS.QUESTION_CATEGORY.map((option) => (
+              <Option key={option} value={option}>
+                {option}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+      </Form>
+      <Card size="small" title={'Questions'}>
+        <Suspense fallback={<div>Loading...</div>}>
+          <QuestionnaireEditor
+            defaultQuestions={questionnaire.questions}
+            onChange={handleQuestionnaireChange}
+            noCategory
+          />
+        </Suspense>
+      </Card>
+      <Button type="primary" block onClick={handleSubmit}>
+        Submit
+      </Button>
+    </>
   );
 };
 

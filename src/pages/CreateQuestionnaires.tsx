@@ -11,9 +11,16 @@ import {
   Form,
   Input,
   Select,
+  notification,
   Empty,
 } from 'antd';
-import { MinusCircleOutlined, PlusOutlined, SettingOutlined } from '@ant-design/icons';
+import {
+  MinusCircleOutlined,
+  ExportOutlined,
+  CopyOutlined,
+  PlusOutlined,
+  SettingOutlined,
+} from '@ant-design/icons';
 const { Panel } = Collapse;
 import CreateQuestionnaire from '@/components/iSee/question/CreateQuestionnaire';
 import DATA_FILEDS from '@/models/common';
@@ -22,6 +29,7 @@ const CreateQuestionnaires: React.FC = () => {
   const { Option } = Select;
 
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modal, setModal] = useState({ visibility: false, idx: -1 });
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -29,313 +37,320 @@ const CreateQuestionnaires: React.FC = () => {
 
   const handleOk = () => {
     setIsModalVisible(false);
+    setModal({ visibility: false, idx: -1 });
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
   };
 
-  const [questionnaires, setQuestionnaires] = useState([{
-    name: 'Explanation Satisfaction Scale (Hoffman)',
-    category: 'Satisfaction',
-    questions: [
-      {
-        question_text: 'From the explanation, I understand how the AI model works.',
-        question_metric: 'Likert',
-        metric_values: [
-          'I agree strongly',
-          'I agree somewhat',
-          'I’m neutral about it',
-          'I disagree somewhat',
-          'I disagree strongly',
-        ],
-        required: true,
-      },
-      {
-        question_text: 'This explanation of how the AI model works is satisfying.',
-        question_metric: 'Likert',
-        metric_values: [
-          'I agree strongly',
-          'I agree somewhat',
-          'I’m neutral about it',
-          'I disagree somewhat',
-          'I disagree strongly',
-        ],
-        required: false,
-      },
-      {
-        question_text: 'This explanation of how the AI model works has sufficient detail.',
-        question_metric: 'Likert',
-        metric_values: [
-          'I agree strongly',
-          'I agree somewhat',
-          'I’m neutral about it',
-          'I disagree somewhat',
-          'I disagree strongly',
-        ],
-        required: true,
-      },
-      {
-        question_text: 'This explanation of how the AI model works seems complete.',
-        question_metric: 'Likert',
-        metric_values: [
-          'I agree strongly',
-          'I agree somewhat',
-          'I’m neutral about it',
-          'I disagree somewhat',
-          'I disagree strongly',
-        ],
-        required: false,
-      },
-      {
-        question_text: 'This explanation of how the AI model works tells me how to use it',
-        question_metric: 'Likert',
-        metric_values: [
-          'I agree strongly',
-          'I agree somewhat',
-          'I’m neutral about it',
-          'I disagree somewhat',
-          'I disagree strongly',
-        ],
-        required: true,
-      },
-      {
-        question_text: 'This explanation of how the AI model works is useful to my goals.',
-        question_metric: 'Likert',
-        metric_values: [
-          'I agree strongly',
-          'I agree somewhat',
-          'I’m neutral about it',
-          'I disagree somewhat',
-          'I disagree strongly',
-        ],
-        required: false,
-      },
-      {
-        question_text:
-          'This explanation of the [software, algorithm, tool] shows me how accurate the AI model is.',
-        question_metric: 'Likert',
-        metric_values: [
-          'I agree strongly',
-          'I agree somewhat',
-          'I’m neutral about it',
-          'I disagree somewhat',
-          'I disagree strongly',
-        ],
-        required: false,
-      },
-      {
-        question_text:
-          'This explanation lets me judge when I should trust and not trust the AI model. ',
-        question_metric: 'Likert',
-        metric_values: [
-          'I agree strongly',
-          'I agree somewhat',
-          'I’m neutral about it',
-          'I disagree somewhat',
-          'I disagree strongly',
-        ],
-        required: true,
-      },
-    ]
-  }, {
-    name: 'Explanation Goodness Checklist (Hoffman)',
-    category: 'Goodness',
-    questions: [
-      {
-        question_text: 'The explanation helps me understand how the AI model works.',
-        question_metric: 'radio',
-        metric_values: ['Yes', 'No'],
-        required: true,
-      },
-      {
-        question_text: 'The explanation of how the AI model works is satisfying.',
-        question_metric: 'radio',
-        metric_values: ['Yes', 'No'],
-        required: true,
-      },
-      {
-        question_text: 'The explanation of the AI model sufficiently detailed. ',
-        question_metric: 'radio',
-        metric_values: ['Yes', 'No'],
-        required: true,
-      },
-      {
-        question_text: 'The explanation of how the AI model works is sufficiently complete.',
-        question_metric: 'radio',
-        metric_values: ['Yes', 'No'],
-        required: true,
-      },
-      {
-        question_text:
-          'The explanation is actionable, that is, it helps me know how to use the AI M=model',
-        question_metric: 'radio',
-        metric_values: ['Yes', 'No'],
-        required: true,
-      },
-      {
-        question_text: 'The explanation lets me know how accurate or reliable the AI model is.',
-        question_metric: 'radio',
-        metric_values: ['Yes', 'No'],
-        required: true,
-      },
-      {
-        question_text: 'The explanation lets me know how trustworthy the AI model is.',
-        question_metric: 'radio',
-        metric_values: ['Yes', 'No'],
-        required: true,
-      },
-    ]
-  },
-  {
-    name: 'Cahour-Forzy Trust Scale;',
-    category: 'Trust',
-    questions: [
-      {
-        question_text: 'What is your confidence in the [tool]? Do you have a feeling of trust in it?',
-        question_metric: 'Likert',
-        metric_values: [
-          '1 (I do not trust it at all.)',
-          '2',
-          '3',
-          '4',
-          '5',
-          '6',
-          '7 (I trust it completely)',
-        ],
-        required: true,
-      }, {
-        question_text: 'Are the actions of the [tool] predictable?',
-        question_metric: 'Likert',
-        metric_values: [
-          '1 (It is not at all predictable.)',
-          '2',
-          '3',
-          '4',
-          '5',
-          '6',
-          '7 (It is completely predictable)',
-        ],
-        required: true,
-      }, {
-        question_text: 'Is the [tool] reliable? Do you think it is safe?',
-        question_metric: 'Likert',
-        metric_values: [
-          '1 (It is not at all safe.)',
-          '2',
-          '3',
-          '4',
-          '5',
-          '6',
-          '7 (It is completely safe. )',
-        ],
-        required: true,
-      }, {
-        question_text: 'Is the [tool] efficient at what it does?',
-        question_metric: 'Likert',
-        metric_values: [
-          '1 (It is not at all efficient.)',
-          '2',
-          '3',
-          '4',
-          '5',
-          '6',
-          '7 (It is completely efficient)',
-        ],
-        required: true,
-      },
-    ]
-  },
-  {
-    name: 'Trust Scale (Hoffman)',
-    category: 'Trust',
-    questions: [
-      {
-        question_text: 'I am confident in the [tool]. I feel that it works well.',
-        question_metric: 'Likert',
-        metric_values: [
-          'I agree strongly',
-          'I agree somewhat',
-          'I’m neutral about it',
-          'I disagree somewhat',
-          'I disagree strongly',
-        ],
-        required: true,
-      },
-      {
-        question_text: 'The outputs of the [tool] are very predictable.',
-        question_metric: 'Likert',
-        metric_values: [
-          'I agree strongly',
-          'I agree somewhat',
-          'I’m neutral about it',
-          'I disagree somewhat',
-          'I disagree strongly',
-        ],
-        required: true,
-      },
-      {
-        question_text: 'I feel safe that when I rely on the [tool] I will get the right answers.',
-        question_metric: 'Likert',
-        metric_values: [
-          'I agree strongly',
-          'I agree somewhat',
-          'I’m neutral about it',
-          'I disagree somewhat',
-          'I disagree strongly',
-        ],
-        required: true,
-      },
-      {
-        question_text: 'The [tool] is efficient in that it works very quickly.',
-        question_metric: 'Likert',
-        metric_values: [
-          'I agree strongly',
-          'I agree somewhat',
-          'I’m neutral about it',
-          'I disagree somewhat',
-          'I disagree strongly',
-        ],
-        required: true,
-      },
-      {
-        question_text: 'I am wary of the [tool].',
-        question_metric: 'Likert',
-        metric_values: [
-          'I agree strongly',
-          'I agree somewhat',
-          'I’m neutral about it',
-          'I disagree somewhat',
-          'I disagree strongly',
-        ],
-        required: true,
-      },
-      {
-        question_text: ' The [tool] can perform the task better than a novice human user.',
-        question_metric: 'Likert',
-        metric_values: [
-          'I agree strongly',
-          'I agree somewhat',
-          'I’m neutral about it',
-          'I disagree somewhat',
-          'I disagree strongly',
-        ],
-        required: true,
-      },
-      {
-        question_text: 'I like using the system for decision making.',
-        question_metric: 'Likert',
-        metric_values: [
-          'I agree strongly',
-          'I agree somewhat',
-          'I’m neutral about it',
-          'I disagree somewhat',
-          'I disagree strongly',
-        ],
-        required: true,
-      }
-    ]
-  }
+  const [questionnaires, setQuestionnaires] = useState([
+    {
+      name: 'Explanation Satisfaction Scale (Hoffman)',
+      category: 'Satisfaction',
+      id: 'q-1',
+      questions: [
+        {
+          text: 'From the explanation, I understand how the AI model works.',
+          metric: 'Likert',
+          metric_values: [
+            { val: 'I agree strongly' },
+            { val: 'I agree somewhat' },
+            { val: "I'm neutral about it" },
+            { val: 'I disagree somewhat' },
+            { val: 'I disagree strongly' },
+          ],
+          required: true,
+        },
+        {
+          text: 'This explanation of how the AI model works is satisfying.',
+          metric: 'Likert',
+          metric_values: [
+            { val: 'I agree strongly' },
+            { val: 'I agree somewhat' },
+            { val: "I'm neutral about it" },
+            { val: 'I disagree somewhat' },
+            { val: 'I disagree strongly' },
+          ],
+          required: false,
+        },
+        {
+          text: 'This explanation of how the AI model works has sufficient detail.',
+          metric: 'Likert',
+          metric_values: [
+            { val: 'I agree strongly' },
+            { val: 'I agree somewhat' },
+            { val: "I'm neutral about it" },
+            { val: 'I disagree somewhat' },
+            { val: 'I disagree strongly' },
+          ],
+          required: true,
+        },
+        {
+          text: 'This explanation of how the AI model works seems complete.',
+          metric: 'Likert',
+          metric_values: [
+            { val: 'I agree strongly' },
+            { val: 'I agree somewhat' },
+            { val: "I'm neutral about it" },
+            { val: 'I disagree somewhat' },
+            { val: 'I disagree strongly' },
+          ],
+          required: false,
+        },
+        {
+          text: 'This explanation of how the AI model works tells me how to use it',
+          metric: 'Likert',
+          metric_values: [
+            { val: 'I agree strongly' },
+            { val: 'I agree somewhat' },
+            { val: "I'm neutral about it" },
+            { val: 'I disagree somewhat' },
+            { val: 'I disagree strongly' },
+          ],
+          required: true,
+        },
+        {
+          text: 'This explanation of how the AI model works is useful to my goals.',
+          metric: 'Likert',
+          metric_values: [
+            { val: 'I agree strongly' },
+            { val: 'I agree somewhat' },
+            { val: "I'm neutral about it" },
+            { val: 'I disagree somewhat' },
+            { val: 'I disagree strongly' },
+          ],
+          required: false,
+        },
+        {
+          text: 'This explanation of the [software, algorithm, tool] shows me how accurate the AI model is.',
+          metric: 'Likert',
+          metric_values: [
+            { val: 'I agree strongly' },
+            { val: 'I agree somewhat' },
+            { val: "I'm neutral about it" },
+            { val: 'I disagree somewhat' },
+            { val: 'I disagree strongly' },
+          ],
+          required: false,
+        },
+        {
+          text: 'This explanation lets me judge when I should trust and not trust the AI model. ',
+          metric: 'Likert',
+          metric_values: [
+            { val: 'I agree strongly' },
+            { val: 'I agree somewhat' },
+            { val: "I'm neutral about it" },
+            { val: 'I disagree somewhat' },
+            { val: 'I disagree strongly' },
+          ],
+          required: true,
+        },
+      ],
+    },
+    {
+      name: 'Explanation Goodness Checklist (Hoffman)',
+      category: 'Goodness',
+      id: 'q-2',
+      questions: [
+        {
+          text: 'The explanation helps me understand how the AI model works.',
+          metric: 'Radio',
+          metric_values: [{ val: 'Yes' }, { val: 'No' }],
+          required: true,
+        },
+        {
+          text: 'The explanation of how the AI model works is satisfying.',
+          metric: 'Radio',
+          metric_values: [{ val: 'Yes' }, { val: 'No' }],
+          required: true,
+        },
+        {
+          text: 'The explanation of the AI model sufficiently detailed. ',
+          metric: 'Radio',
+          metric_values: [{ val: 'Yes' }, { val: 'No' }],
+          required: true,
+        },
+        {
+          text: 'The explanation of how the AI model works is sufficiently complete.',
+          metric: 'Radio',
+          metric_values: [{ val: 'Yes' }, { val: 'No' }],
+          required: true,
+        },
+        {
+          text: 'The explanation is actionable, that is, it helps me know how to use the AI M=model',
+          metric: 'Radio',
+          metric_values: [{ val: 'Yes' }, { val: 'No' }],
+          required: true,
+        },
+        {
+          text: 'The explanation lets me know how accurate or reliable the AI model is.',
+          metric: 'Radio',
+          metric_values: [{ val: 'Yes' }, { val: 'No' }],
+          required: true,
+        },
+        {
+          text: 'The explanation lets me know how trustworthy the AI model is.',
+          metric: 'Radio',
+          metric_values: [{ val: 'Yes' }, { val: 'No' }],
+          required: true,
+        },
+      ],
+    },
+    {
+      name: 'Cahour-Forzy Trust Scale;',
+      category: 'Trust',
+      id: 'q-3',
+      questions: [
+        {
+          text: 'What is your confidence in the [tool]? Do you have a feeling of trust in it?',
+          metric: 'Likert',
+          metric_values: [
+            { val: '1 (I do not trust it at all.)' },
+            { val: '2' },
+            { val: '3' },
+            { val: '4' },
+            { val: '5' },
+            { val: '6' },
+            { val: '7 (I trust it completely)' },
+          ],
+          required: true,
+        },
+        {
+          text: 'Are the actions of the [tool] predictable?',
+          metric: 'Likert',
+          metric_values: [
+            { val: '1 (I do not trust it at all.)' },
+            { val: '2' },
+            { val: '3' },
+            { val: '4' },
+            { val: '5' },
+            { val: '6' },
+            { val: '7 (I trust it completely)' },
+          ],
+          required: true,
+        },
+        {
+          text: 'Is the [tool] reliable? Do you think it is safe?',
+          metric: 'Likert',
+          metric_values: [
+            { val: '1 (I do not trust it at all.)' },
+            { val: '2' },
+            { val: '3' },
+            { val: '4' },
+            { val: '5' },
+            { val: '6' },
+            { val: '7 (I trust it completely)' },
+          ],
+          required: true,
+        },
+        {
+          text: 'Is the [tool] efficient at what it does?',
+          metric: 'Likert',
+          metric_values: [
+            { val: '1 (I do not trust it at all.)' },
+            { val: '2' },
+            { val: '3' },
+            { val: '4' },
+            { val: '5' },
+            { val: '6' },
+            { val: '7 (I trust it completely)' },
+          ],
+          required: true,
+        },
+      ],
+    },
+    {
+      name: 'Trust Scale (Hoffman)',
+      category: 'Trust',
+      id: 'q-4',
+      questions: [
+        {
+          text: 'I am confident in the [tool]. I feel that it works well.',
+          metric: 'Likert',
+          metric_values: [
+            { val: 'I agree strongly' },
+            { val: 'I agree somewhat' },
+            { val: "I'm neutral about it" },
+            { val: 'I disagree somewhat' },
+            { val: 'I disagree strongly' },
+          ],
+          required: true,
+        },
+        {
+          text: 'The outputs of the [tool] are very predictable.',
+          metric: 'Likert',
+          metric_values: [
+            { val: 'I agree strongly' },
+            { val: 'I agree somewhat' },
+            { val: "I'm neutral about it" },
+            { val: 'I disagree somewhat' },
+            { val: 'I disagree strongly' },
+          ],
+          required: true,
+        },
+        {
+          text: 'I feel safe that when I rely on the [tool] I will get the right answers.',
+          metric: 'Likert',
+          metric_values: [
+            { val: 'I agree strongly' },
+            { val: 'I agree somewhat' },
+            { val: "I'm neutral about it" },
+            { val: 'I disagree somewhat' },
+            { val: 'I disagree strongly' },
+          ],
+          required: true,
+        },
+        {
+          text: 'The [tool] is efficient in that it works very quickly.',
+          metric: 'Likert',
+          metric_values: [
+            { val: 'I agree strongly' },
+            { val: 'I agree somewhat' },
+            { val: "I'm neutral about it" },
+            { val: 'I disagree somewhat' },
+            { val: 'I disagree strongly' },
+          ],
+          required: true,
+        },
+        {
+          text: 'I am wary of the [tool].',
+          metric: 'Likert',
+          metric_values: [
+            { val: 'I agree strongly' },
+            { val: 'I agree somewhat' },
+            { val: "I'm neutral about it" },
+            { val: 'I disagree somewhat' },
+            { val: 'I disagree strongly' },
+          ],
+          required: true,
+        },
+        {
+          text: ' The [tool] can perform the task better than a novice human user.',
+          metric: 'Likert',
+          metric_values: [
+            { val: 'I agree strongly' },
+            { val: 'I agree somewhat' },
+            { val: "I'm neutral about it" },
+            { val: 'I disagree somewhat' },
+            { val: 'I disagree strongly' },
+          ],
+          required: true,
+        },
+        {
+          text: 'I like using the system for decision making.',
+          metric: 'Likert',
+          metric_values: [
+            { val: 'I agree strongly' },
+            { val: 'I agree somewhat' },
+            { val: "I'm neutral about it" },
+            { val: 'I disagree somewhat' },
+            { val: 'I disagree strongly' },
+          ],
+          required: true,
+        },
+      ],
+    },
   ]);
 
   const onFinish = (values: any) => {
@@ -353,22 +368,50 @@ const CreateQuestionnaires: React.FC = () => {
 
   const genExtra = (values: any) => (
     <div>
+      <Button
+        ghost
+        type="primary"
+        icon={<ExportOutlined />}
+        style={{ marginRight: '10px' }}
+        onClick={() => {
+          setModal({ visibility: true, idx: questionnaires.indexOf(values) });
+        }}
+      />
       <Popconfirm
         title={'Are you sure to delete?'}
         onConfirm={() => removeQuestionnaire(values)}
-        // onCancel={cancel}
         okText="Yes"
         cancelText="No"
       >
-        <Button
-          danger
-          className="dynamic-delete-button"
-          icon={<MinusCircleOutlined />}>
-
-        </Button>
+        <Button danger className="dynamic-delete-button" icon={<MinusCircleOutlined />} />
       </Popconfirm>
     </div>
   );
+
+  const handleCloseModal = () => {
+    setModal({ ...modal, visibility: false });
+  };
+
+  const addToClipboard = () => {
+    navigator.clipboard.writeText(JSON.stringify(questionnaires[modal.idx], null, 4)).then(
+      () => {
+        notification.success({
+          message: `Success`,
+          duration: 3,
+          description: 'The questionnaire json has been added to the clipboard',
+          placement: 'bottomRight',
+        });
+      },
+      () => {
+        notification.error({
+          message: `Error`,
+          duration: 3,
+          description: 'An error occured, the json was not added to the clipboard',
+          placement: 'bottomRight',
+        });
+      },
+    );
+  };
 
   return (
     <PageContainer>
@@ -408,15 +451,13 @@ const CreateQuestionnaires: React.FC = () => {
             tooltip="This is a required field"
             rules={[{ required: true, message: 'Input is required!' }]}
           >
-            <Select
-            >
+            <Select>
               {DATA_FILEDS.QUESTION_CATEGORY.map((option) => (
                 <Option key={option} value={option}>
                   {option}
                 </Option>
               ))}
             </Select>
-
           </Form.Item>
         </Form>
       </Modal>
@@ -427,35 +468,62 @@ const CreateQuestionnaires: React.FC = () => {
         title="Questionnaires"
         // subTitle="Displaying questionnaires"
         extra={[
-          <Button type="primary" onClick={showModal} style={{ width: '100%' }}>
+          <Button
+            type="primary"
+            onClick={showModal}
+            style={{ width: '100%' }}
+            key={'add-questionnaire-btn'}
+          >
             <PlusOutlined /> Add New Questionnaire
           </Button>,
         ]}
       />
       <div>
-        {
-          questionnaires.length != 0 ? (
-            <Collapse
-              accordion
-            >
-              {questionnaires.map((questionnaire) => (
-                <Panel
-                  header={
-                    <div>
-                      <SettingOutlined /> {questionnaire.name}
-                    </div>
-                  }
-                  key={questionnaire.name}
-                  extra={genExtra(questionnaire)}
-                >
-                  <Card>
-                    <CreateQuestionnaire questionnaire={questionnaire} />
-                  </Card>
-                </Panel>
-              ))}
-            </Collapse>)
-            : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Questionnaires" />}
+        {questionnaires.length != 0 ? (
+          <Collapse accordion>
+            {questionnaires.map((questionnaire) => (
+              <Panel
+                header={
+                  <div>
+                    <SettingOutlined /> {questionnaire.name}
+                  </div>
+                }
+                key={questionnaire.name}
+                extra={genExtra(questionnaire)}
+              >
+                <Card>
+                  <CreateQuestionnaire questionnaire={questionnaire} />
+                </Card>
+              </Panel>
+            ))}
+          </Collapse>
+        ) : (
+          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Questionnaires" />
+        )}
       </div>
+      <Modal
+        title={'Export'}
+        visible={modal.visibility}
+        onOk={handleOk}
+        onCancel={handleCloseModal}
+        footer={
+          <>
+            <Button onClick={addToClipboard} icon={<CopyOutlined />}>
+              Copy to clipboard
+            </Button>
+
+            <Button type="primary" onClick={handleOk}>
+              Close
+            </Button>
+          </>
+        }
+      >
+        <pre>
+          <code onClick={(e) => console.dir(e.target)}>
+            {JSON.stringify(questionnaires[modal.idx], null, 2)}
+          </code>
+        </pre>
+      </Modal>
     </PageContainer>
   );
 };
