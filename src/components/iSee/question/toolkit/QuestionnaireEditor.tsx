@@ -135,7 +135,7 @@ const QuestionnaireEditor: React.FC<{
         size="large"
         icon={<PlusCircleOutlined />}
         onClick={handleAddbutton}
-        style={{ transition: '.3s', display: 'block', width: '50%', margin: '1rem auto' }}
+        className="add-question-button"
       >
         Add a question
       </Button>
@@ -144,7 +144,7 @@ const QuestionnaireEditor: React.FC<{
           size="large"
           icon={<ImportOutlined />}
           onClick={handleImportButton}
-          style={{ transition: '.3s', display: 'block', width: '50%', margin: ' 0 auto 4rem auto' }}
+          className={'import-question-button'}
         >
           Import a questionnaire
         </Button>

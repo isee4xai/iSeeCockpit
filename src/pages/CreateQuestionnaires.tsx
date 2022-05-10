@@ -16,7 +16,7 @@ import {
 } from 'antd';
 import {
   MinusCircleOutlined,
-  ExportOutlined,
+  SaveOutlined,
   CopyOutlined,
   PlusOutlined,
   SettingOutlined,
@@ -371,7 +371,7 @@ const CreateQuestionnaires: React.FC = () => {
       <Button
         ghost
         type="primary"
-        icon={<ExportOutlined />}
+        icon={<SaveOutlined />}
         style={{ marginRight: '10px' }}
         onClick={() => {
           setModal({ visibility: true, idx: questionnaires.indexOf(values) });

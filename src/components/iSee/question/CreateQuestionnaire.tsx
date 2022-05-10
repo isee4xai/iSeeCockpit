@@ -16,9 +16,12 @@ const CreateQuestionnaire: React.FC<{ questionnaire: Questionnaire }> = (props) 
       ...question,
       id: `q-${uuidv4()}`,
     })); // generate an id for each question to update [hardcode les id]
-  const [questionnaire, setQuestionnaire] = useState({ ...props.questionnaire, questions: withId });
+
   const [questions, setQuestions] = useState(withId);
   const [form, setForm] = useState(props.questionnaire);
+  const [questionnaire, setQuestionnaire] = useState({ ...form, questions });
+
+  const [formAntd] = Form.useForm();
 
   const handleQuestionnaireChange = useCallback(
     (updatedQuestions) => {
@@ -31,8 +34,9 @@ const CreateQuestionnaire: React.FC<{ questionnaire: Questionnaire }> = (props) 
     setForm({ ...form, ...values });
   };
 
-  const handleSubmit = () => {
-    setQuestionnaire({ ...form, questions });
+  const handleSubmit = (values: Questionnaire) => {
+    setQuestionnaire({ ...values, questions });
+    // register changes
   };
 
   return (
@@ -43,6 +47,8 @@ const CreateQuestionnaire: React.FC<{ questionnaire: Questionnaire }> = (props) 
         onValuesChange={handleFormChange}
         wrapperCol={{ span: 16 }}
         initialValues={questionnaire}
+        onFinish={handleSubmit}
+        form={formAntd}
       >
         <Form.Item
           label="Questionnaire Name"
@@ -76,7 +82,13 @@ const CreateQuestionnaire: React.FC<{ questionnaire: Questionnaire }> = (props) 
           />
         </Suspense>
       </Card>
-      <Button type="primary" block onClick={handleSubmit}>
+      <Button
+        type="primary"
+        size="large"
+        ghost
+        onClick={() => formAntd.submit()}
+        style={{ display: 'block', width: '80%', margin: '2rem 10% 0' }}
+      >
         Submit
       </Button>
     </>
