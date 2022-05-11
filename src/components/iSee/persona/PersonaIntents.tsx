@@ -312,10 +312,13 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
               //     option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               // }
             >
-              {IntentOptions.map((category, idx) => (
-                <OptGroup label={category.name} key={idx}>
+              {IntentOptions.map((category) => (
+                <OptGroup label={category.name} key={category.name}>
                   {category.questions.map((question) => (
-                    <Option key={idx + '-item'} value={category.name + '#' + question}>
+                    <Option
+                      key={category.name + '#' + question}
+                      value={category.name + '#' + question}
+                    >
                       {question}
                     </Option>
                   ))}

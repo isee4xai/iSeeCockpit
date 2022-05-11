@@ -77,7 +77,7 @@ const Create: React.FC<Params> = (props) => {
       }
     }
     get();
-  }, []);
+  }, [props.match.params.id, settingsForm]);
 
   // New Persona Popu Functions
   const [isModalVisible, setIsModalVisible] = useState(false);
