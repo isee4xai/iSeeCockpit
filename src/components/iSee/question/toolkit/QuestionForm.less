@@ -1,4 +1,42 @@
+// variables
+@Free-Text: #88ccee;
+@Number: #117733;
+@Radio: #ddcc77;
+@Likert: #cc6677;
+@Checkbox: #aa4499;
+
 .QuestionForm-container {
+  border-left: 5px solid #bbb;
+
+  .backgroundType (@typeColor) {
+    border-left: 5px solid @typeColor;
+    & .Questionnaire-footer > *:hover {
+      color: @typeColor !important;
+    }
+    & .ant-switch-checked {
+      background-color: @typeColor;
+    }
+    & .selectIcon {
+      color: @typeColor;
+    }
+  }
+
+  &.Free-Text {
+    .backgroundType(@Free-Text);
+  }
+  &.Number {
+    .backgroundType(@Number);
+  }
+  &.Radio {
+    .backgroundType(@Radio);
+  }
+  &.Likert {
+    .backgroundType(@Likert);
+  }
+  &.Checkbox {
+    .backgroundType(@Checkbox);
+  }
+
   & .QuestionForm-header {
     padding: 1rem 1rem 0 1rem;
   }

@@ -61,6 +61,7 @@ const CreateQuestionnaires: React.FC = () => {
             { val: 'I disagree strongly' },
           ],
           required: true,
+          id: 'q-1-1',
         },
         {
           text: 'This explanation of how the AI model works is satisfying.',
@@ -73,6 +74,7 @@ const CreateQuestionnaires: React.FC = () => {
             { val: 'I disagree strongly' },
           ],
           required: false,
+          id: 'q-1-2',
         },
         {
           text: 'This explanation of how the AI model works has sufficient detail.',
@@ -85,6 +87,7 @@ const CreateQuestionnaires: React.FC = () => {
             { val: 'I disagree strongly' },
           ],
           required: true,
+          id: 'q-1-3',
         },
         {
           text: 'This explanation of how the AI model works seems complete.',
@@ -97,6 +100,7 @@ const CreateQuestionnaires: React.FC = () => {
             { val: 'I disagree strongly' },
           ],
           required: false,
+          id: 'q-1-4',
         },
         {
           text: 'This explanation of how the AI model works tells me how to use it',
@@ -109,6 +113,7 @@ const CreateQuestionnaires: React.FC = () => {
             { val: 'I disagree strongly' },
           ],
           required: true,
+          id: 'q-1-5',
         },
         {
           text: 'This explanation of how the AI model works is useful to my goals.',
@@ -121,6 +126,7 @@ const CreateQuestionnaires: React.FC = () => {
             { val: 'I disagree strongly' },
           ],
           required: false,
+          id: 'q-1-6',
         },
         {
           text: 'This explanation of the [software, algorithm, tool] shows me how accurate the AI model is.',
@@ -133,6 +139,7 @@ const CreateQuestionnaires: React.FC = () => {
             { val: 'I disagree strongly' },
           ],
           required: false,
+          id: 'q-1-7',
         },
         {
           text: 'This explanation lets me judge when I should trust and not trust the AI model. ',
@@ -145,6 +152,7 @@ const CreateQuestionnaires: React.FC = () => {
             { val: 'I disagree strongly' },
           ],
           required: true,
+          id: 'q-1-8',
         },
       ],
     },
@@ -158,42 +166,49 @@ const CreateQuestionnaires: React.FC = () => {
           metric: 'Radio',
           metric_values: [{ val: 'Yes' }, { val: 'No' }],
           required: true,
+          id: 'q-2-1',
         },
         {
           text: 'The explanation of how the AI model works is satisfying.',
           metric: 'Radio',
           metric_values: [{ val: 'Yes' }, { val: 'No' }],
           required: true,
+          id: 'q-2-2',
         },
         {
           text: 'The explanation of the AI model sufficiently detailed. ',
           metric: 'Radio',
           metric_values: [{ val: 'Yes' }, { val: 'No' }],
           required: true,
+          id: 'q-2-3',
         },
         {
           text: 'The explanation of how the AI model works is sufficiently complete.',
           metric: 'Radio',
           metric_values: [{ val: 'Yes' }, { val: 'No' }],
           required: true,
+          id: 'q-2-4',
         },
         {
           text: 'The explanation is actionable, that is, it helps me know how to use the AI M=model',
           metric: 'Radio',
           metric_values: [{ val: 'Yes' }, { val: 'No' }],
           required: true,
+          id: 'q-2-5',
         },
         {
           text: 'The explanation lets me know how accurate or reliable the AI model is.',
           metric: 'Radio',
           metric_values: [{ val: 'Yes' }, { val: 'No' }],
           required: true,
+          id: 'q-2-6',
         },
         {
           text: 'The explanation lets me know how trustworthy the AI model is.',
           metric: 'Radio',
           metric_values: [{ val: 'Yes' }, { val: 'No' }],
           required: true,
+          id: 'q-2-7',
         },
       ],
     },
@@ -215,6 +230,7 @@ const CreateQuestionnaires: React.FC = () => {
             { val: '7 (I trust it completely)' },
           ],
           required: true,
+          id: 'q-3-1',
         },
         {
           text: 'Are the actions of the [tool] predictable?',
@@ -229,6 +245,7 @@ const CreateQuestionnaires: React.FC = () => {
             { val: '7 (I trust it completely)' },
           ],
           required: true,
+          id: 'q-3-2',
         },
         {
           text: 'Is the [tool] reliable? Do you think it is safe?',
@@ -243,6 +260,7 @@ const CreateQuestionnaires: React.FC = () => {
             { val: '7 (I trust it completely)' },
           ],
           required: true,
+          id: 'q-3-3',
         },
         {
           text: 'Is the [tool] efficient at what it does?',
@@ -257,6 +275,7 @@ const CreateQuestionnaires: React.FC = () => {
             { val: '7 (I trust it completely)' },
           ],
           required: true,
+          id: 'q-3-4',
         },
       ],
     },
@@ -276,6 +295,7 @@ const CreateQuestionnaires: React.FC = () => {
             { val: 'I disagree strongly' },
           ],
           required: true,
+          id: 'q-4-1',
         },
         {
           text: 'The outputs of the [tool] are very predictable.',
@@ -288,6 +308,7 @@ const CreateQuestionnaires: React.FC = () => {
             { val: 'I disagree strongly' },
           ],
           required: true,
+          id: 'q-4-2',
         },
         {
           text: 'I feel safe that when I rely on the [tool] I will get the right answers.',
@@ -300,6 +321,7 @@ const CreateQuestionnaires: React.FC = () => {
             { val: 'I disagree strongly' },
           ],
           required: true,
+          id: 'q-4-3',
         },
         {
           text: 'The [tool] is efficient in that it works very quickly.',
@@ -312,6 +334,7 @@ const CreateQuestionnaires: React.FC = () => {
             { val: 'I disagree strongly' },
           ],
           required: true,
+          id: 'q-4-4',
         },
         {
           text: 'I am wary of the [tool].',
@@ -324,6 +347,7 @@ const CreateQuestionnaires: React.FC = () => {
             { val: 'I disagree strongly' },
           ],
           required: true,
+          id: 'q-4-5',
         },
         {
           text: ' The [tool] can perform the task better than a novice human user.',
@@ -336,6 +360,7 @@ const CreateQuestionnaires: React.FC = () => {
             { val: 'I disagree strongly' },
           ],
           required: true,
+          id: 'q-4-6',
         },
         {
           text: 'I like using the system for decision making.',
@@ -348,6 +373,7 @@ const CreateQuestionnaires: React.FC = () => {
             { val: 'I disagree strongly' },
           ],
           required: true,
+          id: 'q-4-7',
         },
       ],
     },

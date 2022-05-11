@@ -50,7 +50,7 @@ const QuestionForm: React.FC<{
   };
 
   return (
-    <Form className="QuestionForm-container" onValuesChange={onFormChange}>
+    <Form className={`QuestionForm-container ${state.metric}`} onValuesChange={onFormChange}>
       <Form.Item
         className="QuestionForm-header"
         name="text"
@@ -84,25 +84,25 @@ const QuestionForm: React.FC<{
             >
               <Select placeholder="Choose a category">
                 <Select.Option value="Goodness">
-                  <LikeOutlined /> - Goodness
+                  <LikeOutlined className="selectIcon" /> - Goodness
                 </Select.Option>
-                <Select.Option value="SatisFaction">
-                  <SmileOutlined /> - Satisfaction
+                <Select.Option value="Satisfaction">
+                  <SmileOutlined className="selectIcon" /> - Satisfaction
                 </Select.Option>
                 <Select.Option value="Mental Model">
-                  <RadarChartOutlined /> - Mental Model
+                  <RadarChartOutlined className="selectIcon" /> - Mental Model
                 </Select.Option>
                 <Select.Option value="Curiosity">
-                  <QuestionCircleOutlined /> - Curiosity
+                  <QuestionCircleOutlined className="selectIcon" /> - Curiosity
                 </Select.Option>
                 <Select.Option value="Trust">
-                  <CheckOutlined /> - Trust
+                  <CheckOutlined className="selectIcon" /> - Trust
                 </Select.Option>
                 <Select.Option value="Performance">
-                  <ThunderboltOutlined /> - Performance
+                  <ThunderboltOutlined className="selectIcon" /> - Performance
                 </Select.Option>
                 <Select.Option value="Custom">
-                  <SettingOutlined /> - Custom
+                  <SettingOutlined className="selectIcon" /> - Custom
                 </Select.Option>
               </Select>
             </Form.Item>
@@ -119,19 +119,19 @@ const QuestionForm: React.FC<{
           >
             <Select placeholder="Choose a type">
               <Select.Option value="Free-Text">
-                <FieldStringOutlined /> - Free-Text
+                <FieldStringOutlined className="selectIcon" /> - Free-Text
               </Select.Option>
               <Select.Option value="Number">
-                <FieldNumberOutlined /> - Number
+                <FieldNumberOutlined className="selectIcon" /> - Number
               </Select.Option>
               <Select.Option value="Radio">
-                <CheckCircleOutlined /> - Radio
+                <CheckCircleOutlined className="selectIcon" /> - Radio
               </Select.Option>
               <Select.Option value="Checkbox">
-                <CheckSquareOutlined /> - Checkbox
+                <CheckSquareOutlined className="selectIcon" /> - Checkbox
               </Select.Option>
               <Select.Option value="Likert">
-                <DashboardOutlined /> - Likert
+                <DashboardOutlined className="selectIcon" /> - Likert
               </Select.Option>
             </Select>
           </Form.Item>

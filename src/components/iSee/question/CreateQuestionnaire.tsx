@@ -1,7 +1,6 @@
 import React, { useState, useCallback, Suspense } from 'react';
 import { Form, Input, Select, Button, Card } from 'antd';
-import { v4 as uuidv4 } from 'uuid';
-import type { Question, Questionnaire } from '@/models/questionnaire';
+import type { Questionnaire } from '@/models/questionnaire';
 import DATA_FILEDS from '@/models/common';
 const { Option } = Select;
 
@@ -10,16 +9,9 @@ const QuestionnaireEditor = React.lazy(
 );
 
 const CreateQuestionnaire: React.FC<{ questionnaire: Questionnaire }> = (props) => {
-  const withId =
-    props.questionnaire.questions &&
-    props.questionnaire.questions.map((question: Question) => ({
-      ...question,
-      id: `q-${uuidv4()}`,
-    })); // generate an id for each question to update [hardcode les id]
-
-  const [questions, setQuestions] = useState(withId);
+  const [questions, setQuestions] = useState(props.questionnaire.questions);
   const [form, setForm] = useState(props.questionnaire);
-  const [questionnaire, setQuestionnaire] = useState({ ...form, questions });
+  const [questionnaire, setQuestionnaire] = useState(form);
 
   const [formAntd] = Form.useForm();
 
