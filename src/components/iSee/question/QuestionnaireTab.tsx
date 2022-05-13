@@ -1,13 +1,20 @@
-import { DownloadOutlined, SaveOutlined } from '@ant-design/icons';
-import { Form, Button, Card, Empty, Col, Row, Select, message } from 'antd';
+import {
+  DownloadOutlined,
+  SaveOutlined,
+  DashboardOutlined,
+  FieldStringOutlined,
+  CheckCircleOutlined,
+  FieldNumberOutlined,
+  CheckSquareOutlined,
+} from '@ant-design/icons';
+import { Form, Button, Card, Col, Row, Empty, Select, message, Checkbox } from 'antd';
 import type { Question, Questionnaire } from '@/models/questionnaire';
 import QuestionnaireEditor from '@/components/iSee/question/toolkit/QuestionnaireEditor';
 import Modal from 'antd/lib/modal/Modal';
 import { useState } from 'react';
-import DATA_FILEDS from '@/models/common';
 import type { Persona } from '@/models/persona';
 import { api_persona_save_intent_evaluation } from '@/services/isee/usecases';
-
+import { v4 as uuidv4 } from 'uuid';
 const questionnaires: Questionnaire[] = [
   {
     name: 'Explanation Satisfaction Scale (Hoffman)',
@@ -351,6 +358,14 @@ export type PersonaType = {
   intent_cat: string;
 };
 
+const questionTypeToIcon = {
+  Likert: <DashboardOutlined />,
+  'Free-Text': <FieldStringOutlined />,
+  Radio: <CheckCircleOutlined />,
+  Checkbox: <CheckSquareOutlined />,
+  Number: <FieldNumberOutlined />,
+};
+
 const QuestionnaireTab: React.FC<PersonaType> = ({
   evaluation,
   updatePersona,
@@ -359,9 +374,9 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
   intent_cat,
 }) => {
   const [questions, setQuestions] = useState(evaluation.questions || []);
-
   // New Load Quesionts Popu Functions
   const [isQuestionModal2Visible, setIsQuestionModal2Visible] = useState(false);
+  const [importQuestionnaire, setImportQuestionnaire] = useState(undefined);
   const [isChangedQuestion, setIsChangedQuestion] = useState(false);
 
   const showModalQ2 = () => {
@@ -370,6 +385,7 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
 
   const handleOkQ2 = () => {
     setIsQuestionModal2Visible(false);
+    setImportQuestionnaire(undefined);
   };
 
   const handleCancelQ2 = () => {
@@ -383,72 +399,90 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
   };
 
   const onFinish2 = (values: any) => {
-    console.log('Success:', values);
-
     if (values.questions.length > 0) setIsChangedQuestion(true);
     else setIsChangedQuestion(false);
 
-    const questionList: Question[] = questionnaires
-      .map(
-        (questionnaire) =>
-          (questionnaire.questions &&
-            questionnaire.questions.map((question) => ({
-              ...question,
-              category: questionnaire.category,
-            }))) ||
-          [],
-      )
-      .flat()
-      .filter((question) => question && values.questions.includes(question.id));
+    const questionList: Question[] =
+      questionnaires
+        .filter((q) => q.id == values.questionnaire)[0]
+        ?.questions?.filter((q) => values.questions.includes(q.id))
+        ?.map((q) => ({ ...q, id: 'q-' + uuidv4() })) || [];
+
+    handleOkQ2();
 
     setQuestions([...questions, ...questionList]);
-
     updateQuestions([...questions, ...questionList]);
-    handleOkQ2();
+
     message.success('Succesfully Added Question');
   };
 
-  // New Persona Popu Functions
-
-  const [isQuestionModalVisible, setIsQuestionModalVisible] = useState(false);
-
-  const handleOkQ = () => {
-    setIsQuestionModalVisible(false);
-  };
-
-  const handleCancelQ = () => {
-    setIsQuestionModalVisible(false);
-  };
-
-  const onFinish = (values: any) => {
-    console.log('Success:', values);
-
+  const addQuestion = () => {
     const blank_obj: Question = {
-      id: 'q-' + Math.floor(Math.random() * 100000) + 1,
-      completed: false,
-      text: 'Question',
-      metric: 'Free-Text',
-      required: false,
-      category: values.category,
+      id: 'q-' + uuidv4(),
     };
 
-    const append = [...questions, blank_obj];
-    setQuestions(append);
-    console.log('Success:', blank_obj);
-    console.log('append:', append);
+    const append = [blank_obj, ...questions];
+
     setIsChangedQuestion(true);
+    setQuestions(append);
     updateQuestions(append);
-    handleOkQ();
+
     message.success('Succesfully Added Question');
   };
 
-  async function saveQuestionnaire() {
-    console.log('Saveeee');
-    console.log(questions);
-    await api_persona_save_intent_evaluation(usecaseId, persona.id, intent_cat, questions);
+  const isQuestionValid = (question: Question) => {
+    // this function return true if the text isn't juste space or emty
+    // and if the type is valid, in certain case metric values must be longer than 0
+    // and also if the category is valid
+    // otherwise return false
 
-    setIsChangedQuestion(false);
-    message.success('Saved Evaluation Questionaire');
+    if (!question.text || question.text.trim() === '') {
+      return false;
+    }
+
+    if (!['Free-Text', 'Radio', 'Checkbox', 'Number', 'Likert'].includes(question.metric ?? '')) {
+      return false;
+    } else {
+      if (['Likert', 'Radio', 'Checkbox'].includes(question.metric ?? '')) {
+        if (!question.metric_values || question.metric_values.length === 0) {
+          return false;
+        }
+      }
+    }
+
+    if (
+      ![
+        'Goodness',
+        'Satisfaction',
+        'Mental Model',
+        'Curiosity',
+        'Trust',
+        'Performance',
+        'Custom',
+      ].includes(question.category ?? '')
+    ) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const isQuestionnaireValid = () => questions.every((question) => isQuestionValid(question));
+
+  async function saveQuestionnaire() {
+    // console log some text using css to style it
+    console.log('%c Saving.... ', 'font-size: 20px; color: orange;');
+
+    if (isQuestionnaireValid()) {
+      console.log('%c Valid ! ', 'font-size: 20px; color: green;');
+      setIsChangedQuestion(false);
+      await api_persona_save_intent_evaluation(usecaseId, persona.id, intent_cat, questions);
+      message.success('Saved Evaluation Questionnaire');
+    } else {
+      console.log('%c Invalid ! ', 'font-size: 20px; color: red;');
+
+      message.error('Invalid Evaluation Questionnaire');
+    }
   }
 
   return (
@@ -467,10 +501,14 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
                 Load Questions
               </Button>
               &nbsp;
+              <Button onClick={addQuestion} icon={<DownloadOutlined />} name="addQuestionButton">
+                New Question
+              </Button>
+              &nbsp;
               <Button
                 type="primary"
                 disabled={!isChangedQuestion}
-                onClick={() => saveQuestionnaire()}
+                onClick={saveQuestionnaire}
                 icon={<SaveOutlined />}
                 name="addQuestionButton"
               >
@@ -479,8 +517,10 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
             </div>
           }
         >
-          {questions.length != 0 ? (
+          {questions.length > 0 ? (
             <QuestionnaireEditor
+              noImport
+              noAdd
               defaultQuestions={questions}
               onChange={(newQuestions) => {
                 setQuestions(newQuestions);
@@ -488,52 +528,10 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
               }}
             />
           ) : (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Questions" />
+            <Empty description={'Please add a question'} />
           )}
         </Card>
       </Col>
-
-      {/* New Question Popup  */}
-      <Modal
-        title="Create new Question"
-        visible={isQuestionModalVisible}
-        key={'eval-modal-' + evaluation.id}
-        onCancel={handleCancelQ}
-        footer={[
-          <Button key="back" onClick={handleCancelQ}>
-            Cancel
-          </Button>,
-          <Button key="create" form={'eval-' + evaluation.id} htmlType="submit" type="primary">
-            Create
-          </Button>,
-        ]}
-      >
-        <Form
-          id={'eval-' + evaluation.id}
-          name={'eval-' + evaluation.id}
-          layout="vertical"
-          labelCol={{ span: 0 }}
-          // initialValues={{ remember: true }}
-          // onFinish=
-          onFinish={onFinish}
-          autoComplete="off"
-        >
-          <Form.Item
-            label="Questionnaire Category"
-            name="category"
-            tooltip="This is a required field"
-            rules={[{ required: true, message: 'Input is required!' }]}
-          >
-            <Select>
-              {DATA_FILEDS.QUESTION_CATEGORY.map((option) => (
-                <Select.Option key={option} value={option}>
-                  {option}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Form>
-      </Modal>
 
       {/* Load Question Popup  */}
       <Modal
@@ -545,7 +543,7 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
             Cancel
           </Button>,
           <Button form="createQuestion22" key="submitQ" htmlType="submit" type="primary">
-            Create
+            Load Questions
           </Button>,
         ]}
       >
@@ -556,27 +554,49 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
           labelCol={{ span: 0 }}
           onFinish={onFinish2}
           autoComplete="off"
+          onValuesChange={(changedValues) =>
+            changedValues?.questionnaire
+              ? setImportQuestionnaire(changedValues.questionnaire)
+              : null
+          }
         >
           <Form.Item
-            label="select questions"
-            name="questions"
+            label="select a questionnaire"
+            name="questionnaire"
             tooltip="This is a required field"
             rules={[{ required: true, message: 'Input is required!' }]}
           >
-            <Select mode="multiple">
+            <Select>
               {questionnaires.map((questionnaire) => (
-                <Select.OptGroup key={questionnaire.id} label={questionnaire.name}>
-                  {questionnaire.questions &&
-                    questionnaire.questions.map((q) => (
-                      <Select.Option key={q.id} value={q.id}>
-                        {' '}
-                        {q.text}{' '}
-                      </Select.Option>
-                    ))}
-                </Select.OptGroup>
+                <Select.Option key={questionnaire.id} value={questionnaire.id}>
+                  {questionnaire.name}
+                </Select.Option>
               ))}
             </Select>
           </Form.Item>
+          {importQuestionnaire && (
+            <Form.Item
+              label="select questions"
+              name="questions"
+              tooltip="This is a required field"
+              rules={[{ required: true, message: 'Input is required!' }]}
+            >
+              <Checkbox.Group
+                options={
+                  questionnaires
+                    .filter((q) => q.id == importQuestionnaire)[0]
+                    ?.questions?.map((q) => ({
+                      label: (
+                        <>
+                          {questionTypeToIcon[q.metric ?? '']} {q.text ?? ''}
+                        </>
+                      ),
+                      value: q.id ?? '',
+                    })) || []
+                }
+              />
+            </Form.Item>
+          )}
         </Form>
       </Modal>
     </Row>

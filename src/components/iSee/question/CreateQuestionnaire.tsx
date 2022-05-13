@@ -1,15 +1,17 @@
 import React, { useState, useCallback, Suspense } from 'react';
-import { Form, Input, Select, Button, Card } from 'antd';
+import { Form, Input, Select, Button, Empty, Card } from 'antd';
 import type { Questionnaire } from '@/models/questionnaire';
 import DATA_FILEDS from '@/models/common';
 const { Option } = Select;
+
+import { PlusOutlined } from '@ant-design/icons';
 
 const QuestionnaireEditor = React.lazy(
   () => import('@/components/iSee/question/toolkit/QuestionnaireEditor'),
 );
 
 const CreateQuestionnaire: React.FC<{ questionnaire: Questionnaire }> = (props) => {
-  const [questions, setQuestions] = useState(props.questionnaire.questions);
+  const [questions, setQuestions] = useState(props.questionnaire.questions || []);
   const [form, setForm] = useState(props.questionnaire);
   const [questionnaire, setQuestionnaire] = useState(form);
 
@@ -28,7 +30,10 @@ const CreateQuestionnaire: React.FC<{ questionnaire: Questionnaire }> = (props) 
 
   const handleSubmit = (values: Questionnaire) => {
     setQuestionnaire({ ...values, questions });
-    // register changes
+  };
+
+  const addQuestion = () => {
+    setQuestions([{}, ...questions]);
   };
 
   return (
@@ -65,14 +70,36 @@ const CreateQuestionnaire: React.FC<{ questionnaire: Questionnaire }> = (props) 
           </Select>
         </Form.Item>
       </Form>
-      <Card size="small" title={'Questions'}>
-        <Suspense fallback={<div>Loading...</div>}>
-          <QuestionnaireEditor
-            defaultQuestions={questionnaire.questions}
-            onChange={handleQuestionnaireChange}
-            noCategory
-          />
-        </Suspense>
+      <Card
+        size="small"
+        title={'Questions'}
+        extra={
+          <Button
+            className="dynamic-delete-button"
+            size="small"
+            type="primary"
+            ghost
+            onClick={addQuestion}
+            icon={<PlusOutlined />}
+            name="addQuestionButton"
+          >
+            Add
+          </Button>
+        }
+      >
+        {questions.length > 0 ? (
+          <Suspense fallback={<div>Loading...</div>}>
+            <QuestionnaireEditor
+              noAdd
+              noImport
+              defaultQuestions={questions}
+              onChange={handleQuestionnaireChange}
+              noCategory
+            />
+          </Suspense>
+        ) : (
+          <Empty description={'Please add a question!'} />
+        )}
       </Card>
       <Button
         type="primary"

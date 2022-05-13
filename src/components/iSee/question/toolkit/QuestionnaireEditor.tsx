@@ -18,7 +18,9 @@ const QuestionnaireEditor: React.FC<{
   defaultQuestions?: Question[];
   onChange: (question: Question[]) => void;
   noCategory?: boolean;
-}> = ({ defaultQuestions, onChange, noCategory = false }) => {
+  noImport?: boolean;
+  noAdd?: boolean;
+}> = ({ defaultQuestions, onChange, noCategory = false, noImport = false, noAdd = false }) => {
   const [modal, setModal] = useState({ visibility: false });
   const [importJson, setImportJson] = useState('');
   const [questions, handleStartDrag, handleDrag, handleStopDrag, setQuestions] = useDrag<Question>(
@@ -26,6 +28,14 @@ const QuestionnaireEditor: React.FC<{
     'question-container',
     'page-question-container',
   );
+
+  useEffect(() => {
+    setQuestions(defaultQuestions || []);
+  }, [defaultQuestions, setQuestions]);
+
+  useEffect(() => {
+    if (!(JSON.stringify(defaultQuestions) === JSON.stringify(questions))) onChange(questions);
+  }, [questions]);
 
   const handleOk = () => {
     try {
@@ -53,10 +63,6 @@ const QuestionnaireEditor: React.FC<{
     }
     setModal({ ...modal, visibility: false });
   };
-
-  useEffect(() => {
-    if (onChange) onChange(questions);
-  }, [questions, onChange]);
 
   const nextId = () => `q-${uuidv4()}`;
 
@@ -114,13 +120,12 @@ const QuestionnaireEditor: React.FC<{
             onStop={handleStopDrag}
             handle={'.question-holder'}
           >
-            <div className="question-container" drag-index={idx}>
+            <div className={'question-container'} drag-index={idx}>
               <div className="question-holder">
                 <HolderOutlined />
               </div>
               <QuestionForm
                 noCategory={noCategory}
-                key={question.id}
                 question={question}
                 onChange={handleQuestionChange}
                 onDuplication={handleDuplication}
@@ -131,15 +136,17 @@ const QuestionnaireEditor: React.FC<{
         ))}
         <span className="space-4" />
       </div>
-      <Button
-        size="large"
-        icon={<PlusCircleOutlined />}
-        onClick={handleAddbutton}
-        className="add-question-button"
-      >
-        Add a question
-      </Button>
-      {questions.length === 0 && (
+      {!noAdd && (
+        <Button
+          size="large"
+          icon={<PlusCircleOutlined />}
+          onClick={handleAddbutton}
+          className="add-question-button"
+        >
+          Add a question
+        </Button>
+      )}
+      {!noImport && questions.length === 0 && (
         <Button
           size="large"
           icon={<ImportOutlined />}

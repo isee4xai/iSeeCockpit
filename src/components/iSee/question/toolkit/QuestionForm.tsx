@@ -138,14 +138,20 @@ const QuestionForm: React.FC<{
         </div>
         <div className="Questionanire-dynamic-body">
           {state.metric === 'Free-Text' ? null : state.metric === 'Number' ? (
-            <>
-              <Form.Item name={['validators', 'min']}>
+            <div>
+              <Form.Item
+                name={['validators', 'min']}
+                style={{ display: 'inline-block', padding: '0 1rem 0 0' }}
+              >
                 <InputNumber placeholder={'min'} />
               </Form.Item>
-              <Form.Item name={['validators', 'max']}>
+              <Form.Item
+                name={['validators', 'max']}
+                style={{ display: 'inline-block', padding: '0 1rem 0 0' }}
+              >
                 <InputNumber placeholder={'max'} />
               </Form.Item>
-            </>
+            </div>
           ) : state.metric === 'Radio' ? (
             <RadioInput
               onChange={handleOptionChange}
