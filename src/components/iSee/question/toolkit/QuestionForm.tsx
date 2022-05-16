@@ -140,12 +140,14 @@ const QuestionForm: React.FC<{
           {state.metric === 'Free-Text' ? null : state.metric === 'Number' ? (
             <div>
               <Form.Item
+                initialValue={state.validators?.min}
                 name={['validators', 'min']}
                 style={{ display: 'inline-block', padding: '0 1rem 0 0' }}
               >
                 <InputNumber placeholder={'min'} />
               </Form.Item>
               <Form.Item
+                initialValue={state.validators?.max}
                 name={['validators', 'max']}
                 style={{ display: 'inline-block', padding: '0 1rem 0 0' }}
               >

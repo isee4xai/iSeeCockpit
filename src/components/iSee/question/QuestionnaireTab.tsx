@@ -7,14 +7,15 @@ import {
   FieldNumberOutlined,
   CheckSquareOutlined,
 } from '@ant-design/icons';
-import { Form, Button, Card, Col, Row, Empty, Select, message, Checkbox } from 'antd';
+import { Form, Button, Card, Col, Row, Empty, Select, message, Checkbox, notification } from 'antd';
 import type { Question, Questionnaire } from '@/models/questionnaire';
 import QuestionnaireEditor from '@/components/iSee/question/toolkit/QuestionnaireEditor';
 import Modal from 'antd/lib/modal/Modal';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import type { Persona } from '@/models/persona';
 import { api_persona_save_intent_evaluation } from '@/services/isee/usecases';
 import { v4 as uuidv4 } from 'uuid';
+
 const questionnaires: Questionnaire[] = [
   {
     name: 'Explanation Satisfaction Scale (Hoffman)',
@@ -403,6 +404,7 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
     else setIsChangedQuestion(false);
 
     const questionList: Question[] =
+      // collect questions based on the id from pre-existing questionnaires
       questionnaires
         .filter((q) => q.id == values.questionnaire)[0]
         ?.questions?.filter((q) => values.questions.includes(q.id))
@@ -431,21 +433,18 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
   };
 
   const isQuestionValid = (question: Question) => {
-    // this function return true if the text isn't juste space or emty
-    // and if the type is valid, in certain case metric values must be longer than 0
-    // and also if the category is valid
-    // otherwise return false
+    const error = [];
 
     if (!question.text || question.text.trim() === '') {
-      return false;
+      error.push('Question Text is required');
     }
 
     if (!['Free-Text', 'Radio', 'Checkbox', 'Number', 'Likert'].includes(question.metric ?? '')) {
-      return false;
+      error.push('Metric is required');
     } else {
       if (['Likert', 'Radio', 'Checkbox'].includes(question.metric ?? '')) {
         if (!question.metric_values || question.metric_values.length === 0) {
-          return false;
+          error.push('Metric Values are required for type ' + question.metric + ' questions');
         }
       }
     }
@@ -461,27 +460,51 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
         'Custom',
       ].includes(question.category ?? '')
     ) {
-      return false;
+      error.push('A category is required');
     }
 
-    return true;
+    return error;
   };
 
-  const isQuestionnaireValid = () => questions.every((question) => isQuestionValid(question));
-
   async function saveQuestionnaire() {
-    // console log some text using css to style it
     console.log('%c Saving.... ', 'font-size: 20px; color: orange;');
+    const errors = questions.map((q) => isQuestionValid(q));
+    setIsChangedQuestion(false);
 
-    if (isQuestionnaireValid()) {
+    if (errors.reduce((prev, curr) => [...prev, ...curr], []).length === 0) {
       console.log('%c Valid ! ', 'font-size: 20px; color: green;');
-      setIsChangedQuestion(false);
       await api_persona_save_intent_evaluation(usecaseId, persona.id, intent_cat, questions);
-      message.success('Saved Evaluation Questionnaire');
+      notification.success({
+        message: 'Saved Evaluation Questionnaire',
+        placement: 'top',
+        duration: 3,
+      });
     } else {
-      console.log('%c Invalid ! ', 'font-size: 20px; color: red;');
+      notification.warning({
+        message: `Invalid Questionnaire`,
+        description: (
+          <div>
+            <p>Please fix the following errors before saving:</p>
+            {errors.map((e, i) => (
+              <React.Fragment key={i}>
+                <b> Questions {i + 1}</b>
+                <br />
+                {e.map((err, j) => (
+                  <React.Fragment key={j}>
+                    <span style={{ marginLeft: '1rem' }}>{err}</span>
+                    <br />
+                  </React.Fragment>
+                ))}
+                <br />
+              </React.Fragment>
+            ))}
+          </div>
+        ),
+        placement: 'top',
+        duration: Math.min(3, errors.length * 2),
+      });
 
-      message.error('Invalid Evaluation Questionnaire');
+      console.table(errors);
     }
   }
 
