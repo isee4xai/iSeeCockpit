@@ -124,6 +124,7 @@ const QuestionnaireEditor: React.FC<{
               <div className="question-holder">
                 <HolderOutlined />
               </div>
+              {console.log(question)}
               <QuestionForm
                 noCategory={noCategory}
                 question={question}

@@ -7,11 +7,11 @@ export interface Questionnaire {
 
 export interface Question {
   id?: string;
-  text?: string;
-  metric?: string;
-  category?: string;
-  answer?: string | object;
-  metric_values?: {
+  content?: string;
+  responseType?: string;
+  dimension?: string;
+  answer?: string[];
+  responseOptions?: {
     val: string;
   }[];
   required?: boolean;

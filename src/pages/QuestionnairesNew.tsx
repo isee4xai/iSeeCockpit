@@ -51,11 +51,12 @@ const CreateQuestionnaires: React.FC = () => {
   };
 
   const isQuestionValid = (question: Question) => {
-    if (!question.id || !question.text || !question.metric || !question.category) return false;
-    if (question.text.trim() === '') return false;
+    if (!question.id || !question.content || !question.responseType || !question.responseType)
+      return false;
+    if (question.content.trim() === '') return false;
 
-    if (['Likert', 'Radio', 'Checkbox'].includes(question.metric)) {
-      if (!question.metric_values || question.metric_values.length === 0) return false;
+    if (['Likert', 'Radio', 'Checkbox'].includes(question.responseType)) {
+      if (!question.responseOptions || question.responseOptions.length === 0) return false;
     }
 
     return true;

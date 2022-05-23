@@ -37,7 +37,7 @@ const QuestionForm: React.FC<{
   const handleOptionChange = useCallback((options: string[]) => {
     setState((old) => ({
       ...old,
-      metric_values: options.map((opt) => ({ val: opt })),
+      responseOptions: options.map((opt) => ({ val: opt })),
     }));
   }, []);
 
@@ -50,11 +50,11 @@ const QuestionForm: React.FC<{
   };
 
   return (
-    <Form className={`QuestionForm-container ${state.metric}`} onValuesChange={onFormChange}>
+    <Form className={`QuestionForm-container ${state.responseType}`} onValuesChange={onFormChange}>
       <Form.Item
         className="QuestionForm-header"
-        name="text"
-        initialValue={state.text}
+        name="content"
+        initialValue={state.content}
         rules={[
           {
             required: true,
@@ -73,8 +73,8 @@ const QuestionForm: React.FC<{
         <div className="Questionnaire-top-body">
           {!noCategory && (
             <Form.Item
-              initialValue={state.category}
-              name={'category'}
+              initialValue={state.dimension}
+              name={'dimension'}
               rules={[
                 {
                   required: true,
@@ -108,8 +108,8 @@ const QuestionForm: React.FC<{
             </Form.Item>
           )}
           <Form.Item
-            initialValue={state.metric}
-            name={'metric'}
+            initialValue={state.responseType}
+            name={'responseType'}
             rules={[
               {
                 required: true,
@@ -137,7 +137,7 @@ const QuestionForm: React.FC<{
           </Form.Item>
         </div>
         <div className="Questionanire-dynamic-body">
-          {state.metric === 'Free-Text' ? null : state.metric === 'Number' ? (
+          {state.responseType === 'Free-Text' ? null : state.responseType === 'Number' ? (
             <div>
               <Form.Item
                 initialValue={state.validators?.min}
@@ -154,20 +154,20 @@ const QuestionForm: React.FC<{
                 <InputNumber placeholder={'max'} />
               </Form.Item>
             </div>
-          ) : state.metric === 'Radio' ? (
+          ) : state.responseType === 'Radio' ? (
             <RadioInput
               onChange={handleOptionChange}
-              options={question?.metric_values?.map((opt) => opt.val)}
+              options={question?.responseOptions?.map((opt) => opt.val)}
             />
-          ) : state.metric === 'Checkbox' ? (
+          ) : state.responseType === 'Checkbox' ? (
             <CheckboxInput
               onChange={handleOptionChange}
-              options={question?.metric_values?.map((opt) => opt.val)}
+              options={question?.responseOptions?.map((opt) => opt.val)}
             />
-          ) : state.metric === 'Likert' ? (
+          ) : state.responseType === 'Likert' ? (
             <LikertInput
               onChange={handleOptionChange}
-              options={question?.metric_values?.map((opt) => opt.val)}
+              options={question?.responseOptions?.map((opt) => opt.val)}
             />
           ) : (
             <Empty description={'Please, choose a question type !'} />

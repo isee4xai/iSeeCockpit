@@ -47,6 +47,7 @@ const CreateQuestionnaire: React.FC<{ questionnaire: Questionnaire }> = (props) 
         onFinish={handleSubmit}
         form={formAntd}
       >
+        {console.log({ questionnaire })}
         <Form.Item
           label="Questionnaire Name"
           name="name"
@@ -57,7 +58,7 @@ const CreateQuestionnaire: React.FC<{ questionnaire: Questionnaire }> = (props) 
 
         <Form.Item
           label="Questionnaire Category"
-          name="category"
+          name="dimension"
           tooltip="This is a required field"
           rules={[{ required: true, message: 'Input is required!' }]}
         >
