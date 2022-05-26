@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import {
   DownloadOutlined,
   SaveOutlined,
@@ -426,7 +427,7 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
         ?.map((q) => ({
           ...q,
           id: 'q-' + uuidv4(),
-          category: questionnaires.filter((qs) => qs.id == values.questionnaire)[0].category,
+          dimension: questionnaires.filter((qs) => qs.id == values.questionnaire)[0].category,
         })) || [];
 
     handleOkQ2();
@@ -434,7 +435,7 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
     setQuestions([...questions, ...questionList]);
     updateQuestions([...questions, ...questionList]);
 
-    message.success('Succesfully Added Question');
+    message.success({ content: 'Succesfully Added Question', duration: 2 });
   };
 
   const addQuestion = () => {
@@ -448,7 +449,7 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
     setQuestions(append);
     updateQuestions(append);
 
-    message.success('Succesfully Added Question');
+    message.success({ content: 'Succesfully Added Question', duration: 2 });
   };
 
   const isQuestionValid = (question: Question) => {

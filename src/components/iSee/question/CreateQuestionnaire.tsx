@@ -47,7 +47,6 @@ const CreateQuestionnaire: React.FC<{ questionnaire: Questionnaire }> = (props) 
         onFinish={handleSubmit}
         form={formAntd}
       >
-        {console.log({ questionnaire })}
         <Form.Item
           label="Questionnaire Name"
           name="name"

@@ -1,6 +1,17 @@
 import './QuestionForm.less';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Switch, Input, Select, Empty, InputNumber, Form, Popconfirm } from 'antd';
+import {
+  Switch,
+  Input,
+  Select,
+  Empty,
+  InputNumber,
+  Form,
+  Popconfirm,
+  Divider,
+  Space,
+  Typography,
+} from 'antd';
 import CheckboxInput from './CheckboxInput';
 import LikertInput from './LikertInput';
 import RadioInput from './RadioInput';
@@ -15,6 +26,7 @@ import {
   CloseOutlined,
   CheckSquareOutlined,
   SettingOutlined,
+  PlusOutlined,
   RadarChartOutlined,
   DashboardOutlined,
   ThunderboltOutlined,
@@ -33,6 +45,8 @@ const QuestionForm: React.FC<{
   noCategory?: boolean;
 }> = ({ question, onChange, onDuplication, onDelete, noCategory = false }) => {
   const [state, setState] = useState<Question>({ ...question });
+  const [name, setName] = useState('');
+  const [content, setContent] = useState(state.content);
 
   const handleOptionChange = useCallback((options: string[]) => {
     setState((old) => ({
@@ -40,6 +54,18 @@ const QuestionForm: React.FC<{
       responseOptions: options.map((opt) => ({ val: opt })),
     }));
   }, []);
+
+  const handleNameChange = (event: any) => {
+    setName(event.target.value);
+  };
+
+  const addItem = (e: any) => {
+    e.preventDefault();
+    if (name && name.trim().length > 0) {
+      setState({ ...state, dimension: name });
+      setName('');
+    }
+  };
 
   useEffect(() => {
     if (onChange) onChange(state);
@@ -51,24 +77,16 @@ const QuestionForm: React.FC<{
 
   return (
     <Form className={`QuestionForm-container ${state.responseType}`} onValuesChange={onFormChange}>
-      <Form.Item
-        className="QuestionForm-header"
-        name="content"
-        initialValue={state.content}
-        rules={[
-          {
-            required: true,
-            message: 'Please input your question!',
-          },
-        ]}
-      >
-        <Input
-          allowClear
-          size="large"
-          placeholder="Enter the question"
-          addonBefore={<QuestionOutlined />}
-        />
-      </Form.Item>
+      <Input
+        style={{ margin: '1rem', width: 'calc(100% - 2rem)' }}
+        defaultValue={content}
+        allowClear
+        size="large"
+        placeholder="Enter the question"
+        onChange={(e: any) => setContent(e.target.value)}
+        onBlur={(e: any) => setState({ ...state, content: e.target.value })}
+        addonBefore={<QuestionOutlined />}
+      />
       <div className="Questionnaire-body">
         <div className="Questionnaire-top-body">
           {!noCategory && (
@@ -82,7 +100,39 @@ const QuestionForm: React.FC<{
                 },
               ]}
             >
-              <Select placeholder="Choose a category">
+              <Select
+                placeholder="Choose a category"
+                dropdownRender={(menu) => (
+                  <>
+                    {menu}
+                    <Divider
+                      style={{
+                        margin: '8px 0',
+                      }}
+                    />
+                    <Space
+                      align="center"
+                      style={{
+                        padding: '0 8px 4px',
+                      }}
+                    >
+                      <Input
+                        placeholder="Define the custom category"
+                        value={name}
+                        onChange={handleNameChange}
+                      />
+                      <Typography.Link
+                        onClick={addItem}
+                        style={{
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        <PlusOutlined /> Update
+                      </Typography.Link>
+                    </Space>
+                  </>
+                )}
+              >
                 <Select.Option value="Goodness">
                   <LikeOutlined className="selectIcon" /> - Goodness
                 </Select.Option>
@@ -101,8 +151,35 @@ const QuestionForm: React.FC<{
                 <Select.Option value="Performance">
                   <ThunderboltOutlined className="selectIcon" /> - Performance
                 </Select.Option>
-                <Select.Option value="Custom">
-                  <SettingOutlined className="selectIcon" /> - Custom
+                <Select.Option
+                  value={
+                    state.dimension &&
+                    ![
+                      'Goodness',
+                      'Satisfaction',
+                      'Mental Model',
+                      'Curiosity',
+                      'Trust',
+                      'Performance',
+                    ].includes(state.dimension) &&
+                    state.dimension.trim()
+                      ? state.dimension
+                      : 'Custom'
+                  }
+                >
+                  <SettingOutlined className="selectIcon" /> -{' '}
+                  {state.dimension &&
+                  ![
+                    'Goodness',
+                    'Satisfaction',
+                    'Mental Model',
+                    'Curiosity',
+                    'Trust',
+                    'Performance',
+                  ].includes(state.dimension) &&
+                  state.dimension.trim()
+                    ? state.dimension
+                    : 'Custom'}
                 </Select.Option>
               </Select>
             </Form.Item>

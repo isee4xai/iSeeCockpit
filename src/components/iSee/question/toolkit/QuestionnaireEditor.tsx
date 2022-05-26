@@ -35,6 +35,7 @@ const QuestionnaireEditor: React.FC<{
 
   useEffect(() => {
     if (!(JSON.stringify(defaultQuestions) === JSON.stringify(questions))) onChange(questions);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questions]);
 
   const handleOk = () => {
@@ -124,7 +125,6 @@ const QuestionnaireEditor: React.FC<{
               <div className="question-holder">
                 <HolderOutlined />
               </div>
-              {console.log(question)}
               <QuestionForm
                 noCategory={noCategory}
                 question={question}
