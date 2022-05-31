@@ -33,7 +33,7 @@ const CreateQuestionnaire: React.FC<{ questionnaire: Questionnaire }> = (props) 
   };
 
   const addQuestion = () => {
-    setQuestions([{}, ...questions]);
+    setQuestions([{ responseOptions: [{ val: 'Option 1' }, { val: 'Option 2' }] }, ...questions]);
   };
 
   return (

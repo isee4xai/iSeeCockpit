@@ -441,6 +441,7 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
   const addQuestion = () => {
     const blank_obj: Question = {
       id: 'q-' + uuidv4(),
+      responseOptions: [{ val: 'Option 1' }, { val: 'Option 2' }],
     };
 
     const append = [blank_obj, ...questions];

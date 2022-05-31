@@ -68,7 +68,15 @@ const QuestionnaireEditor: React.FC<{
   const nextId = () => `q-${uuidv4()}`;
 
   const handleAddbutton = () => {
-    setQuestions([...questions, { id: nextId() }]);
+    setQuestions([
+      ...questions,
+      {
+        id: nextId(),
+        responseOptions: [{ val: 'option 1' }, { val: 'option 2' }],
+        dimension: '',
+        content: '',
+      },
+    ]);
   };
 
   const handleQuestionChange = useCallback(

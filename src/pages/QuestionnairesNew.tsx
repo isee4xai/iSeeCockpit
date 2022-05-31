@@ -4,11 +4,15 @@ import { Modal, Button, Alert, notification } from 'antd';
 import { CopyOutlined, ExportOutlined } from '@ant-design/icons';
 import { useState, useCallback } from 'react';
 
+// import { api_test } from '@/services/isee/database';
+
 import type { Question } from '@/models/questionnaire';
 
 const CreateQuestionnaires: React.FC = () => {
   const [modal, setModal] = useState({ visibility: false, type: 'export' });
   const [questions, setQuestions] = useState<Question[]>([]);
+
+  // api_test()
 
   const handleExportButton = () => {
     setModal({ visibility: true, type: 'export' });

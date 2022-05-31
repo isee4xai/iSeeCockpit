@@ -37,7 +37,7 @@ const RadioInput: React.FC<{
 
   useEffect(() => {
     onChange(optionsList);
-  }, [onChange, optionsList]);
+  }, [optionsList]);
 
   return (
     <>
