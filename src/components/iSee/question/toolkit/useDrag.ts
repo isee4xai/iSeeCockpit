@@ -5,13 +5,19 @@ const useDrag: <Type>(
   baseOptions: Type[],
   containerClass?: string,
   parentClass?: string,
+  offset?: string,
 ) => [
   Type[],
   (dragEvent: any) => void,
   (dragEvent: any) => void,
   (dragEvent: any) => void,
   (options: Type[] | ((old: Type[]) => Type[])) => void,
-] = <Type>(baseOptions: Type[], containerClass = 'container', parentClass = 'option-group') => {
+] = <Type>(
+  baseOptions: Type[],
+  containerClass = 'container',
+  parentClass = 'option-group',
+  offset = '0px',
+) => {
   const [handle, setHandle] = useState<HTMLElement>();
   const [options, setOptions] = useState<Type[]>(baseOptions);
   let initialY: number;
@@ -54,11 +60,11 @@ const useDrag: <Type>(
       (element as HTMLElement).style.transition = '.3s';
       let translation = '0';
 
-      if (elementBounding.top < handlePosition.top && elementDragIndex > handleIndex) {
+      if (handlePosition.bottom > elementBounding.bottom && elementDragIndex > handleIndex) {
         // translation = -100;
-        translation = `calc(${handlePosition.top - handlePosition.bottom}px)`;
+        translation = `calc(${handlePosition.top - handlePosition.bottom}px - ${offset})`;
       } else if (elementBounding.top > handlePosition.top && elementDragIndex < handleIndex) {
-        translation = `calc(${-(handlePosition.top - handlePosition.bottom)}px)`;
+        translation = `calc(${-(handlePosition.top - handlePosition.bottom)}px + ${offset})`;
       }
       (element as HTMLElement).style.transform = `translate(0, ${translation})`;
     });

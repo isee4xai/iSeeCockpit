@@ -477,17 +477,7 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
         }
       }
     }
-    if (
-      ![
-        'Goodness',
-        'Satisfaction',
-        'Mental Model',
-        'Curiosity',
-        'Trust',
-        'Performance',
-        'Custom',
-      ].includes(question.dimension ?? '')
-    ) {
+    if (!question.dimension || question.dimension.trim() == '') {
       error.push('A category is required');
     }
 

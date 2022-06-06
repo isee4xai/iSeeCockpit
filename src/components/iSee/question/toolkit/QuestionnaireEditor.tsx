@@ -27,6 +27,7 @@ const QuestionnaireEditor: React.FC<{
     defaultQuestions || [],
     'question-container',
     'page-question-container',
+    '1.5rem',
   );
 
   useEffect(() => {

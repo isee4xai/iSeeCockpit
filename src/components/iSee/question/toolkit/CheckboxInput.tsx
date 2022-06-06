@@ -1,4 +1,4 @@
-import './CheckboxInput.less';
+import './InputForm.less';
 import { useEffect, useState } from 'react';
 import { Checkbox, Space, Input } from 'antd';
 import { PlusSquareOutlined, HolderOutlined } from '@ant-design/icons';
@@ -47,7 +47,7 @@ const CheckboxInput: React.FC<{
             <Draggable
               axis="y"
               position={{ x: 0, y: 0 }}
-              bounds={{ top: -5 - 38 * idx, bottom: 5 + (tab.length - idx - 1) * 38 }}
+              bounds={{ top: -5 - 30 * idx, bottom: 5 + (tab.length - idx - 1) * 30 }}
               key={`${idx}-${option}`}
               onStart={handleStartDrag}
               onStop={handleStopDrag}
@@ -55,10 +55,10 @@ const CheckboxInput: React.FC<{
                 setEdit(-1);
                 handleDrag(event);
               }}
-              handle={'.checkbox-holder'}
+              handle={'.input-holder'}
             >
               <div className="container" drag-index={idx}>
-                <HolderOutlined className="checkbox-holder" />
+                <HolderOutlined className="input-holder" />
                 <Checkbox className="checkbox-item" value={option} onClick={() => handleEdit(idx)}>
                   {edit === idx ? (
                     <Input
@@ -76,7 +76,7 @@ const CheckboxInput: React.FC<{
           ))}
         </Space>
       </Checkbox.Group>
-      <div className="CheckboxForm-Add" onClick={handleAdd}>
+      <div className="InputForm-Add" onClick={handleAdd}>
         <PlusSquareOutlined style={{ color: '#BFBFBF', fontSize: 16 }} />
         {add ? (
           <Input

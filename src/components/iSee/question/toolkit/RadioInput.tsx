@@ -1,4 +1,4 @@
-import './RadioInput.less';
+import './InputForm.less';
 import { useEffect, useState } from 'react';
 import { Radio, Space, Input } from 'antd';
 import { PlusCircleOutlined, HolderOutlined } from '@ant-design/icons';
@@ -47,7 +47,7 @@ const RadioInput: React.FC<{
             <Draggable
               position={{ x: 0, y: 0 }}
               axis="y"
-              bounds={{ top: -5 - 38 * idx, bottom: 5 + (tab.length - idx - 1) * 38 }} // bound to the parent would be better
+              bounds={{ top: -5 - 30 * idx, bottom: 5 + (tab.length - idx - 1) * 30 }} // bound to the parent would be better
               key={`${idx}-${option}`}
               onStart={handleStartDrag}
               onStop={handleStopDrag}
@@ -55,10 +55,10 @@ const RadioInput: React.FC<{
                 setEdit(-1);
                 handleDrag(event);
               }}
-              handle={'.likert-holder'}
+              handle={'.input-holder'}
             >
               <div className="container" drag-index={idx}>
-                <HolderOutlined className="likert-holder" />
+                <HolderOutlined className="input-holder" />
                 <Radio className="radio-item" value={option} onClick={() => handleEdit(idx)}>
                   {edit === idx ? (
                     <Input
@@ -76,7 +76,7 @@ const RadioInput: React.FC<{
           ))}
         </Space>
       </Radio.Group>
-      <div className="RadioForm-Add" onClick={handleAdd}>
+      <div className="InputForm-Add" onClick={handleAdd}>
         <PlusCircleOutlined style={{ color: '#BFBFBF', fontSize: 16 }} />
         {add ? (
           <Input
