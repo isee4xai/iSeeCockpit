@@ -34,8 +34,25 @@ const QuestionnaireEditor: React.FC<{
     setQuestions(defaultQuestions || []);
   }, [defaultQuestions, setQuestions]);
 
+  const removeAttr = (list: Question[], attr: string) => {
+    return list.map((elmnt: Question) => {
+      delete elmnt[attr];
+      Object.keys(elmnt).map((subElment) =>
+        elmnt[subElment] instanceof Array ? removeAttr(elmnt[subElment], attr) : subElment,
+      );
+      return elmnt;
+    });
+  };
+
   useEffect(() => {
-    if (!(JSON.stringify(defaultQuestions) === JSON.stringify(questions))) onChange(questions);
+    if (
+      !(
+        defaultQuestions &&
+        JSON.stringify(removeAttr([...defaultQuestions], '_id')) ===
+          JSON.stringify(removeAttr([...questions], '_id'))
+      )
+    )
+      onChange(questions);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questions]);
 

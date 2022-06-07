@@ -564,7 +564,7 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
           {questions.length > 0 ? (
             <QuestionnaireEditor
               noImport
-              noAdd
+              // noAdd
               defaultQuestions={questions}
               onChange={(newQuestions) => {
                 setQuestions(newQuestions);

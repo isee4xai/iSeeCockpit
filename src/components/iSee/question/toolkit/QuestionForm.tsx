@@ -72,6 +72,7 @@ const QuestionForm: React.FC<{
   }, [state, onChange]);
 
   const onFormChange = (values: any, allValues: any) => {
+    console.log(allValues);
     setState({ ...state, ...allValues });
   };
 

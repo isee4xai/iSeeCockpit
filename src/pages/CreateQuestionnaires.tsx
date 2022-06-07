@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import {
   Button,
@@ -16,20 +16,23 @@ import {
 } from 'antd';
 import {
   MinusCircleOutlined,
-  DownloadOutlined,
+  ExportOutlined,
   CopyOutlined,
   PlusOutlined,
   SettingOutlined,
 } from '@ant-design/icons';
-const { Panel } = Collapse;
-import CreateQuestionnaire from '@/components/iSee/question/CreateQuestionnaire';
 import DATA_FILEDS from '@/models/common';
+import CreateQuestionnaire from '@/components/iSee/question/CreateQuestionnaire';
+const { Panel } = Collapse;
+const { Option } = Select;
+
+import type { Questionnaire } from '@/models/questionnaire';
+import { api_get_all, api_create, api_delete } from '@/services/isee/questionnaires';
 
 const CreateQuestionnaires: React.FC = () => {
-  const { Option } = Select;
-
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modal, setModal] = useState({ visibility: false, idx: -1 });
+  const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -44,363 +47,38 @@ const CreateQuestionnaires: React.FC = () => {
     setIsModalVisible(false);
   };
 
-  const [questionnaires, setQuestionnaires] = useState([
-    {
-      name: 'Explanation Satisfaction Scale (Hoffman)',
-      dimension: 'Satisfaction',
-      id: 'q-1',
-      questions: [
-        {
-          content: 'From the explanation, I understand how the AI model works.',
-          responseType: 'Likert',
-          responseOptions: [
-            { val: 'I agree strongly' },
-            { val: 'I agree somewhat' },
-            { val: "I'm neutral about it" },
-            { val: 'I disagree somewhat' },
-            { val: 'I disagree strongly' },
-          ],
-          required: true,
-          id: 'q-1-1',
-        },
-        {
-          content: 'This explanation of how the AI model works is satisfying.',
-          responseType: 'Likert',
-          responseOptions: [
-            { val: 'I agree strongly' },
-            { val: 'I agree somewhat' },
-            { val: "I'm neutral about it" },
-            { val: 'I disagree somewhat' },
-            { val: 'I disagree strongly' },
-          ],
-          required: false,
-          id: 'q-1-2',
-        },
-        {
-          content: 'This explanation of how the AI model works has sufficient detail.',
-          responseType: 'Likert',
-          responseOptions: [
-            { val: 'I agree strongly' },
-            { val: 'I agree somewhat' },
-            { val: "I'm neutral about it" },
-            { val: 'I disagree somewhat' },
-            { val: 'I disagree strongly' },
-          ],
-          required: true,
-          id: 'q-1-3',
-        },
-        {
-          content: 'This explanation of how the AI model works seems complete.',
-          responseType: 'Likert',
-          responseOptions: [
-            { val: 'I agree strongly' },
-            { val: 'I agree somewhat' },
-            { val: "I'm neutral about it" },
-            { val: 'I disagree somewhat' },
-            { val: 'I disagree strongly' },
-          ],
-          required: false,
-          id: 'q-1-4',
-        },
-        {
-          content: 'This explanation of how the AI model works tells me how to use it',
-          responseType: 'Likert',
-          responseOptions: [
-            { val: 'I agree strongly' },
-            { val: 'I agree somewhat' },
-            { val: "I'm neutral about it" },
-            { val: 'I disagree somewhat' },
-            { val: 'I disagree strongly' },
-          ],
-          required: true,
-          id: 'q-1-5',
-        },
-        {
-          content: 'This explanation of how the AI model works is useful to my goals.',
-          responseType: 'Likert',
-          responseOptions: [
-            { val: 'I agree strongly' },
-            { val: 'I agree somewhat' },
-            { val: "I'm neutral about it" },
-            { val: 'I disagree somewhat' },
-            { val: 'I disagree strongly' },
-          ],
-          required: false,
-          id: 'q-1-6',
-        },
-        {
-          content:
-            'This explanation of the [software, algorithm, tool] shows me how accurate the AI model is.',
-          responseType: 'Likert',
-          responseOptions: [
-            { val: 'I agree strongly' },
-            { val: 'I agree somewhat' },
-            { val: "I'm neutral about it" },
-            { val: 'I disagree somewhat' },
-            { val: 'I disagree strongly' },
-          ],
-          required: false,
-          id: 'q-1-7',
-        },
-        {
-          content:
-            'This explanation lets me judge when I should trust and not trust the AI model. ',
-          responseType: 'Likert',
-          responseOptions: [
-            { val: 'I agree strongly' },
-            { val: 'I agree somewhat' },
-            { val: "I'm neutral about it" },
-            { val: 'I disagree somewhat' },
-            { val: 'I disagree strongly' },
-          ],
-          required: true,
-          id: 'q-1-8',
-        },
-      ],
-    },
-    {
-      name: 'Explanation Goodness Checklist (Hoffman)',
-      dimension: 'Goodness',
-      id: 'q-2',
-      questions: [
-        {
-          content: 'The explanation helps me understand how the AI model works.',
-          responseType: 'Radio',
-          responseOptions: [{ val: 'Yes' }, { val: 'No' }],
-          required: true,
-          id: 'q-2-1',
-        },
-        {
-          content: 'The explanation of how the AI model works is satisfying.',
-          responseType: 'Radio',
-          responseOptions: [{ val: 'Yes' }, { val: 'No' }],
-          required: true,
-          id: 'q-2-2',
-        },
-        {
-          content: 'The explanation of the AI model sufficiently detailed. ',
-          responseType: 'Radio',
-          responseOptions: [{ val: 'Yes' }, { val: 'No' }],
-          required: true,
-          id: 'q-2-3',
-        },
-        {
-          content: 'The explanation of how the AI model works is sufficiently complete.',
-          responseType: 'Radio',
-          responseOptions: [{ val: 'Yes' }, { val: 'No' }],
-          required: true,
-          id: 'q-2-4',
-        },
-        {
-          content:
-            'The explanation is actionable, that is, it helps me know how to use the AI M=model',
-          responseType: 'Radio',
-          responseOptions: [{ val: 'Yes' }, { val: 'No' }],
-          required: true,
-          id: 'q-2-5',
-        },
-        {
-          content: 'The explanation lets me know how accurate or reliable the AI model is.',
-          responseType: 'Radio',
-          responseOptions: [{ val: 'Yes' }, { val: 'No' }],
-          required: true,
-          id: 'q-2-6',
-        },
-        {
-          content: 'The explanation lets me know how trustworthy the AI model is.',
-          responseType: 'Radio',
-          responseOptions: [{ val: 'Yes' }, { val: 'No' }],
-          required: true,
-          id: 'q-2-7',
-        },
-      ],
-    },
-    {
-      name: 'Cahour-Forzy Trust Scale;',
-      dimension: 'Trust',
-      id: 'q-3',
-      questions: [
-        {
-          content: 'What is your confidence in the [tool]? Do you have a feeling of trust in it?',
-          responseType: 'Likert',
-          responseOptions: [
-            { val: '1 (I do not trust it at all.)' },
-            { val: '2' },
-            { val: '3' },
-            { val: '4' },
-            { val: '5' },
-            { val: '6' },
-            { val: '7 (I trust it completely)' },
-          ],
-          required: true,
-          id: 'q-3-1',
-        },
-        {
-          content: 'Are the actions of the [tool] predictable?',
-          responseType: 'Likert',
-          responseOptions: [
-            { val: '1 (I do not trust it at all.)' },
-            { val: '2' },
-            { val: '3' },
-            { val: '4' },
-            { val: '5' },
-            { val: '6' },
-            { val: '7 (I trust it completely)' },
-          ],
-          required: true,
-          id: 'q-3-2',
-        },
-        {
-          content: 'Is the [tool] reliable? Do you think it is safe?',
-          responseType: 'Likert',
-          responseOptions: [
-            { val: '1 (I do not trust it at all.)' },
-            { val: '2' },
-            { val: '3' },
-            { val: '4' },
-            { val: '5' },
-            { val: '6' },
-            { val: '7 (I trust it completely)' },
-          ],
-          required: true,
-          id: 'q-3-3',
-        },
-        {
-          content: 'Is the [tool] efficient at what it does?',
-          responseType: 'Likert',
-          responseOptions: [
-            { val: '1 (I do not trust it at all.)' },
-            { val: '2' },
-            { val: '3' },
-            { val: '4' },
-            { val: '5' },
-            { val: '6' },
-            { val: '7 (I trust it completely)' },
-          ],
-          required: true,
-          id: 'q-3-4',
-        },
-      ],
-    },
-    {
-      name: 'Trust Scale (Hoffman)',
-      dimension: 'Trust',
-      id: 'q-4',
-      questions: [
-        {
-          content: 'I am confident in the [tool]. I feel that it works well.',
-          responseType: 'Likert',
-          responseOptions: [
-            { val: 'I agree strongly' },
-            { val: 'I agree somewhat' },
-            { val: "I'm neutral about it" },
-            { val: 'I disagree somewhat' },
-            { val: 'I disagree strongly' },
-          ],
-          required: true,
-          id: 'q-4-1',
-        },
-        {
-          content: 'The outputs of the [tool] are very predictable.',
-          responseType: 'Likert',
-          responseOptions: [
-            { val: 'I agree strongly' },
-            { val: 'I agree somewhat' },
-            { val: "I'm neutral about it" },
-            { val: 'I disagree somewhat' },
-            { val: 'I disagree strongly' },
-          ],
-          required: true,
-          id: 'q-4-2',
-        },
-        {
-          content: 'I feel safe that when I rely on the [tool] I will get the right answers.',
-          responseType: 'Likert',
-          responseOptions: [
-            { val: 'I agree strongly' },
-            { val: 'I agree somewhat' },
-            { val: "I'm neutral about it" },
-            { val: 'I disagree somewhat' },
-            { val: 'I disagree strongly' },
-          ],
-          required: true,
-          id: 'q-4-3',
-        },
-        {
-          content: 'The [tool] is efficient in that it works very quickly.',
-          responseType: 'Likert',
-          responseOptions: [
-            { val: 'I agree strongly' },
-            { val: 'I agree somewhat' },
-            { val: "I'm neutral about it" },
-            { val: 'I disagree somewhat' },
-            { val: 'I disagree strongly' },
-          ],
-          required: true,
-          id: 'q-4-4',
-        },
-        {
-          content: 'I am wary of the [tool].',
-          responseType: 'Likert',
-          responseOptions: [
-            { val: 'I agree strongly' },
-            { val: 'I agree somewhat' },
-            { val: "I'm neutral about it" },
-            { val: 'I disagree somewhat' },
-            { val: 'I disagree strongly' },
-          ],
-          required: true,
-          id: 'q-4-5',
-        },
-        {
-          content: ' The [tool] can perform the task better than a novice human user.',
-          responseType: 'Likert',
-          responseOptions: [
-            { val: 'I agree strongly' },
-            { val: 'I agree somewhat' },
-            { val: "I'm neutral about it" },
-            { val: 'I disagree somewhat' },
-            { val: 'I disagree strongly' },
-          ],
-          required: true,
-          id: 'q-4-6',
-        },
-        {
-          content: 'I like using the system for decision making.',
-          responseType: 'Likert',
-          responseOptions: [
-            { val: 'I agree strongly' },
-            { val: 'I agree somewhat' },
-            { val: "I'm neutral about it" },
-            { val: 'I disagree somewhat' },
-            { val: 'I disagree strongly' },
-          ],
-          required: true,
-          id: 'q-4-7',
-        },
-      ],
-    },
-  ]);
-
   const onFinish = (values: any) => {
     values.questions = [];
-    setQuestionnaires([...questionnaires, values]);
-    console.log('Success:', values);
+
+    api_create(values)
+      .then((data) => {
+        setQuestionnaires([...questionnaires, data]);
+        message.success('Succesfully Added questionnaire');
+      })
+      .catch((error) => {
+        message.error(error.message);
+      });
+
     handleOk();
-    message.success('Succesfully Added Usecase');
   };
 
   const removeQuestionnaire = (values: any) => {
-    console.log('Success:', values);
-    setQuestionnaires(questionnaires.filter((item) => item.name !== values.name));
+    api_delete(values._id)
+      .then(() => {
+        setQuestionnaires(questionnaires.filter((item) => item.name !== values.name));
+        message.success('Succesfully deleted questionnaire');
+      })
+      .catch((error) => {
+        message.error(error.message);
+      });
   };
 
   const genExtra = (values: any) => (
     <div>
       <Button
-        ghost
         type="primary"
-        icon={<DownloadOutlined />}
+        icon={<ExportOutlined />}
+        ghost
         style={{ marginRight: '10px' }}
         onClick={() => {
           setModal({ visibility: true, idx: questionnaires.indexOf(values) });
@@ -412,7 +90,7 @@ const CreateQuestionnaires: React.FC = () => {
         okText="Yes"
         cancelText="No"
       >
-        <Button danger className="dynamic-delete-button" icon={<MinusCircleOutlined />} />
+        <Button danger type="primary" ghost icon={<MinusCircleOutlined />} />
       </Popconfirm>
     </div>
   );
@@ -441,6 +119,13 @@ const CreateQuestionnaires: React.FC = () => {
       },
     );
   };
+
+  useEffect(() => {
+    (async () => {
+      const data = await api_get_all();
+      setQuestionnaires(data);
+    })();
+  }, []);
 
   return (
     <PageContainer>
@@ -492,7 +177,6 @@ const CreateQuestionnaires: React.FC = () => {
       </Modal>
 
       <PageHeader
-        ghost={false}
         key="questionnaires_heading"
         title="Questionnaires"
         // subTitle="Displaying questionnaires"
@@ -517,7 +201,7 @@ const CreateQuestionnaires: React.FC = () => {
                     <SettingOutlined /> {questionnaire.name}
                   </div>
                 }
-                key={questionnaire.name}
+                key={questionnaire.name || 'no-name'}
                 extra={genExtra(questionnaire)}
               >
                 <Card>

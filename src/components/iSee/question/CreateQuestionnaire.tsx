@@ -1,8 +1,10 @@
 import React, { useState, useCallback, Suspense } from 'react';
-import { Form, Input, Select, Button, Empty, Card } from 'antd';
+import { Form, Input, Select, Button, Empty, Card, message } from 'antd';
 import type { Questionnaire } from '@/models/questionnaire';
 import DATA_FILEDS from '@/models/common';
 const { Option } = Select;
+import { v4 as uuidv4 } from 'uuid';
+import { api_update } from '@/services/isee/questionnaires';
 
 import { PlusOutlined } from '@ant-design/icons';
 
@@ -13,7 +15,7 @@ const QuestionnaireEditor = React.lazy(
 const CreateQuestionnaire: React.FC<{ questionnaire: Questionnaire }> = (props) => {
   const [questions, setQuestions] = useState(props.questionnaire.questions || []);
   const [form, setForm] = useState(props.questionnaire);
-  const [questionnaire, setQuestionnaire] = useState(form);
+  const [questionnaire] = useState(form);
 
   const [formAntd] = Form.useForm();
 
@@ -29,11 +31,21 @@ const CreateQuestionnaire: React.FC<{ questionnaire: Questionnaire }> = (props) 
   };
 
   const handleSubmit = (values: Questionnaire) => {
-    setQuestionnaire({ ...values, questions });
+    api_update({ ...values, questions, _id: questionnaire._id })
+      .then(() => {
+        message.success('Questionnaire saved');
+      })
+      .catch((error) => {
+        message.error(error.message);
+      });
   };
 
   const addQuestion = () => {
-    setQuestions([{ responseOptions: [{ val: 'Option 1' }, { val: 'Option 2' }] }, ...questions]);
+    const blank_obj = {
+      id: 'q-' + uuidv4(),
+      responseOptions: [{ val: 'Option 1' }, { val: 'Option 2' }],
+    };
+    setQuestions([blank_obj, ...questions]);
   };
 
   return (
@@ -75,10 +87,8 @@ const CreateQuestionnaire: React.FC<{ questionnaire: Questionnaire }> = (props) 
         title={'Questions'}
         extra={
           <Button
-            className="dynamic-delete-button"
             size="small"
             type="primary"
-            ghost
             onClick={addQuestion}
             icon={<PlusOutlined />}
             name="addQuestionButton"
@@ -104,11 +114,10 @@ const CreateQuestionnaire: React.FC<{ questionnaire: Questionnaire }> = (props) 
       <Button
         type="primary"
         size="large"
-        ghost
         onClick={() => formAntd.submit()}
-        style={{ display: 'block', width: '80%', margin: '2rem 10% 0' }}
+        style={{ display: 'block', width: '25rem', maxWidth: '50%', margin: '2rem auto 0' }}
       >
-        Submit
+        Update
       </Button>
     </>
   );
