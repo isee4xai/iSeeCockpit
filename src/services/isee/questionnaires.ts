@@ -45,6 +45,5 @@ export const api_update = async (questionnaire: Questionnaire) => {
     },
     body: JSON.stringify(questionnaire),
   });
-  console.log({ data });
   return data;
 };

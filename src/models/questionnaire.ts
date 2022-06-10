@@ -1,5 +1,5 @@
 export interface Questionnaire {
-  _id: string;
+  _id?: string;
   name?: string;
   dimension?: string;
   questions?: Question[];

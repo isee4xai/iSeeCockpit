@@ -27,8 +27,8 @@ const PersonaTabs: React.FC<PersonaType> = (props) => {
         title={'Are you sure to delete?'}
         onConfirm={async () => {
           console.log(persona);
-          await api_delete_persona(usecaseId, persona.id);
-          setPersonas(personas.filter((p) => p.id !== persona.id));
+          await api_delete_persona(usecaseId, persona._id);
+          setPersonas(personas.filter((p) => p._id !== persona._id));
           message.error('Deleted Persona ' + persona.details.name);
         }}
         okText="Yes"
@@ -69,7 +69,7 @@ const PersonaTabs: React.FC<PersonaType> = (props) => {
           {personas.map((persona, index) => (
             <Panel
               header={getHeader(persona.details.name, index)}
-              key={'panel-' + persona.id}
+              key={'panel-' + persona._id}
               style={{ borderColor: getColor(index) }}
               extra={genExtra2(persona)}
             >

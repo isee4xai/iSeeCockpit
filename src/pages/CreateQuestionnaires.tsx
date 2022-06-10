@@ -1,33 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import CreateQuestionnaire from '@/components/iSee/question/CreateQuestionnaire';
+import DATA_FILEDS from '@/models/common';
+import {
+  CopyOutlined,
+  ExportOutlined,
+  MinusCircleOutlined,
+  PlusOutlined,
+  SettingOutlined,
+} from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import {
   Button,
   Card,
   Collapse,
-  PageHeader,
-  Popconfirm,
-  message,
-  Modal,
+  Empty,
   Form,
   Input,
-  Select,
+  message,
+  Modal,
   notification,
-  Empty,
+  PageHeader,
+  Popconfirm,
+  Select,
 } from 'antd';
-import {
-  MinusCircleOutlined,
-  ExportOutlined,
-  CopyOutlined,
-  PlusOutlined,
-  SettingOutlined,
-} from '@ant-design/icons';
-import DATA_FILEDS from '@/models/common';
-import CreateQuestionnaire from '@/components/iSee/question/CreateQuestionnaire';
+import React, { useEffect, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 const { Panel } = Collapse;
 const { Option } = Select;
 
 import type { Questionnaire } from '@/models/questionnaire';
-import { api_get_all, api_create, api_delete } from '@/services/isee/questionnaires';
+import { api_create, api_delete, api_get_all } from '@/services/isee/questionnaires';
 
 const CreateQuestionnaires: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -49,6 +50,7 @@ const CreateQuestionnaires: React.FC = () => {
 
   const onFinish = (values: any) => {
     values.questions = [];
+    values._id = uuidv4();
 
     api_create(values)
       .then((data) => {

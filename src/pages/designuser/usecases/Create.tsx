@@ -1,41 +1,48 @@
-import React, { useEffect, useState } from 'react';
+import AssetmentField from '@/components/iSee/AssetmentFieldSet';
+import PersonaTabs from '@/components/iSee/persona/PersonaTabs';
+import DATA_FILEDS from '@/models/common';
+import type { Persona } from '@/models/persona';
+import type { Usecase, UsecaseSettings } from '@/models/usecase';
 import {
-  Card,
-  Button,
-  message,
-  Form,
-  Row,
-  Col,
-  Radio,
-  Select,
-  Upload,
-  Tag,
-  PageHeader,
-  Switch,
-  Input,
-  Modal,
-  Space,
-  Result,
-  notification,
-} from 'antd';
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
+  api_create_persona,
+  api_delete,
+  api_get,
+  api_publish,
+  api_update_settings,
+} from '@/services/isee/usecases';
 import {
   CheckOutlined,
   CloseOutlined,
+  DeleteOutlined,
   PlusOutlined,
   SaveOutlined,
   SettingOutlined,
   UploadOutlined,
   UserSwitchOutlined,
 } from '@ant-design/icons';
-import AssetmentField from '@/components/iSee/AssetmentFieldSet';
-import type { Persona } from '@/models/persona';
-import type { Usecase, UsecaseSettings } from '@/models/usecase';
-import PersonaTabs from '@/components/iSee/persona/PersonaTabs';
-import DATA_FILEDS from '@/models/common';
+import { PageHeaderWrapper } from '@ant-design/pro-layout';
+import {
+  Button,
+  Card,
+  Col,
+  Form,
+  Input,
+  message,
+  Modal,
+  notification,
+  PageHeader,
+  Popconfirm,
+  Radio,
+  Result,
+  Row,
+  Select,
+  Space,
+  Switch,
+  Tag,
+  Upload,
+} from 'antd';
+import React, { useEffect, useState } from 'react';
 const { Option } = Select;
-import { history } from 'umi';
-import { api_create_persona, api_get, api_update_settings } from '@/services/isee/usecases';
 
 const sample_personas: Persona[] = [];
 
@@ -59,24 +66,24 @@ const Create: React.FC<Params> = (props) => {
 
   const [settingsForm] = Form.useForm();
 
-  const [usecase, setUsecase] = useState<Usecase>({ id: '0', name: '', published: false });
+  const [usecase, setUsecase] = useState<Usecase>({ _id: '0', name: '', published: false });
 
   useEffect(() => {
-    async function get() {
+    (async () => {
       const res_usecase = await api_get(props.match.params.id);
+
+      console.log(res_usecase);
 
       setUsecase(res_usecase);
       if (!res_usecase) {
         setPageStatus('404');
       } else {
         setPageStatus('200');
-        console.log(res_usecase.settings);
         settingsForm.setFieldsValue(res_usecase.settings);
         setSettings(res_usecase.settings);
         setPersonas(res_usecase.personas);
       }
-    }
-    get();
+    })();
   }, [props.match.params.id, settingsForm]);
 
   // New Persona Popu Functions
@@ -97,7 +104,7 @@ const Create: React.FC<Params> = (props) => {
   async function onFinishPersona(values: any) {
     // We need to update this blank model if we change the object
     const new_persona: Persona = {
-      id: 'persona-' + Math.floor(Math.random() * 100000) + 1,
+      _id: 'persona-' + Math.floor(Math.random() * 100000) + 1,
       completed: false,
       details: {
         name: values.name,
@@ -109,7 +116,7 @@ const Create: React.FC<Params> = (props) => {
 
     setPersonas([...personas, new_persona]);
     console.log('Success Create Persona:', new_persona);
-    await api_create_persona(usecase.id, new_persona);
+    await api_create_persona(usecase._id, new_persona);
     handleOk();
     message.success('Succesfully Added Persona');
   }
@@ -147,8 +154,11 @@ const Create: React.FC<Params> = (props) => {
 
     setSettings(updateSettings);
 
-    await api_update_settings(usecase.id, updateSettings);
-    console.log('Updating Settings', usecase);
+    const test = await api_update_settings(usecase._id, {
+      ...usecase,
+      settings: { ...updateSettings },
+    });
+    console.log('Success Update Settings:', test);
     message.success('Succesfully saved AI Model Settings');
     SetIsSettingChanged(false);
   }
@@ -194,7 +204,7 @@ const Create: React.FC<Params> = (props) => {
           title="404"
           subTitle="Sorry, we couldn't find the Usecase"
           extra={
-            <Button type="primary" onClick={() => history.push('/')}>
+            <Button type="primary" onClick={() => (window.location.pathname = '/')}>
               Back Home
             </Button>
           }
@@ -205,40 +215,64 @@ const Create: React.FC<Params> = (props) => {
           <PageHeader
             key="head2"
             ghost={false}
-            // onBack={() => window.history.back()}
             title={usecase.name}
-            subTitle={<Tag color="red">Unpublished</Tag>}
+            subTitle={
+              usecase.published ? (
+                <Tag color="green">Published</Tag>
+              ) : (
+                <Tag color="red">Unpublished</Tag>
+              )
+            }
             extra={[
               <div key="head3">
+                Publish &nbsp;&nbsp;
+                <Switch
+                  onChange={async (checked) => {
+                    await api_publish(usecase._id || '', checked);
+                    setUsecase({ ...usecase, published: checked });
+                  }}
+                  checkedChildren={<CheckOutlined />}
+                  unCheckedChildren={<CloseOutlined />}
+                  defaultChecked={usecase.published}
+                />
                 <Button
                   type="primary"
-                  danger
-                  onClick={() => {
-                    const saved_usecases = localStorage.getItem('USECASES') + '';
-
-                    const arr = JSON.parse(saved_usecases) || [];
-                    const ucindex = arr.findIndex((obj: any) => obj.id == usecase.id);
+                  style={{ margin: '0 1rem' }}
+                  onClick={async () => {
+                    const json = await api_get(usecase._id || '');
 
                     notification.open({
                       message: 'iSee JSON Export',
-                      description: JSON.stringify(arr[ucindex]),
+                      description: (
+                        <pre>
+                          <code>{JSON.stringify(json, null, 2)}</code>
+                        </pre>
+                      ),
                       onClick: () => {
                         console.log('Export Clicked!');
                       },
                     });
                   }}
                   htmlType="button"
-                  className="r-10"
                   icon={<SaveOutlined />}
                 >
                   Export JSON
                 </Button>{' '}
-                &nbsp;&nbsp; Publish &nbsp;&nbsp;
-                <Switch
-                  checkedChildren={<CheckOutlined />}
-                  unCheckedChildren={<CloseOutlined />}
-                  defaultChecked={false}
-                />
+                <Popconfirm
+                  title={'Are you sure to delete?'}
+                  onConfirm={async () => {
+                    await api_delete(usecase._id || '');
+                    window.location.pathname = '/usecases';
+                  }}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button
+                    danger={true}
+                    className="dynamic-delete-button"
+                    icon={<DeleteOutlined />}
+                  />
+                </Popconfirm>
               </div>,
             ]}
           />
