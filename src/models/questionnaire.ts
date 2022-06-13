@@ -1,17 +1,23 @@
-
 export interface Questionnaire {
-    id: string;
-    name?: string;
-    category?: string;
-    questions?: Question[];
-};
+  _id?: string;
+  name?: string;
+  dimension?: string;
+  questions?: Question[];
+}
 
 export interface Question {
-    id?: string;
-    text?: string;
-    metric?: string;
-    category?: string;
-    metric_values?: string[];
-    required?: boolean;
-    completed?: boolean;
-};
+  id?: string;
+  content?: string;
+  responseType?: string;
+  dimension?: string;
+  answer?: string[];
+  responseOptions?: {
+    val: string;
+  }[];
+  required?: boolean;
+  completed?: boolean;
+  validators?: {
+    min?: number;
+    max?: number;
+  };
+}

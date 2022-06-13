@@ -1,0 +1,85 @@
+// variables
+@Free-Text: #88ccee;
+@Number: #117733;
+@Radio: #ddcc77;
+@Likert: #cc6677;
+@Checkbox: #aa4499;
+
+.QuestionForm-container {
+  border-left: 5px solid #bbb;
+  .backgroundType (@typeColor) {
+    border-left: 5px solid @typeColor;
+    & .Questionnaire-footer > *:hover {
+      color: @typeColor !important;
+    }
+    & .ant-switch-checked {
+      background-color: @typeColor;
+    }
+    & .selectIcon {
+      color: @typeColor;
+    }
+  }
+
+  &.Free-Text {
+    .backgroundType(@Free-Text);
+  }
+  &.Number {
+    .backgroundType(@Number);
+  }
+  &.Radio {
+    .backgroundType(@Radio);
+  }
+  &.Likert {
+    .backgroundType(@Likert);
+  }
+  &.Checkbox {
+    .backgroundType(@Checkbox);
+  }
+
+  & .QuestionForm-header {
+    margin: 0;
+    padding: 1rem;
+  }
+  & .Questionnaire-body {
+    padding: 0 1rem;
+
+    & .Questionnaire-top-body {
+      display: flex;
+      gap: 0 1rem;
+      justify-content: space-between;
+
+      & > * {
+        flex: 1 1 0;
+      }
+    }
+
+    & .Questionanire-dynamic-body {
+      padding: 1rem 0;
+
+      & .Questionnaire-number-range {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem !important;
+        justify-content: center;
+      }
+    }
+  }
+  & .Questionnaire-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 1rem;
+
+    & > .footer-required-switch {
+      align-items: center;
+      margin-bottom: 0;
+    }
+    & > * {
+      margin-right: 0.8rem;
+    }
+  }
+
+  & * {
+    user-select: none;
+  }
+}

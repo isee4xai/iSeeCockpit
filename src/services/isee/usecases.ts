@@ -1,201 +1,216 @@
 // @ts-ignore
+import type { Persona, PersonaDetails, PersonaIntent } from '@/models/persona';
+import type { Usecase } from '@/models/usecase';
 
-import { Persona, PersonaDetails, PersonaIntent } from "@/models/persona";
-import { Question } from "@/models/questionnaire";
-import { Usecase, UsecaseSettings } from "@/models/usecase";
+const KEY = 'usecases';
+const BASE_URL = 'http://localhost:3000/api';
 
-const KEY = "USECASES";
-
-/* eslint-disable */
+// -----------------------------------------
+//              HANDLE USECASE
+// ------------------------------------------
 export async function api_create(usecase: Usecase) {
-    const saved_usecases = localStorage.getItem(KEY);
-    let initialValue = JSON.parse(saved_usecases) || [];
-    initialValue.push(usecase);
-    localStorage.setItem(KEY, JSON.stringify(initialValue));
-    return usecase || [];
-}
+  try {
+    const data = await fetch(`${BASE_URL}/${KEY}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(usecase),
+    });
 
-export async function api_get_all() {
-    const saved_usecases = localStorage.getItem(KEY);
-    const initialValue = JSON.parse(saved_usecases);
-    return initialValue || [];
-
+    const result = await data.json();
+    return result || [];
+  } catch (error) {
+    return [];
+  }
 }
 
 export async function api_get(id: string) {
-    const saved_usecases = localStorage.getItem(KEY);
-    const arr = JSON.parse(saved_usecases);
-
-    const found = arr.find((v: { id: string; }) => {
-        return v.id.toLowerCase() == id;
+  try {
+    const data = await fetch(`${BASE_URL}/${KEY}/${id}`, {
+      method: 'GET',
     });
-
-    if (found) {
-        console.log("Matched")
-        console.log(found)
-    }
-
-    return found || false;
+    const result = await data.json();
+    if (result.message) return false;
+    return result || false;
+  } catch (error) {
+    return false;
+  }
 }
 
-export async function api_update_settings(id: string,
-    settings: UsecaseSettings) {
+export const api_get_all = async () => {
+  try {
+    const data = await fetch(`${BASE_URL}/${KEY}/`, {
+      method: 'GET',
+    });
+    const result = await data.json();
+    if (result.message) return [];
+    return result || [];
+  } catch (error) {
+    return [];
+  }
+};
 
-    console.log(id)
-    console.log(settings)
-    const saved_usecases = localStorage.getItem(KEY);
-    let arr = JSON.parse(saved_usecases) || [];
-    const ucindex = arr.findIndex((obj => obj.id == id));
-    arr[ucindex].settings = settings
-    localStorage.setItem(KEY, JSON.stringify(arr));
+export const api_update_settings = async (id: string | undefined, settings: Usecase) => {
+  if (!id) return false;
 
-    return id || false;
+  const data = await fetch(`${BASE_URL}/${KEY}/${id}/settings`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(settings),
+  });
+  return data;
+};
+
+export async function api_delete(id: string) {
+  try {
+    const data = await fetch(`${BASE_URL}/${KEY}/${id}`, {
+      method: 'DELETE',
+    });
+    return data || false;
+  } catch (error) {
+    return false;
+  }
 }
 
-export async function api_create_persona(usecaseId: string,
-    persona: Persona) {
+export async function api_publish(id: string, status: boolean) {
+  try {
+    const data = await fetch(`${BASE_URL}/${KEY}/${id}/publish`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ status }),
+    });
+    return data || false;
+  } catch (error) {
+    return false;
+  }
+}
 
-    console.log(usecaseId)
-    console.log(persona)
-    const saved_usecases = localStorage.getItem(KEY);
-    let arr = JSON.parse(saved_usecases) || [];
-    const ucindex = arr.findIndex((obj => obj.id == usecaseId));
-    arr[ucindex].personas.push(persona);
-    localStorage.setItem(KEY, JSON.stringify(arr));
+// -----------------------------------------
+//              HANDLE PERSONAS
+// ------------------------------------------
+export async function api_create_persona(usecaseId: string | undefined, persona: Persona) {
+  if (!usecaseId) return usecaseId;
 
+  try {
+    await fetch(`${BASE_URL}/${KEY}/${usecaseId}/persona`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(persona),
+    });
     return usecaseId;
-}
-
-export async function api_delete_persona(usecaseId: string,
-    personaId: string) {
-
-    console.log(usecaseId)
-    const saved_usecases = localStorage.getItem(KEY);
-    let arr = JSON.parse(saved_usecases) || [];
-    const ucindex = arr.findIndex((obj => obj.id == usecaseId));
-
-
-    let filteredPersonas = arr[ucindex].personas.filter(persona => persona.id !== personaId)
-
-    console.log(filteredPersonas)
-
-    arr[ucindex].personas = filteredPersonas;
-
-
-    localStorage.setItem(KEY, JSON.stringify(arr));
-
+  } catch (error) {
     return usecaseId;
+  }
 }
 
+export async function api_delete_persona(
+  usecaseId: string | undefined,
+  personaId: string | undefined,
+) {
+  if (!usecaseId || !personaId) return usecaseId;
 
-// SAVE PERSONA FUNCTIONS
+  try {
+    await fetch(`${BASE_URL}/${KEY}/${usecaseId}/persona/${personaId}`, {
+      method: 'DELETE',
+    });
+    return usecaseId;
+  } catch (error) {
+    return usecaseId;
+  }
+}
+
 export async function api_persona_details(
-    usecaseId: string, personaId: string, details: PersonaDetails) {
+  usecaseId: string | undefined,
+  personaId: string | undefined,
+  details: PersonaDetails,
+) {
+  if (!usecaseId || !personaId) return usecaseId;
 
-    console.log(usecaseId)
-    console.log(personaId)
-    const saved_usecases = localStorage.getItem(KEY);
-    let arr = JSON.parse(saved_usecases) || [];
-    const ucindex = arr.findIndex((obj => obj.id == usecaseId));
-    let personas = arr[ucindex].personas;
-    const persona_index = personas.findIndex((obj => obj.id == personaId));
-
-    console.log(personas[persona_index])
-
-    arr[ucindex].personas[persona_index].details = details
-
-    localStorage.setItem(KEY, JSON.stringify(arr));
-
+  try {
+    await fetch(`${BASE_URL}/${KEY}/${usecaseId}/persona/${personaId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(details),
+    });
     return usecaseId;
+  } catch (error) {
+    return usecaseId;
+  }
 }
 
+// -----------------------------------------
+//              HANDLE INTENTS
+// ------------------------------------------
 export async function api_persona_new_intent(
-    usecaseId: string, personaId: string, intent: PersonaIntent) {
+  usecaseId: string | undefined,
+  personaId: string | undefined,
+  intent: PersonaIntent,
+) {
+  if (!usecaseId || !personaId) return usecaseId;
 
-    console.log(usecaseId)
-    console.log(personaId)
-    const saved_usecases = localStorage.getItem(KEY);
-    let arr = JSON.parse(saved_usecases) || [];
-    const ucindex = arr.findIndex((obj => obj.id == usecaseId));
-    let personas = arr[ucindex].personas;
-    const persona_index = personas.findIndex((obj => obj.id == personaId));
-
-    console.log(personas[persona_index])
-
-    arr[ucindex].personas[persona_index].intents.push(intent)
-
-    localStorage.setItem(KEY, JSON.stringify(arr));
-
+  try {
+    await fetch(`${BASE_URL}/${KEY}/${usecaseId}/persona/${personaId}/intent`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(intent),
+    });
     return usecaseId;
-}
-
-export async function api_persona_add_intent_question(
-    usecaseId: string, personaId: string, intent_cat: string, intent_question: string) {
-
-    console.log(usecaseId)
-    console.log(personaId)
-    const saved_usecases = localStorage.getItem(KEY);
-
-    let arr = JSON.parse(saved_usecases) || [];
-    const ucindex = arr.findIndex((obj => obj.id == usecaseId));
-
-    let personas = arr[ucindex].personas;
-    const persona_index = personas.findIndex((obj => obj.id == personaId));
-
-    let intents = arr[ucindex].personas[persona_index].intents;
-    const intent_index = intents.findIndex((obj => obj.name == intent_cat));
-
-    arr[ucindex].personas[persona_index].intents[intent_index].questions.push(intent_question)
-
-    localStorage.setItem(KEY, JSON.stringify(arr));
-
+  } catch (error) {
     return usecaseId;
+  }
 }
 
 export async function api_persona_delete_intent(
-    usecaseId: string, personaId: string, intentId: string) {
+  usecaseId: string | undefined,
+  personaId: string | undefined,
+  intentId: string | undefined,
+) {
+  if (!usecaseId || !personaId || !intentId) return usecaseId;
 
-    console.log(usecaseId)
-    console.log(personaId)
-    const saved_usecases = localStorage.getItem(KEY);
-    let arr = JSON.parse(saved_usecases) || [];
-    const ucindex = arr.findIndex((obj => obj.id == usecaseId));
-    let personas = arr[ucindex].personas;
-    const persona_index = personas.findIndex((obj => obj.id == personaId));
-
-    let filteredIntents = arr[ucindex].personas[persona_index].intents.filter(intent => intent.id !== intentId)
-
-    console.log(filteredIntents)
-
-    arr[ucindex].personas[persona_index].intents = filteredIntents;
-
-    localStorage.setItem(KEY, JSON.stringify(arr));
-
+  try {
+    const test = await fetch(
+      `${BASE_URL}/${KEY}/${usecaseId}/persona/${personaId}/intent/${intentId}`,
+      {
+        method: 'DELETE',
+      },
+    );
+    console.log(test);
     return usecaseId;
+  } catch (error) {
+    console.error(error);
+    return usecaseId;
+  }
 }
 
+export async function api_persona_update_intent(
+  usecaseId: string | undefined,
+  personaId: string | undefined,
+  intentId: string | undefined,
+  intent: PersonaIntent,
+) {
+  if (!usecaseId || !personaId || !intentId) return usecaseId;
 
-export async function api_persona_save_intent_evaluation(
-    usecaseId: string, personaId: string, intent_cat: string, evaluation_questions: Question[]) {
-
-    console.log(usecaseId)
-    console.log(personaId)
-    const saved_usecases = localStorage.getItem(KEY);
-
-    let arr = JSON.parse(saved_usecases) || [];
-    const ucindex = arr.findIndex((obj => obj.id == usecaseId));
-
-    let personas = arr[ucindex].personas;
-    const persona_index = personas.findIndex((obj => obj.id == personaId));
-
-    let intents = arr[ucindex].personas[persona_index].intents;
-    const intent_index = intents.findIndex((obj => obj.name == intent_cat));
-
-    arr[ucindex].personas[persona_index].intents[intent_index].evaluation.questions = evaluation_questions;
-
-    localStorage.setItem(KEY, JSON.stringify(arr));
-
+  try {
+    await fetch(`${BASE_URL}/${KEY}/${usecaseId}/persona/${personaId}/intent/${intentId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(intent),
+    });
     return usecaseId;
+  } catch (error) {
+    return usecaseId;
+  }
 }
-
-
