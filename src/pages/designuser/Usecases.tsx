@@ -177,10 +177,14 @@ const Welcome: React.FC = () => {
                   (usecase.published && <Tag color="green">Published</Tag>)
                 }
                 actions={[
-                  <Button key={'btn2'} type="text" href={'usecase/manage/' + usecase._id}>
+                  <Button key={'btn-settings'} type="text" href={'usecase/manage/' + usecase._id}>
                     <SettingOutlined color="green" />
                   </Button>,
-                  <Button key={'btn1'} type="text" href={'usecase/analytics/' + usecase._id}>
+                  <Button
+                    key={'btn-analytics'}
+                    type="text"
+                    href={'usecase/analytics/' + usecase._id}
+                  >
                     <LineChartOutlined />
                   </Button>,
                 ]}

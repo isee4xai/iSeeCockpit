@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   iseecockpit-dev:
-    container_name: isee4xai_cockpit_dev
+    container_name: isee4xai/cockpit:dev
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -10,6 +10,3 @@ services:
       - '8000:8000'
     volumes:
       - ./src:/app/src
-
-
-      
