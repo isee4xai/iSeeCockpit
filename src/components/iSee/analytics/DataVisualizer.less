@@ -1,0 +1,46 @@
+.dataVisualisation-container {
+  position: relative;
+
+  &:hover .changeVisualisation {
+    opacity: 1;
+  }
+  & .changeVisualisation {
+    position: absolute;
+    right: 0%;
+    bottom: -20%;
+    z-index: 2;
+    width: fit-content;
+    max-width: 80%;
+    overflow: auto hidden;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0 0 10px #ccc;
+    // opacity: 0;
+    transition: 0.2s;
+    & button {
+      display: inline-block;
+      width: fit-content;
+      color: #aaa;
+      font-size: 1.2rem;
+      text-decoration: none;
+      background: transparent;
+      border: none;
+      transition: 0.2s;
+      aspect-ratio: 1;
+
+      &.activeType {
+        color: #1890ff;
+      }
+
+      &:hover {
+        background: #eee;
+        border-radius: 5px;
+      }
+    }
+
+    &::-webkit-scrollbar {
+      width: 5px;
+      background-color: white;
+    }
+  }
+}
