@@ -119,11 +119,17 @@ const DataVisualizer: React.FC<{
 }) => {
   const [type, setType] = useState(defaultType);
 
+  console.log(data instanceof Array, data);
+
   const generateVisualizer = () => {
     let label = 'label',
       value = 'value';
 
-    if (data instanceof Array && data?.length !== 0) {
+    if (data instanceof Array && data?.length === 0) {
+      return <p style={{ textAlign: 'center' }}>no data to use !</p>;
+    }
+
+    if (data instanceof Array) {
       label = Object.keys(data?.[0])[0];
       value = Object.keys(data?.[0])[1];
     }
@@ -171,36 +177,42 @@ const DataVisualizer: React.FC<{
   return (
     <div className={'dataVisualisation-container'}>
       {generateVisualizer()}
-      <div className={'changeVisualisation'}>
-        {autorizedType.includes('Pie') && (
-          <button className={type === 'Pie' ? 'activeType' : ''} onClick={() => setType('Pie')}>
-            <PieChartOutlined />
-          </button>
-        )}
-        {autorizedType.includes('Column') && (
-          <button
-            className={type === 'Column' ? 'activeType' : ''}
-            onClick={() => setType('Column')}
-          >
-            <BarChartOutlined />
-          </button>
-        )}
-        {autorizedType.includes('Area') && (
-          <button className={type === 'Area' ? 'activeType' : ''} onClick={() => setType('Area')}>
-            <AreaChartOutlined />
-          </button>
-        )}
-        {autorizedType.includes('Line') && (
-          <button className={type === 'line' ? 'activeType' : ''} onClick={() => setType('Line')}>
-            <LineChartOutlined />
-          </button>
-        )}
-        {autorizedType.includes('Gauge') && (
-          <button className={type === 'Gauge' ? 'activeType' : ''} onClick={() => setType('Gauge')}>
-            <DashboardOutlined />
-          </button>
-        )}
-      </div>
+
+      {!(data instanceof Array && data?.length === 0) && (
+        <div className={'changeVisualisation'}>
+          {autorizedType.includes('Pie') && (
+            <button className={type === 'Pie' ? 'activeType' : ''} onClick={() => setType('Pie')}>
+              <PieChartOutlined />
+            </button>
+          )}
+          {autorizedType.includes('Column') && (
+            <button
+              className={type === 'Column' ? 'activeType' : ''}
+              onClick={() => setType('Column')}
+            >
+              <BarChartOutlined />
+            </button>
+          )}
+          {autorizedType.includes('Area') && (
+            <button className={type === 'Area' ? 'activeType' : ''} onClick={() => setType('Area')}>
+              <AreaChartOutlined />
+            </button>
+          )}
+          {autorizedType.includes('Line') && (
+            <button className={type === 'line' ? 'activeType' : ''} onClick={() => setType('Line')}>
+              <LineChartOutlined />
+            </button>
+          )}
+          {autorizedType.includes('Gauge') && (
+            <button
+              className={type === 'Gauge' ? 'activeType' : ''}
+              onClick={() => setType('Gauge')}
+            >
+              <DashboardOutlined />
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 };

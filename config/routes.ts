@@ -27,6 +27,13 @@
     component: './CreateAnalytics',
   },
   {
+    path: '/usecase/analytics/:id',
+    hideInMenu: true,
+    name: 'Usecase Analytics',
+    component: './Analytics',
+    exact: false,
+  },
+  {
     path: '/questionnaires',
     name: 'Questionnaires',
     icon: 'question',

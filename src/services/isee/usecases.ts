@@ -214,3 +214,29 @@ export async function api_persona_update_intent(
     return usecaseId;
   }
 }
+
+export async function api_intent_stat(
+  usecaseId: string | undefined,
+  personaName: string | undefined,
+  intent: string | undefined,
+) {
+  if (!usecaseId || !personaName || !intent) return usecaseId;
+  try {
+    const data = await fetch(
+      `${BASE_URL}/${KEY}/${usecaseId}/persona/${personaName}/${intent}/stats`,
+      {
+        method: 'GET',
+      },
+    );
+
+    console.log(`/${usecaseId}/persona/${personaName}/${intent}/stats`);
+
+    const result = await data.json();
+    if (result.message) return [];
+    console.log(result);
+    return result || [];
+  } catch (error) {
+    console.log('test5');
+    return [];
+  }
+}
