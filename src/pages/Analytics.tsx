@@ -202,7 +202,7 @@ const Analytics: React.FC<Params> = (props) => {
                   >
                     <IntentAnalytics
                       intent={intent.name}
-                      persona={persona.details.name || ''}
+                      persona={persona._id || ''}
                       usecase={props.match.params.id}
                     />
                   </Panel>

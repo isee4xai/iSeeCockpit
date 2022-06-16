@@ -24,79 +24,53 @@ const IntentAnalytics: React.FC<{
   }, [intent, persona, usecase]);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [currentDiagram, setcurrentDiagram] = useState([]);
-  let csv = '';
+  const [currentDiagram, setcurrentDiagram] = useState<Record<string, any>[]>();
 
   const showModal = (jsonData: any) => {
     setcurrentDiagram(jsonData);
     setIsModalVisible(true);
   };
 
-  const generateModal = () => {
-    const handleOk = () => {
-      setIsModalVisible(false);
-    };
-    const handleCloseModal = () => {
-      setIsModalVisible(false);
-    };
-    if (currentDiagram != undefined) {
-      for (let index = 0; index < currentDiagram.length + 1; index++) {
-        if (index == 0) {
-          csv += Object.keys(currentDiagram[0]).map((element) => {
-            return element;
-          });
-        } else {
-          csv +=
-            '\r\n' +
-            currentDiagram[index - 1][`${Object.keys(currentDiagram[0])[0]}`] +
-            ', ' +
-            currentDiagram[index - 1][`${Object.keys(currentDiagram[0])[1]}`];
-        }
-      }
-    }
-    const addToClipboard = () => {
-      navigator.clipboard.writeText(csv).then(
-        () => {
-          notification.success({
-            message: `Success`,
-            duration: 3,
-            description: 'The questionnaire json has been added to the clipboard',
-            placement: 'bottomRight',
-          });
-        },
-        () => {
-          notification.error({
-            message: `Error`,
-            duration: 3,
-            description: 'An error occured, the json was not added to the clipboard',
-            placement: 'bottomRight',
-          });
-        },
-      );
-    };
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
 
-    return (
-      <Modal
-        title={'Export'}
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCloseModal}
-        footer={
-          <>
-            {
-              <Button onClick={addToClipboard} icon={<CopyOutlined />}>
-                Copy to clipboard
-              </Button>
-            }
+  const diagramToCSV = () => {
+    if (!currentDiagram) return '';
 
-            <Button type="primary" onClick={handleOk}>
-              Close
-            </Button>
-          </>
-        }
-      >
-        <pre>{<code onClick={(e) => console.dir(e.target)}>{csv}</code>}</pre>
-      </Modal>
+    let csv = '';
+    csv += Object.keys(currentDiagram[0]) + '\r\n';
+
+    currentDiagram?.forEach((item) => {
+      csv +=
+        Object.entries(item)
+          .map((i) => i[1])
+          .join(',') + '\r\n';
+    });
+    return csv;
+  };
+
+  const addToClipboard = () => {
+    navigator.clipboard.writeText(diagramToCSV()).then(
+      () => {
+        notification.success({
+          message: `Success`,
+          duration: 3,
+          description: 'The questionnaire json has been added to the clipboard',
+          placement: 'bottomRight',
+        });
+      },
+      () => {
+        notification.error({
+          message: `Error`,
+          duration: 3,
+          description: 'An error occured, the json was not added to the clipboard',
+          placement: 'bottomRight',
+        });
+      },
     );
   };
 
@@ -129,26 +103,27 @@ const IntentAnalytics: React.FC<{
           </Col>
         ))}
       </Row>
-      {generateModal}
-      {/* <Form
-                name="basic"
-                labelCol={{ span: 8 }}
-                wrapperCol={{ span: 16 }}
-            // initialValues={questions}
-            // onFinish={onFinish}
-            // onChange={onChange}
-            >
+      <Modal
+        title={'Export'}
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCloseModal}
+        footer={
+          <>
+            {
+              <Button onClick={addToClipboard} icon={<CopyOutlined />}>
+                Copy to clipboard
+              </Button>
+            }
 
-                <Row gutter={10}>
-                    <Col span={24} style={{ textAlign: 'center' }}>
-                        <Button
-                            type="primary"
-                            htmlType="submit">
-                            Save
-                        </Button>
-                    </Col>
-                </Row>
-            </Form> */}
+            <Button type="primary" onClick={handleOk}>
+              Close
+            </Button>
+          </>
+        }
+      >
+        <pre>{<code onClick={(e) => console.dir(e.target)}>{diagramToCSV()}</code>}</pre>
+      </Modal>
     </Card>
   );
 };

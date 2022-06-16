@@ -217,19 +217,19 @@ export async function api_persona_update_intent(
 
 export async function api_intent_stat(
   usecaseId: string | undefined,
-  personaName: string | undefined,
+  personaId: string | undefined,
   intent: string | undefined,
 ) {
-  if (!usecaseId || !personaName || !intent) return usecaseId;
+  if (!usecaseId || !personaId || !intent) return usecaseId;
   try {
     const data = await fetch(
-      `${BASE_URL}/${KEY}/${usecaseId}/persona/${personaName}/${intent}/stats`,
+      `${BASE_URL}/${KEY}/${usecaseId}/persona/${personaId}/${intent}/stats`,
       {
         method: 'GET',
       },
     );
 
-    console.log(`/${usecaseId}/persona/${personaName}/${intent}/stats`);
+    console.log(`/${usecaseId}/persona/${personaId}/${intent}/stats`);
 
     const result = await data.json();
     if (result.message) return [];
