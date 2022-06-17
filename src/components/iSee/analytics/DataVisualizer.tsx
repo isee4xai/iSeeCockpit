@@ -12,15 +12,15 @@ import {
 import './DataVisualizer.less';
 
 const AreaSettings = {
-  point: {
-    size: 5,
-    shape: 'diamond',
-    style: {
-      fill: 'white',
-      stroke: '#5B8FF9',
-      lineWidth: 2,
-    },
-  },
+  // point: {
+  //   size: 5,
+  //   shape: 'diamond',
+  //   style: {
+  //     fill: 'white',
+  //     stroke: '#5B8FF9',
+  //     lineWidth: 2,
+  //   },
+  // },
   areaStyle: () => {
     return {
       fill: 'l(270) 0:#ffffff 0.5:#7ec2f3 1:#1890ff',
@@ -43,6 +43,7 @@ const AreaSettings = {
       type: 'marker-active',
     },
   ],
+  smooth: true,
 };
 const PieSettings = {
   appendPadding: 10,
@@ -103,11 +104,12 @@ const ColumnSettings = {
       autoRotate: false,
     },
   },
+  smooth: true,
 };
 
 const DataVisualizer: React.FC<{
   // Record create an object with any key that has a value of string or number
-  data: Record<string, string | number>[] | number;
+  data: Record<string, any>[] | number;
   defaultType?: string;
   height?: number;
   autorizedType?: string[];
@@ -166,6 +168,20 @@ const DataVisualizer: React.FC<{
           );
         }
       case 'Gauge':
+        if (data instanceof Array) {
+          const total = [...data].reverse().reduce(
+            (acc, curr, idx) => {
+              return [
+                acc[0] + idx * (1 / (data.length - 1)) * curr[Object.keys(curr)[1]],
+                acc[1] + curr[Object.keys(curr)[1]],
+              ];
+            },
+            [0, 0],
+          );
+
+          return <Gauge {...GaugeSettings} percent={total[0] / total[1]} height={height} />;
+        }
+
         if (typeof data === 'number') {
           return <Gauge {...GaugeSettings} percent={data} height={height} />;
         }

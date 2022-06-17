@@ -13,7 +13,12 @@ const IntentAnalytics: React.FC<{
   intent: string;
 }> = ({ persona, usecase, intent }) => {
   const [data, setData] = useState<
-    { question: string; dimension: string; values: Record<string, string | number>[] }[]
+    {
+      question: string;
+      dimension: string;
+      responseType: string;
+      values: Record<string, string | number>[];
+    }[]
   >([]);
 
   useEffect(() => {
@@ -74,6 +79,13 @@ const IntentAnalytics: React.FC<{
     );
   };
 
+  /**
+   *
+   *
+   *
+   *  Likert  [Gauge, Column, Pie]
+   */
+
   return (
     <Card>
       <Row gutter={20}>
@@ -90,12 +102,26 @@ const IntentAnalytics: React.FC<{
               title={'Question ' + (index + 1)}
               extra={<Button onClick={() => showModal(item.values)}>Export CSV</Button>}
             >
-              <Descriptions.Item label={item.question}>{item.question}</Descriptions.Item>
+              <Descriptions.Item label={item.question}>
+                {item.question.replaceAll(/<\/*div>/g, '')}
+              </Descriptions.Item>
               <Meta description={'(' + item.dimension + ')'} />
               <DataVisualizer
                 defaultType="Pie"
                 data={item.values}
-                autorizedType={['Pie', 'Column']}
+                autorizedType={
+                  item.responseType === 'Free-Text'
+                    ? ['Wordcloud']
+                    : item.responseType === 'Number'
+                    ? ['Column', 'Gauge', 'pie', 'Wordcloud']
+                    : item.responseType === 'Radio'
+                    ? ['Pie', 'Column']
+                    : item.responseType === 'Checkbox'
+                    ? ['Pie', 'Column']
+                    : item.responseType === 'Likert'
+                    ? ['Column', 'Pie']
+                    : ['Pie', 'Column', 'Gauge', 'Wordcloud', 'Area']
+                }
               />
             </Card>
 

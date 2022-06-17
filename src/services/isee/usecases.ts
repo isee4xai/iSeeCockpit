@@ -240,3 +240,20 @@ export async function api_intent_stat(
     return [];
   }
 }
+
+export async function api_usecase_stat(usecaseId: string | undefined) {
+  if (!usecaseId) return usecaseId;
+  try {
+    const data = await fetch(`${BASE_URL}/${KEY}/${usecaseId}/stats`, {
+      method: 'GET',
+    });
+
+    const result = await data.json();
+
+    if (result.message) return {};
+
+    return result || {};
+  } catch (error) {
+    return {};
+  }
+}

@@ -1,69 +1,11 @@
-import type { Persona } from '@/models/persona';
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
-
-import IntentAnalytics from '@/components/iSee/analytics/IntentAnalytics';
-import { UserSwitchOutlined } from '@ant-design/icons';
-import { Card, Col, Collapse, Empty, Form, PageHeader, Row, Tag } from 'antd';
-
 import DataVisualizer from '@/components/iSee/analytics/DataVisualizer';
+import IntentAnalytics from '@/components/iSee/analytics/IntentAnalytics';
 import type { Usecase } from '@/models/usecase';
-import { api_get } from '@/services/isee/usecases';
+import { api_get, api_usecase_stat } from '@/services/isee/usecases';
+import { UserSwitchOutlined } from '@ant-design/icons';
+import { PageHeaderWrapper } from '@ant-design/pro-layout';
+import { Card, Col, Collapse, Empty, Form, PageHeader, Row, Tag } from 'antd';
 import { useEffect, useState } from 'react';
-
-const personas: Persona[] = [
-  {
-    _id: '123',
-    details: { name: 'Loan Applicant' },
-    completed: true,
-  },
-  {
-    _id: '234',
-    details: { name: 'Loan Officer' },
-    completed: true,
-  },
-  {
-    _id: '345',
-    details: { name: 'Govenment' },
-    completed: true,
-  },
-];
-
-const overall_usage = {
-  data: [
-    {
-      week: 'week 1',
-      interactions: 3,
-    },
-    {
-      week: 'week 2',
-      interactions: 2,
-    },
-    {
-      week: 'week 3',
-      interactions: 6,
-    },
-    {
-      week: 'week 4',
-      interactions: 6,
-    },
-    {
-      week: 'week 5',
-      interactions: 7,
-    },
-    {
-      week: 'week 6',
-      interactions: 10,
-    },
-    {
-      week: 'week 7',
-      interactions: 12,
-    },
-    {
-      week: 'week 8',
-      interactions: 6,
-    },
-  ],
-};
 
 const overall_feedback = {
   percent: 0.63,
@@ -95,21 +37,6 @@ const overall_feedback = {
   },
 };
 
-const usage_by_persona_data = [
-  {
-    persona: 'Loan Applicant',
-    value: 23,
-  },
-  {
-    persona: 'Loan officer',
-    value: 12,
-  },
-  {
-    persona: 'Govenment',
-    value: 2,
-  },
-];
-
 export type Params = {
   match: {
     params: {
@@ -122,11 +49,14 @@ const Analytics: React.FC<Params> = (props) => {
   const { Panel } = Collapse;
 
   const [usecase, setUsecase] = useState<Usecase>({ _id: '0', name: '', published: false });
+  const [globalStat, setGlobalStat] = useState<Record<string, any>>({});
 
   useEffect(() => {
     (async () => {
       const res_usecase = await api_get(props.match.params.id);
+      const global_stat = await api_usecase_stat(props.match.params.id);
       setUsecase(res_usecase);
+      setGlobalStat(global_stat);
     })();
   }, [props.match.params.id]);
 
@@ -150,7 +80,7 @@ const Analytics: React.FC<Params> = (props) => {
             <Card title="Overall Usage">
               <DataVisualizer
                 defaultType="Area"
-                data={overall_usage.data}
+                data={globalStat.interactions_per_date}
                 autorizedType={['Pie', 'Area', 'Column']}
               />
             </Card>
@@ -159,7 +89,7 @@ const Analytics: React.FC<Params> = (props) => {
             <Card title="Usage by Persona">
               <DataVisualizer
                 defaultType="Pie"
-                data={usage_by_persona_data}
+                data={globalStat.usage_per_persona}
                 autorizedType={['Pie', 'Column']}
               />
             </Card>
@@ -211,7 +141,7 @@ const Analytics: React.FC<Params> = (props) => {
             </Panel>
           ))}
         </Collapse>
-        {personas?.length == 0 ? (
+        {usecase.personas?.length == 0 ? (
           <Card>
             <Form.Item>
               <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Personas" />
