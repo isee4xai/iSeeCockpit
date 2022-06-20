@@ -219,11 +219,12 @@ export async function api_intent_stat(
   usecaseId: string | undefined,
   personaId: string | undefined,
   intent: string | undefined,
+  statDate: string[],
 ) {
   if (!usecaseId || !personaId || !intent) return usecaseId;
   try {
     const data = await fetch(
-      `${BASE_URL}/stats/${KEY}/${usecaseId}/persona/${personaId}/${intent}/`,
+      `${BASE_URL}/stats/${KEY}/${usecaseId}/persona/${personaId}/${intent}/?sd=${statDate[0]}&ed=${statDate[1]}`,
       {
         method: 'GET',
       },
@@ -239,12 +240,17 @@ export async function api_intent_stat(
   }
 }
 
-export async function api_usecase_stat(usecaseId: string | undefined) {
+export async function api_usecase_stat(usecaseId: string | undefined, dates: string[]) {
   if (!usecaseId) return usecaseId;
   try {
-    const data = await fetch(`${BASE_URL}/stats/${KEY}/${usecaseId}/`, {
-      method: 'GET',
-    });
+    console.log(dates);
+
+    const data = await fetch(
+      `${BASE_URL}/stats/${KEY}/${usecaseId}/?sd=${dates[0]}&ed=${dates[1]}`,
+      {
+        method: 'GET',
+      },
+    );
 
     const result = await data.json();
 

@@ -11,7 +11,8 @@ const IntentAnalytics: React.FC<{
   persona: string;
   usecase: string;
   intent: string;
-}> = ({ persona, usecase, intent }) => {
+  statDate: string[];
+}> = ({ persona, usecase, intent, statDate }) => {
   const [data, setData] = useState<
     {
       question: string;
@@ -23,10 +24,10 @@ const IntentAnalytics: React.FC<{
 
   useEffect(() => {
     (async () => {
-      const stats = await api_intent_stat(usecase, persona, intent);
+      const stats = await api_intent_stat(usecase, persona, intent, statDate);
       setData(stats);
     })();
-  }, [intent, persona, usecase]);
+  }, [intent, persona, usecase, statDate]);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentDiagram, setcurrentDiagram] = useState<Record<string, any>[]>();
@@ -114,14 +115,14 @@ const IntentAnalytics: React.FC<{
                   item.responseType === 'Free-Text'
                     ? ['Wordcloud']
                     : item.responseType === 'Number'
-                    ? ['Column', 'Gauge', 'pie', 'Wordcloud']
+                    ? ['Column', 'Gauge', 'pie']
                     : item.responseType === 'Radio'
                     ? ['Pie', 'Column']
                     : item.responseType === 'Checkbox'
                     ? ['Pie', 'Column']
                     : item.responseType === 'Likert'
                     ? ['Column', 'Pie']
-                    : ['Pie', 'Column', 'Gauge', 'Wordcloud', 'Area']
+                    : ['Pie', 'Column', 'Gauge', 'Area']
                 }
               />
             </Card>

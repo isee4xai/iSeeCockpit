@@ -1,9 +1,10 @@
-import { Area, Column, Gauge, Line, Pie } from '@ant-design/plots';
+import { Area, Column, Gauge, Line, Pie, WordCloud } from '@ant-design/plots';
 import { useState } from 'react';
 
 import {
   AreaChartOutlined,
   BarChartOutlined,
+  CloudOutlined,
   DashboardOutlined,
   LineChartOutlined,
   PieChartOutlined,
@@ -98,6 +99,26 @@ const ColumnSettings = {
   smooth: true,
 };
 
+const WordCloudSettings = {
+  color: '#122c6a',
+  wordStyle: {
+    fontFamily: 'Verdana',
+    // fontSize: [24, 80],
+  },
+  interactions: [
+    {
+      type: 'element-active',
+    },
+  ],
+  state: {
+    active: {
+      style: {
+        lineWidth: 3,
+      },
+    },
+  },
+};
+
 const DataVisualizer: React.FC<{
   // Record create an object with any key that has a value of string or number
   data: Record<string, any>[] | number;
@@ -108,7 +129,7 @@ const DataVisualizer: React.FC<{
   defaultType = 'Pie',
   data,
   height = 200,
-  autorizedType = ['Pie', 'Line', 'Column', 'Area', 'Gauge'],
+  autorizedType = ['Pie', 'Line', 'Column', 'Area', 'Gauge', 'Wordcloud'],
 }) => {
   const [type, setType] = useState(defaultType);
 
@@ -128,6 +149,44 @@ const DataVisualizer: React.FC<{
     }
 
     switch (type) {
+      case 'Wordcloud':
+        console.log('wordCLoud');
+        if (data instanceof Array) {
+          const wordData: Record<string, number> = data
+            .map((option) => {
+              const key = Object.keys(option);
+              return (option[key[0]] + ' ').repeat(option[key[1]]);
+            })
+            .join('')
+            .replace(/  +/g, ' ')
+            .split(' ')
+            .reduce((acc, cur) => {
+              if (cur.trim() !== '') {
+                if (acc[cur]) {
+                  acc[cur]++;
+                } else {
+                  acc[cur] = 1;
+                }
+              }
+              return acc;
+            }, {});
+
+          const finalData: { x: string; value: number }[] = Object.entries(wordData).map(
+            ([word, frequency]) => {
+              return { x: word, value: frequency };
+            },
+          );
+
+          return (
+            <WordCloud
+              {...WordCloudSettings}
+              wordField={'x'}
+              weightField={'value'}
+              height={height}
+              data={finalData}
+            />
+          );
+        }
       case 'Pie':
         if (data instanceof Array) {
           return (
@@ -216,6 +275,14 @@ const DataVisualizer: React.FC<{
               onClick={() => setType('Gauge')}
             >
               <DashboardOutlined />
+            </button>
+          )}
+          {autorizedType.includes('Wordcloud') && (
+            <button
+              className={type === 'Wordcloud' ? 'activeType' : ''}
+              onClick={() => setType('Wordcloud')}
+            >
+              <CloudOutlined />
             </button>
           )}
         </div>

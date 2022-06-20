@@ -4,7 +4,7 @@ import type { Usecase } from '@/models/usecase';
 import { api_get, api_usecase_stat } from '@/services/isee/usecases';
 import { UserSwitchOutlined } from '@ant-design/icons';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { Card, Col, Collapse, Empty, Form, PageHeader, Row, Tag } from 'antd';
+import { Card, Col, Collapse, DatePicker, Empty, Form, PageHeader, Row, Tag } from 'antd';
 import { useEffect, useState } from 'react';
 
 const overall_feedback = {
@@ -50,15 +50,21 @@ const Analytics: React.FC<Params> = (props) => {
 
   const [usecase, setUsecase] = useState<Usecase>({ _id: '0', name: '', published: false });
   const [globalStat, setGlobalStat] = useState<Record<string, any>>({});
+  const [statDate, setStatDate] = useState<string[]>([]);
 
   useEffect(() => {
     (async () => {
       const res_usecase = await api_get(props.match.params.id);
-      const global_stat = await api_usecase_stat(props.match.params.id);
       setUsecase(res_usecase);
-      setGlobalStat(global_stat);
     })();
   }, [props.match.params.id]);
+
+  useEffect(() => {
+    (async () => {
+      const global_stat = await api_usecase_stat(props.match.params.id, statDate);
+      setGlobalStat(global_stat);
+    })();
+  }, [props.match.params.id, statDate]);
 
   return (
     <PageHeaderWrapper>
@@ -72,6 +78,17 @@ const Analytics: React.FC<Params> = (props) => {
           ) : (
             <Tag color="red">Unpublished</Tag>
           )
+        }
+        extra={
+          <DatePicker.RangePicker
+            onCalendarChange={(x) => {
+              const dates: string[] =
+                x?.map((date) => {
+                  return date?.format('DD-MM-YYYY') || '';
+                }) || [];
+              setStatDate(dates);
+            }}
+          />
         }
       />
       <Card>
@@ -134,6 +151,7 @@ const Analytics: React.FC<Params> = (props) => {
                       intent={intent.name}
                       persona={persona._id || ''}
                       usecase={props.match.params.id}
+                      statDate={statDate}
                     />
                   </Panel>
                 ))}
