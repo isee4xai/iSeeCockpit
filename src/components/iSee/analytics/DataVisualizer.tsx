@@ -12,15 +12,6 @@ import {
 import './DataVisualizer.less';
 
 const AreaSettings = {
-  // point: {
-  //   size: 5,
-  //   shape: 'diamond',
-  //   style: {
-  //     fill: 'white',
-  //     stroke: '#5B8FF9',
-  //     lineWidth: 2,
-  //   },
-  // },
   areaStyle: () => {
     return {
       fill: 'l(270) 0:#ffffff 0.5:#7ec2f3 1:#1890ff',

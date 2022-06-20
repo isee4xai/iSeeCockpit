@@ -45,6 +45,7 @@ const IntentAnalytics: React.FC<{
 
   const diagramToCSV = () => {
     if (!currentDiagram) return '';
+    if (currentDiagram.length <= 0) return '';
 
     let csv = '';
     csv += Object.keys(currentDiagram[0]) + '\r\n';

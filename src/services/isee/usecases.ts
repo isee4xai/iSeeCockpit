@@ -223,13 +223,11 @@ export async function api_intent_stat(
   if (!usecaseId || !personaId || !intent) return usecaseId;
   try {
     const data = await fetch(
-      `${BASE_URL}/${KEY}/${usecaseId}/persona/${personaId}/${intent}/stats`,
+      `${BASE_URL}/stats/${KEY}/${usecaseId}/persona/${personaId}/${intent}/`,
       {
         method: 'GET',
       },
     );
-
-    console.log(`/${usecaseId}/persona/${personaId}/${intent}/stats`);
 
     const result = await data.json();
     if (result.message) return [];
@@ -244,7 +242,7 @@ export async function api_intent_stat(
 export async function api_usecase_stat(usecaseId: string | undefined) {
   if (!usecaseId) return usecaseId;
   try {
-    const data = await fetch(`${BASE_URL}/${KEY}/${usecaseId}/stats`, {
+    const data = await fetch(`${BASE_URL}/stats/${KEY}/${usecaseId}/`, {
       method: 'GET',
     });
 
