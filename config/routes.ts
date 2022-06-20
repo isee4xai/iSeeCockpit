@@ -45,6 +45,12 @@
     icon: 'EditOutlined',
     component: './QuestionnairesNew',
   },
+  {
+    path: '/chatbot',
+    name: 'Chatbot',
+    icon: 'RobotOutlined',
+    component: './chatbot/DialogQuestionnaires',
+  },
   // {
   //   path: '/design',
   //   icon: 'crown',
