@@ -7,6 +7,9 @@ import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { Card, Col, Collapse, DatePicker, Empty, Form, PageHeader, Row, Tag } from 'antd';
 import { useEffect, useState } from 'react';
 
+import locale from 'antd/es/date-picker/locale/en_GB';
+import 'moment/locale/en-gb';
+
 const overall_feedback = {
   percent: 0.63,
   type: 'meter',
@@ -81,6 +84,7 @@ const Analytics: React.FC<Params> = (props) => {
         }
         extra={
           <DatePicker.RangePicker
+            locale={locale}
             onCalendarChange={(x) => {
               const dates: string[] =
                 x?.map((date) => {
