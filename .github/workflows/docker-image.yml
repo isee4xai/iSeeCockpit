@@ -23,5 +23,5 @@ jobs:
       uses: docker/build-push-action@v2
       with:
           push: true
-          file: Dockerfile.prod
-          tags: isee4xai/cockpit:prod
+          file: Dockerfile.dev
+          tags: isee4xai/cockpit:dev
