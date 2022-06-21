@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+  iseecockpit-dev:
+    container_name: isee4xai/cockpit:local
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./src:/app/src
