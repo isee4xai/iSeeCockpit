@@ -1,0 +1,101 @@
+@import (reference) '~antd/es/style/themes/index';
+
+#card {
+  width: 80%;
+  height: 110%;
+  margin: auto;
+}
+
+.answer {
+  align-self: flex-end;
+  max-width: 60%;
+  margin: 10px;
+  padding: 10px;
+  color: white;
+  font-size: smaller;
+  word-wrap: break-word;
+  background-color: #1890ff;
+  border: 1px solid #1890ff;
+  border-radius: 20px 20px 1px 20px;
+  & p {
+    margin: 0;
+  }
+}
+
+.question {
+  align-self: flex-start;
+  max-width: 60%;
+  margin: 10px;
+  padding: 8px 8px 8px 10px;
+  font-size: smaller;
+  word-wrap: break-word;
+  border: 1px solid #d9d9d9;
+  border-radius: 20px 20px 20px 1px;
+  & img {
+    width: 300px;
+  }
+}
+
+#layout {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  inset: 58.5px 0 0 0;
+}
+
+#content-card {
+  display: flex;
+  flex-direction: column-reverse;
+  flex-grow: 1;
+  overflow: auto;
+  background-color: white;
+}
+
+#footer {
+  display: flex;
+  justify-content: center;
+  background-color: white;
+}
+
+#input {
+  width: 400px;
+}
+
+#attenteQuestion {
+  align-self: flex-start;
+  width: 100px;
+  max-width: 60%;
+  margin: 10px;
+  padding: 2px 2px 2px 2px;
+  font-size: 30px;
+  border: 1px solid #d9d9d9;
+  border-radius: 20px 20px 20px 1px;
+}
+#attenteQuestion > svg {
+  -webkit-animation: mover 1s infinite alternate;
+  animation: mover 1s infinite alternate;
+}
+@-webkit-keyframes mover {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-5px);
+  }
+}
+@keyframes mover {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-5px);
+  }
+}
+
+.radioButton {
+  white-space: nowrap;
+}
+
+#spaceRadio {
+  justify-content: center;
+}
