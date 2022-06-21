@@ -214,3 +214,50 @@ export async function api_persona_update_intent(
     return usecaseId;
   }
 }
+
+export async function api_intent_stat(
+  usecaseId: string | undefined,
+  personaId: string | undefined,
+  intent: string | undefined,
+  statDate: string[],
+) {
+  if (!usecaseId || !personaId || !intent) return usecaseId;
+  try {
+    const data = await fetch(
+      `${BASE_URL}/stats/${KEY}/${usecaseId}/persona/${personaId}/${intent}/?sd=${statDate[0]}&ed=${statDate[1]}`,
+      {
+        method: 'GET',
+      },
+    );
+
+    const result = await data.json();
+    if (result.message) return [];
+    console.log(result);
+    return result || [];
+  } catch (error) {
+    console.log('test5');
+    return [];
+  }
+}
+
+export async function api_usecase_stat(usecaseId: string | undefined, dates: string[]) {
+  if (!usecaseId) return usecaseId;
+  try {
+    console.log(dates);
+
+    const data = await fetch(
+      `${BASE_URL}/stats/${KEY}/${usecaseId}/?sd=${dates[0]}&ed=${dates[1]}`,
+      {
+        method: 'GET',
+      },
+    );
+
+    const result = await data.json();
+
+    if (result.message) return {};
+
+    return result || {};
+  } catch (error) {
+    return {};
+  }
+}

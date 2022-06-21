@@ -27,6 +27,13 @@
     component: './CreateAnalytics',
   },
   {
+    path: '/usecase/analytics/:id',
+    hideInMenu: true,
+    name: 'Usecase Analytics',
+    component: './Analytics',
+    exact: false,
+  },
+  {
     path: '/questionnaires',
     name: 'Questionnaires',
     icon: 'question',
@@ -37,6 +44,12 @@
     name: 'Questionnaires toolkit',
     icon: 'EditOutlined',
     component: './QuestionnairesNew',
+  },
+  {
+    path: '/chatbot',
+    name: 'Chatbot',
+    icon: 'RobotOutlined',
+    component: './chatbot/DialogQuestionnaires',
   },
   // {
   //   path: '/design',

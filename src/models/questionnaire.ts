@@ -9,6 +9,7 @@ export interface Question {
   id?: string;
   content?: string;
   responseType?: string;
+  intent?: string;
   dimension?: string;
   answer?: string[];
   responseOptions?: {
@@ -20,4 +21,11 @@ export interface Question {
     min?: number;
     max?: number;
   };
+}
+export interface Interaction {
+  name: string;
+  dimension: string;
+  personaId: string;
+  usecaseId: string;
+  questions: Question[];
 }
