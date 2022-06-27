@@ -2,8 +2,9 @@
 import type { Persona, PersonaDetails, PersonaIntent } from '@/models/persona';
 import type { Usecase } from '@/models/usecase';
 
+import { HEADERS, BASE_URL } from './api.config';
+
 const KEY = 'usecases';
-const BASE_URL = 'http://localhost:3000/api';
 
 // -----------------------------------------
 //              HANDLE USECASE
@@ -12,9 +13,7 @@ export async function api_create(usecase: Usecase) {
   try {
     const data = await fetch(`${BASE_URL}/${KEY}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: HEADERS,
       body: JSON.stringify(usecase),
     });
 
@@ -29,6 +28,7 @@ export async function api_get(id: string) {
   try {
     const data = await fetch(`${BASE_URL}/${KEY}/${id}`, {
       method: 'GET',
+      headers: HEADERS,
     });
     const result = await data.json();
     if (result.message) return false;
@@ -42,6 +42,7 @@ export const api_get_all = async () => {
   try {
     const data = await fetch(`${BASE_URL}/${KEY}/`, {
       method: 'GET',
+      headers: HEADERS
     });
     const result = await data.json();
     if (result.message) return [];
@@ -56,9 +57,7 @@ export const api_update_settings = async (id: string | undefined, settings: Usec
 
   const data = await fetch(`${BASE_URL}/${KEY}/${id}/settings`, {
     method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: HEADERS,
     body: JSON.stringify(settings),
   });
   return data;
@@ -68,6 +67,7 @@ export async function api_delete(id: string) {
   try {
     const data = await fetch(`${BASE_URL}/${KEY}/${id}`, {
       method: 'DELETE',
+      headers: HEADERS
     });
     return data || false;
   } catch (error) {
@@ -79,9 +79,7 @@ export async function api_publish(id: string, status: boolean) {
   try {
     const data = await fetch(`${BASE_URL}/${KEY}/${id}/publish`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: HEADERS,
       body: JSON.stringify({ status }),
     });
     return data || false;
@@ -99,9 +97,7 @@ export async function api_create_persona(usecaseId: string | undefined, persona:
   try {
     await fetch(`${BASE_URL}/${KEY}/${usecaseId}/persona`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: HEADERS,
       body: JSON.stringify(persona),
     });
     return usecaseId;
@@ -119,6 +115,7 @@ export async function api_delete_persona(
   try {
     await fetch(`${BASE_URL}/${KEY}/${usecaseId}/persona/${personaId}`, {
       method: 'DELETE',
+      headers: HEADERS,
     });
     return usecaseId;
   } catch (error) {
@@ -136,9 +133,7 @@ export async function api_persona_details(
   try {
     await fetch(`${BASE_URL}/${KEY}/${usecaseId}/persona/${personaId}`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: HEADERS,
       body: JSON.stringify(details),
     });
     return usecaseId;
@@ -160,9 +155,7 @@ export async function api_persona_new_intent(
   try {
     await fetch(`${BASE_URL}/${KEY}/${usecaseId}/persona/${personaId}/intent`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: HEADERS,
       body: JSON.stringify(intent),
     });
     return usecaseId;
@@ -183,6 +176,7 @@ export async function api_persona_delete_intent(
       `${BASE_URL}/${KEY}/${usecaseId}/persona/${personaId}/intent/${intentId}`,
       {
         method: 'DELETE',
+        headers: HEADERS,
       },
     );
     console.log(test);
@@ -204,9 +198,7 @@ export async function api_persona_update_intent(
   try {
     await fetch(`${BASE_URL}/${KEY}/${usecaseId}/persona/${personaId}/intent/${intentId}`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: HEADERS,
       body: JSON.stringify(intent),
     });
     return usecaseId;
@@ -227,6 +219,7 @@ export async function api_intent_stat(
       `${BASE_URL}/stats/${KEY}/${usecaseId}/persona/${personaId}/${intent}/?sd=${statDate[0]}&ed=${statDate[1]}`,
       {
         method: 'GET',
+        headers: HEADERS,
       },
     );
 
@@ -249,6 +242,7 @@ export async function api_usecase_stat(usecaseId: string | undefined, dates: str
       `${BASE_URL}/stats/${KEY}/${usecaseId}/?sd=${dates[0]}&ed=${dates[1]}`,
       {
         method: 'GET',
+        headers: HEADERS,
       },
     );
 
