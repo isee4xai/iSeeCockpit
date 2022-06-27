@@ -1,7 +1,7 @@
 import ProForm, { ProFormProps } from '@ant-design/pro-form';
 import { ConfigProvider } from 'antd';
 import React, { useContext, useMemo } from 'react';
-import './index.less';
+import './login.less';
 
 export type LoginFormProps<T> = {
     message: React.ReactNode | false;

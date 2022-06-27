@@ -7,6 +7,7 @@ import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
 // import { outLogin } from '@/services/ant-design-pro/api';
 import type { MenuInfo } from 'rc-menu/lib/interface';
+import { logout } from '@/services/isee/user';
 
 export type GlobalHeaderRightProps = {
   menu?: boolean;
@@ -21,6 +22,7 @@ const loginOut = async () => {
   const { redirect } = query;
   // Note: There may be security issues, please note
   if (window.location.pathname !== '/user/login' && !redirect) {
+    logout();
     history.replace({
       pathname: '/user/login',
       search: stringify({
@@ -37,6 +39,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     (event: MenuInfo) => {
       const { key } = event;
       if (key === 'logout') {
+
         setInitialState((s) => ({ ...s, currentUser: undefined }));
         loginOut();
         return;

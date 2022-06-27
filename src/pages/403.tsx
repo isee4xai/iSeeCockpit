@@ -8,8 +8,8 @@ const NotAuthorisedPage: React.FC = () => (
         title="403"
         subTitle="Sorry, you are unauthorised to access this page!"
         extra={
-            <Button type="primary" onClick={() => history.push('/')}>
-                Back Home
+            <Button type="primary" onClick={() => history.push('/user/login')}>
+                Login to iSee
             </Button>
         }
     />

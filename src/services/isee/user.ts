@@ -55,3 +55,9 @@ export function getToken() {
     }
     return '';
 }
+
+
+export function logout() {
+    localStorage.removeItem('isee_token');
+    localStorage.removeItem('isee_user');
+}
