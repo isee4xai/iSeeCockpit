@@ -1,10 +1,12 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Alert, message } from 'antd';
+import { Alert, Form, Input, message } from 'antd';
 import React, { useState } from 'react';
-import { ProFormText, LoginForm } from '@ant-design/pro-form';
+import { ProFormText } from '@ant-design/pro-form';
 import { history, useModel } from 'umi';
 import Footer from '@/components/Footer';
 import styles from './index.less';
+import { login } from '@/services/isee/user';
+import { LoginForm } from './LoginForm';
 
 const LoginMessage: React.FC<{
   content: string;
@@ -35,13 +37,11 @@ const Login: React.FC = () => {
   const handleSubmit = async (values: API.LoginParams) => {
     console.log(values);
     try {
-      const msg = {
-        status: 'ok',
-        type,
-        currentAuthority: 'admin',
-      };
-      if (msg.status === 'ok') {
-        const defaultLoginSuccessMessage = 'Logged In!';
+
+      const response = await login({ ...values, type });
+      console.log(response)
+      if (response.status === 'ok') {
+        const defaultLoginSuccessMessage = 'Login Succesful!';
         message.success(defaultLoginSuccessMessage);
         await fetchUserInfo();
 
@@ -50,17 +50,17 @@ const Login: React.FC = () => {
         const { redirect } = query as {
           redirect: string;
         };
-        history.push(redirect || '/');
+        // history.push(redirect || '/');
         return;
       }
-      setUserLoginState(msg);
+      setUserLoginState(response);
     } catch (error) {
       const defaultLoginFailureMessage = 'Not Authenticated';
       message.error(defaultLoginFailureMessage);
     }
   };
 
-  const { status, type: loginType } = userLoginState;
+  const { status, status_message } = userLoginState;
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -77,39 +77,37 @@ const Login: React.FC = () => {
             await handleSubmit(values as API.LoginParams);
           }}
         >
-          {status === 'error' && loginType === 'account' && <LoginMessage content={'eroor)'} />}
-          {type === 'account' && (
-            <>
-              <ProFormText
-                name="username"
-                fieldProps={{
-                  size: 'large',
-                  prefix: <UserOutlined className={styles.prefixIcon} />,
-                }}
-                placeholder={'Email'}
-                rules={[
-                  {
-                    required: true,
-                    message: 'Required',
-                  },
-                ]}
-              />
-              <ProFormText.Password
-                name="password"
-                fieldProps={{
-                  size: 'large',
-                  prefix: <LockOutlined className={styles.prefixIcon} />,
-                }}
-                placeholder={'Password'}
-                rules={[
-                  {
-                    required: true,
-                    message: 'Required',
-                  },
-                ]}
-              />
-            </>
-          )}
+          {status === 'error' && <LoginMessage content={'Login Failed. ' + status_message} />}
+          <>
+            <ProFormText
+              name="email"
+              fieldProps={{
+                size: 'large',
+                prefix: <UserOutlined className={styles.prefixIcon} />,
+              }}
+              placeholder={'Email'}
+              rules={[
+                {
+                  required: true,
+                  message: 'Required',
+                },
+              ]}
+            />
+            <ProFormText.Password
+              name="password"
+              fieldProps={{
+                size: 'large',
+                prefix: <LockOutlined className={styles.prefixIcon} />,
+              }}
+              placeholder={'Password'}
+              rules={[
+                {
+                  required: true,
+                  message: 'Required',
+                },
+              ]}
+            />
+          </>
         </LoginForm>
       </div>
       <Footer />

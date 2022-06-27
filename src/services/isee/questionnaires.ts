@@ -1,14 +1,15 @@
 // @ts-ignore
 
 import type { Questionnaire } from '@/models/questionnaire';
+import { HEADERS, BASE_URL } from './api.config';
 
 const KEY = 'questionnaire';
-const BASE_URL = 'http://localhost:3000/api';
 
 export const api_get_all = async () => {
   try {
     const data = await fetch(`${BASE_URL}/${KEY}`, {
       method: 'GET',
+      headers: HEADERS,
     });
     const result = await data.json();
     return result || [];
@@ -20,9 +21,7 @@ export const api_get_all = async () => {
 export const api_create = async (questionnaire: Questionnaire) => {
   const data = await fetch(`${BASE_URL}/${KEY}`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: HEADERS,
     body: JSON.stringify(questionnaire),
   });
 
@@ -33,6 +32,7 @@ export const api_create = async (questionnaire: Questionnaire) => {
 export const api_delete = async (id: string) => {
   const data = await fetch(`${BASE_URL}/${KEY}/${id}`, {
     method: 'DELETE',
+    headers: HEADERS,
   });
   return data;
 };
@@ -40,9 +40,7 @@ export const api_delete = async (id: string) => {
 export const api_update = async (questionnaire: Questionnaire) => {
   const data = await fetch(`${BASE_URL}/${KEY}/${questionnaire._id}`, {
     method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: HEADERS,
     body: JSON.stringify(questionnaire),
   });
   return data;

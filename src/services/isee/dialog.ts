@@ -1,14 +1,15 @@
 // @ts-ignore
 
 import type { Interaction } from '@/models/questionnaire';
+import { HEADERS, BASE_URL } from './api.config';
 
 const KEY = 'interaction';
-const BASE_URL = 'http://localhost:3000/api';
 
 export const api_get_all = async () => {
   try {
     const data = await fetch(`${BASE_URL}/${KEY}`, {
       method: 'GET',
+      headers: HEADERS,
     });
     const result = await data.json();
     return result || [];
@@ -21,9 +22,7 @@ export const api_create = async (questionnaire: Interaction) => {
   console.log(questionnaire);
   await fetch(`${BASE_URL}/${KEY}`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: HEADERS,
     body: JSON.stringify(questionnaire),
   });
 };
