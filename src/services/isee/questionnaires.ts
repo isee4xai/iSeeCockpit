@@ -1,7 +1,8 @@
 // @ts-ignore
 
 import type { Questionnaire } from '@/models/questionnaire';
-import { HEADERS, BASE_URL } from './api.config';
+import { BASE_URL } from './api.config';
+import { getToken } from './user';
 
 const KEY = 'questionnaire';
 
@@ -9,7 +10,10 @@ export const api_get_all = async () => {
   try {
     const data = await fetch(`${BASE_URL}/${KEY}`, {
       method: 'GET',
-      headers: HEADERS,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': getToken()
+      },
     });
     const result = await data.json();
     return result || [];
@@ -21,7 +25,10 @@ export const api_get_all = async () => {
 export const api_create = async (questionnaire: Questionnaire) => {
   const data = await fetch(`${BASE_URL}/${KEY}`, {
     method: 'POST',
-    headers: HEADERS,
+    headers: {
+      'Content-Type': 'application/json',
+      'x-access-token': getToken()
+    },
     body: JSON.stringify(questionnaire),
   });
 
@@ -32,7 +39,10 @@ export const api_create = async (questionnaire: Questionnaire) => {
 export const api_delete = async (id: string) => {
   const data = await fetch(`${BASE_URL}/${KEY}/${id}`, {
     method: 'DELETE',
-    headers: HEADERS,
+    headers: {
+      'Content-Type': 'application/json',
+      'x-access-token': getToken()
+    },
   });
   return data;
 };
@@ -40,7 +50,10 @@ export const api_delete = async (id: string) => {
 export const api_update = async (questionnaire: Questionnaire) => {
   const data = await fetch(`${BASE_URL}/${KEY}/${questionnaire._id}`, {
     method: 'PATCH',
-    headers: HEADERS,
+    headers: {
+      'Content-Type': 'application/json',
+      'x-access-token': getToken()
+    },
     body: JSON.stringify(questionnaire),
   });
   return data;

@@ -35,12 +35,14 @@ const Login: React.FC = () => {
   };
 
   const handleSubmit = async (values: API.LoginParams) => {
-    console.log(values);
+    // console.log(values);
     try {
 
       const response = await login({ ...values, type });
-      console.log(response)
+      // console.log(response)
       if (response.status === 'ok') {
+        console.log("ok state here")
+
         const defaultLoginSuccessMessage = 'Login Succesful!';
         message.success(defaultLoginSuccessMessage);
         await fetchUserInfo();
@@ -53,6 +55,7 @@ const Login: React.FC = () => {
         history.push(redirect || '/');
         return;
       }
+      console.log("im here")
       setUserLoginState(response);
     } catch (error) {
       const defaultLoginFailureMessage = 'Not Authenticated';
