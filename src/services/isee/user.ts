@@ -15,8 +15,8 @@ export async function login(body: API.LoginParams, options?: { [key: string]: an
         // Only for successful logins
         if (data.status == 200) {
             let result = await data.json();
-            localStorage.setItem('isee_user', JSON.stringify(result));
-            localStorage.setItem('isee_token', result.token);
+            await localStorage.setItem('isee_user', JSON.stringify(result));
+            await localStorage.setItem('isee_token', result.token);
             result.status = "ok"
             return result || "";
         } else {
