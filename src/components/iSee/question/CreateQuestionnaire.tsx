@@ -85,17 +85,17 @@ const CreateQuestionnaire: React.FC<{ questionnaire: Questionnaire }> = (props) 
       <Card
         size="small"
         title={'Questions'}
-        extra={
-          <Button
-            size="small"
-            type="primary"
-            onClick={addQuestion}
-            icon={<PlusOutlined />}
-            name="addQuestionButton"
-          >
-            Add
-          </Button>
-        }
+      // extra={
+      //   <Button
+      //     size="small"
+      //     type="primary"
+      //     onClick={addQuestion}
+      //     icon={<PlusOutlined />}
+      //     name="addQuestionButton"
+      //   >
+      //     Add
+      //   </Button>
+      // }
       >
         {questions.length > 0 ? (
           <Suspense fallback={<div>Loading...</div>}>
@@ -111,14 +111,14 @@ const CreateQuestionnaire: React.FC<{ questionnaire: Questionnaire }> = (props) 
           <Empty description={'Please add a question!'} />
         )}
       </Card>
-      <Button
+      {/* <Button
         type="primary"
         size="large"
         onClick={() => formAntd.submit()}
         style={{ display: 'block', width: '25rem', maxWidth: '50%', margin: '2rem auto 0' }}
       >
         Update
-      </Button>
+      </Button> */}
     </>
   );
 };
