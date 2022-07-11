@@ -6,8 +6,11 @@ declare namespace API {
     name?: string;
     token?: string;
     email?: string;
-    company?: object;
+    company: Company;
     access?: string;
+  };
+  type Company = {
+    name?: string;
   };
 
   type LoginResult = {

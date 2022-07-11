@@ -84,14 +84,14 @@ const CreateQuestionnaires: React.FC = () => {
           setModal({ visibility: true, idx: questionnaires.indexOf(values) });
         }}
       />
-      <Popconfirm
+      {/* <Popconfirm
         title={'Are you sure to delete?'}
         onConfirm={() => removeQuestionnaire(values)}
         okText="Yes"
         cancelText="No"
       >
         <Button danger type="primary" ghost icon={<MinusCircleOutlined />} />
-      </Popconfirm>
+      </Popconfirm> */}
     </div>
   );
 
@@ -178,18 +178,19 @@ const CreateQuestionnaires: React.FC = () => {
 
       <PageHeader
         key="questionnaires_heading"
-        title="Questionnaires"
-        // subTitle="Displaying questionnaires"
-        extra={[
-          <Button
-            type="primary"
-            onClick={showModal}
-            style={{ width: '100%' }}
-            key={'add-questionnaire-btn'}
-          >
-            <PlusOutlined /> Add New Questionnaire
-          </Button>,
-        ]}
+        title="Pre-loaded Questionnaires"
+      // subTitle="Displaying questionnaires"
+      // Later enable for Admins only
+      // extra={[
+      //   <Button
+      //     type="primary"
+      //     onClick={showModal}
+      //     style={{ width: '100%' }}
+      //     key={'add-questionnaire-btn'}
+      //   >
+      //     <PlusOutlined /> Add New Questionnaire
+      //   </Button>,
+      // ]}
       />
       <div>
         {questionnaires.length != 0 ? (
