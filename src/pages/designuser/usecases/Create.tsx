@@ -27,6 +27,7 @@ import {
   Col,
   Form,
   Input,
+  InputNumber,
   message,
   Modal,
   notification,
@@ -285,11 +286,11 @@ const Create: React.FC<Params> = (props) => {
             }
             extra={genExtra()}
             headStyle={{ backgroundColor: '#fafafa', border: '1px solid #d9d9d9' }}
-            // actions={[
-            //   <Button type="primary" htmlType="submit">
-            //     Save AI Model Settings
-            //   </Button>,
-            // ]}
+          // actions={[
+          //   <Button type="primary" htmlType="submit">
+          //     Save AI Model Settings
+          //   </Button>,
+          // ]}
           >
             <Form
               name="basic"
@@ -364,6 +365,27 @@ const Create: React.FC<Params> = (props) => {
                         </Option>
                       ))}
                     </Select>
+                  </Form.Item>
+
+
+                  <Form.Item
+                    label="Number of features"
+                    name="num_features"
+                    tooltip="This is a required field"
+                    rules={[{ required: false, message: 'Input is required!' }]}
+                  >
+                    <InputNumber />
+
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Number of Instances"
+                    name="num_instances"
+                    tooltip="This is a required field"
+                    rules={[{ required: false, message: 'Input is required!' }]}
+                  >
+                    <InputNumber />
+
                   </Form.Item>
 
                   <Form.Item
