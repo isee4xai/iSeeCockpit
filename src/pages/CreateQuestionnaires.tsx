@@ -23,7 +23,6 @@ import {
   Select,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 const { Panel } = Collapse;
 const { Option } = Select;
 
@@ -50,7 +49,6 @@ const CreateQuestionnaires: React.FC = () => {
 
   const onFinish = (values: any) => {
     values.questions = [];
-    values._id = uuidv4();
 
     api_create(values)
       .then((data) => {
