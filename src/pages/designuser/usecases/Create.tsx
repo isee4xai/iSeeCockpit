@@ -7,6 +7,7 @@ import {
   api_create_persona,
   api_delete,
   api_get,
+  api_get_casestructure,
   api_publish,
   api_update_settings,
 } from '@/services/isee/usecases';
@@ -240,10 +241,10 @@ const Create: React.FC<Params> = (props) => {
                   type="primary"
                   style={{ margin: '0 1rem' }}
                   onClick={async () => {
-                    const json = await api_get(usecase._id || '');
+                    const json = await api_get_casestructure(usecase._id || '');
 
                     notification.open({
-                      message: 'iSee JSON Export',
+                      message: json.length + ' Cases - ' + 'iSee Case Structure Export',
                       description: (
                         <pre>
                           <code>{JSON.stringify(json, null, 2)}</code>

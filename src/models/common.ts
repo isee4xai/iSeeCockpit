@@ -75,7 +75,7 @@ const DATA_FILEDS = {
     'Gradient Boosting',
     'Gradient Tree Boosting',
   ],
-  Datatype: ['categorical', 'numerical', 'ordinal'],
+  Datatype: ['categorical', 'numerical', 'image', 'ordinal'],
   ModelOutcome: ['Binary', 'Multi-Class', 'Range'],
   AssetmentType: [
     'Accuracy',

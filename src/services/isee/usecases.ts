@@ -16,7 +16,7 @@ export async function api_create(usecase: Usecase) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-access-token': getToken()
+        'x-access-token': getToken(),
       },
       body: JSON.stringify(usecase),
     });
@@ -34,7 +34,24 @@ export async function api_get(id: string) {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'x-access-token': getToken()
+        'x-access-token': getToken(),
+      },
+    });
+    const result = await data.json();
+    if (result.message) return false;
+    return result || false;
+  } catch (error) {
+    return false;
+  }
+}
+
+export async function api_get_casestructure(id: string) {
+  try {
+    const data = await fetch(`${BASE_URL}/${KEY}/${id}/casestructure`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': getToken(),
       },
     });
     const result = await data.json();
@@ -51,8 +68,8 @@ export const api_get_all = async () => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'x-access-token': getToken()
-      }
+        'x-access-token': getToken(),
+      },
     });
     const result = await data.json();
     if (result.message) return [];
@@ -69,7 +86,7 @@ export const api_update_settings = async (id: string | undefined, settings: Usec
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
-      'x-access-token': getToken()
+      'x-access-token': getToken(),
     },
     body: JSON.stringify(settings),
   });
@@ -82,8 +99,8 @@ export async function api_delete(id: string) {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'x-access-token': getToken()
-      }
+        'x-access-token': getToken(),
+      },
     });
     return data || false;
   } catch (error) {
@@ -97,7 +114,7 @@ export async function api_publish(id: string, status: boolean) {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        'x-access-token': getToken()
+        'x-access-token': getToken(),
       },
       body: JSON.stringify({ status }),
     });
@@ -118,7 +135,7 @@ export async function api_create_persona(usecaseId: string | undefined, persona:
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-access-token': getToken()
+        'x-access-token': getToken(),
       },
       body: JSON.stringify(persona),
     });
@@ -139,7 +156,7 @@ export async function api_delete_persona(
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'x-access-token': getToken()
+        'x-access-token': getToken(),
       },
     });
     return usecaseId;
@@ -160,7 +177,7 @@ export async function api_persona_details(
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        'x-access-token': getToken()
+        'x-access-token': getToken(),
       },
       body: JSON.stringify(details),
     });
@@ -185,7 +202,7 @@ export async function api_persona_new_intent(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-access-token': getToken()
+        'x-access-token': getToken(),
       },
       body: JSON.stringify(intent),
     });
@@ -209,7 +226,7 @@ export async function api_persona_delete_intent(
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          'x-access-token': getToken()
+          'x-access-token': getToken(),
         },
       },
     );
@@ -234,7 +251,7 @@ export async function api_persona_update_intent(
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        'x-access-token': getToken()
+        'x-access-token': getToken(),
       },
       body: JSON.stringify(intent),
     });
@@ -258,7 +275,7 @@ export async function api_intent_stat(
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'x-access-token': getToken()
+          'x-access-token': getToken(),
         },
       },
     );
@@ -284,7 +301,7 @@ export async function api_usecase_stat(usecaseId: string | undefined, dates: str
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'x-access-token': getToken()
+          'x-access-token': getToken(),
         },
       },
     );
