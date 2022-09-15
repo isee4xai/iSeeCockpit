@@ -19,9 +19,10 @@ export interface Usecase {
 
 export interface UsecaseSettings {
   ai_task?: string;
-  ai_method?: string;
+  ai_method?: [string];
   data_type?: string;
   model_outcome?: string;
+  model_mode?: string;
   ml_model?: string;
   assessments?: [string];
   completed?: boolean;
