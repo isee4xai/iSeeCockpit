@@ -78,10 +78,11 @@ const Welcome: React.FC = () => {
       },
       settings: {
         ai_task: '',
-        ai_method: '',
+        // ai_method: [],
         data_type: '',
         model_outcome: '',
         ml_model: '',
+        model_mode: 'file',
         completed: false,
       },
       name: values.name,

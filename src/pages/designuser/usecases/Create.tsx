@@ -109,8 +109,8 @@ const Create: React.FC<Params> = (props) => {
       completed: false,
       details: {
         name: values.name,
-        domain_level: 'Medium',
-        ai_level: 'Medium',
+        domain_level: '',
+        ai_level: '',
       },
       intents: [],
     };
@@ -143,7 +143,7 @@ const Create: React.FC<Params> = (props) => {
     const updateSettings: UsecaseSettings = settingsForm.getFieldsValue();
 
     if (
-      updateSettings.ai_method != '' &&
+      // updateSettings.ai_method?.length > 0 &&
       updateSettings.ai_task != '' &&
       updateSettings.data_type != '' &&
       updateSettings.model_outcome != ''
@@ -301,6 +301,8 @@ const Create: React.FC<Params> = (props) => {
               // onFinishFailed={onFinishFailed}
               onFieldsChange={() => {
                 SetIsSettingChanged(true);
+                const updateSettings: UsecaseSettings = settingsForm.getFieldsValue();
+                setSettings(updateSettings);
               }}
               form={settingsForm}
               autoComplete="off"
@@ -328,13 +330,31 @@ const Create: React.FC<Params> = (props) => {
                     tooltip="This is a required field"
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
-                    <Select>
+                    <Select
+                      mode="multiple"
+                      allowClear
+                    >
                       {DATA_FILEDS.AIMethod.map((option) => (
                         <Option key={option} value={option}>
                           {option}
                         </Option>
                       ))}
                     </Select>
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Dataset Type"
+                    name="dataset_type"
+                    tooltip="This is a required field"
+                    rules={[{ required: false, message: 'Input is required!' }]}
+                  >
+                    <Radio.Group>
+                      {DATA_FILEDS.DatasetType.map((option) => (
+                        <Radio key={option} value={option}>
+                          {option}
+                        </Radio>
+                      ))}
+                    </Radio.Group>
                   </Form.Item>
 
                   <Form.Item
@@ -367,7 +387,6 @@ const Create: React.FC<Params> = (props) => {
                     </Select>
                   </Form.Item>
 
-
                   <Form.Item
                     label="Number of features"
                     name="num_features"
@@ -389,15 +408,43 @@ const Create: React.FC<Params> = (props) => {
                   </Form.Item>
 
                   <Form.Item
-                    label="ML Model"
-                    name="model"
-                    tooltip="Please upload the model using any of the following file formats: json, h5, csv and pkl"
+                    label="ML Model Upload Method"
+                    name="model_mode"
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
-                    <Upload {...uploadprops}>
-                      <Button icon={<UploadOutlined />}>Click to Upload Model</Button>
-                    </Upload>
+                    <Radio.Group buttonStyle="solid">
+                      <Radio.Button key="file" value="file">
+                        Model File Upload (.h5, .pkl..)
+                      </Radio.Button>
+                      <Radio.Button key="api" value="api">
+                        Provide API URL
+                      </Radio.Button>
+                    </Radio.Group>
                   </Form.Item>
+                  {settings?.model_mode == "file" &&
+                    <Form.Item
+                      label="ML Model"
+                      name="model"
+                      tooltip="Please upload the model using any of the following file formats: json, h5, csv and pkl"
+                      rules={[{ required: false, message: 'Input is required!' }]}
+                    >
+                      <Upload {...uploadprops}>
+                        <Button icon={<UploadOutlined />}>Click to Upload Model</Button>
+                      </Upload>
+                    </Form.Item>
+                  }
+                  {settings?.model_mode == "api" &&
+
+                    <Form.Item
+                      label="ML Model API URL (POST)"
+                      name="model"
+                      tooltip="More instructions in the future"
+                      rules={[{ required: false, message: 'Input is required!' }]}
+                    >
+                      <Input />
+                    </Form.Item>
+
+                  }
                 </Col>
                 <Col span={12} className="gutter-row">
                   <AssetmentField types={DATA_FILEDS.AssetmentType} />

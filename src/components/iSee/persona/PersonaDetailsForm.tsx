@@ -1,7 +1,7 @@
 import type { Persona, PersonaDetails } from '@/models/persona';
 import { api_persona_details } from '@/services/isee/usecases';
 import { SaveOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Form, Input, message, Radio, Row } from 'antd';
+import { Button, Card, Col, Form, Input, message, Radio, Row, Select, } from 'antd';
 import { useEffect, useState } from 'react';
 
 export type PersonaType = {
@@ -11,8 +11,16 @@ export type PersonaType = {
   changed?: any;
 };
 
+const { Option } = Select;
 const PersonaDetailsForm: React.FC<PersonaType> = (props) => {
-  const LEVELS = ['Low', 'Medium', 'High'];
+  const LEVELS = [
+    "No knowledge",
+    "Novice",
+    "Advanced Beginner",
+    "Competent",
+    "Proficient",
+    "Expert"
+  ];
   const [detailsForm] = Form.useForm();
 
   const [isChanged, setIsChanged] = useState(false);
@@ -81,14 +89,15 @@ const PersonaDetailsForm: React.FC<PersonaType> = (props) => {
               name="domain_level"
               rules={[{ required: false, message: 'Input is required!' }]}
             >
-              <Radio.Group defaultValue="Medium">
+              <Select>
                 {LEVELS.map((option) => (
-                  <Radio.Button key={option} value={option}>
+                  <Option key={option} value={option}>
                     {option}
-                  </Radio.Button>
+                  </Option>
                 ))}
-              </Radio.Group>
+              </Select>
             </Form.Item>
+
           </Col>
 
           <Col span={8} className="gutter-row">
@@ -97,19 +106,20 @@ const PersonaDetailsForm: React.FC<PersonaType> = (props) => {
               name="knowledge_level"
               rules={[{ required: false, message: 'Input is required!' }]}
             >
-              <Radio.Group defaultValue="Medium">
+              <Select>
                 {LEVELS.map((option) => (
-                  <Radio.Button key={option} value={option}>
+                  <Option key={option} value={option}>
                     {option}
-                  </Radio.Button>
+                  </Option>
                 ))}
-              </Radio.Group>
+              </Select>
             </Form.Item>
           </Col>
         </Row>
       </Form>
     </Card>
   );
+
 };
 
 export default PersonaDetailsForm;
