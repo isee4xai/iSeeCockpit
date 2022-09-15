@@ -286,11 +286,11 @@ const Create: React.FC<Params> = (props) => {
             }
             extra={genExtra()}
             headStyle={{ backgroundColor: '#fafafa', border: '1px solid #d9d9d9' }}
-          // actions={[
-          //   <Button type="primary" htmlType="submit">
-          //     Save AI Model Settings
-          //   </Button>,
-          // ]}
+            // actions={[
+            //   <Button type="primary" htmlType="submit">
+            //     Save AI Model Settings
+            //   </Button>,
+            // ]}
           >
             <Form
               name="basic"
@@ -330,10 +330,7 @@ const Create: React.FC<Params> = (props) => {
                     tooltip="This is a required field"
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
-                    <Select
-                      mode="multiple"
-                      allowClear
-                    >
+                    <Select mode="multiple" allowClear>
                       {DATA_FILEDS.AIMethod.map((option) => (
                         <Option key={option} value={option}>
                           {option}
@@ -394,7 +391,6 @@ const Create: React.FC<Params> = (props) => {
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
                     <InputNumber />
-
                   </Form.Item>
 
                   <Form.Item
@@ -404,7 +400,6 @@ const Create: React.FC<Params> = (props) => {
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
                     <InputNumber />
-
                   </Form.Item>
 
                   <Form.Item
@@ -421,7 +416,7 @@ const Create: React.FC<Params> = (props) => {
                       </Radio.Button>
                     </Radio.Group>
                   </Form.Item>
-                  {settings?.model_mode == "file" &&
+                  {settings?.model_mode == 'file' && (
                     <Form.Item
                       label="ML Model"
                       name="model"
@@ -432,9 +427,8 @@ const Create: React.FC<Params> = (props) => {
                         <Button icon={<UploadOutlined />}>Click to Upload Model</Button>
                       </Upload>
                     </Form.Item>
-                  }
-                  {settings?.model_mode == "api" &&
-
+                  )}
+                  {settings?.model_mode == 'api' && (
                     <Form.Item
                       label="ML Model API URL (POST)"
                       name="model"
@@ -443,8 +437,7 @@ const Create: React.FC<Params> = (props) => {
                     >
                       <Input />
                     </Form.Item>
-
-                  }
+                  )}
                 </Col>
                 <Col span={12} className="gutter-row">
                   <AssetmentField types={DATA_FILEDS.AssetmentType} />

@@ -1,7 +1,7 @@
 import type { Persona, PersonaDetails } from '@/models/persona';
 import { api_persona_details } from '@/services/isee/usecases';
 import { SaveOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Form, Input, message, Radio, Row, Select, } from 'antd';
+import { Button, Card, Col, Form, Input, message, Radio, Row, Select } from 'antd';
 import { useEffect, useState } from 'react';
 
 export type PersonaType = {
@@ -14,12 +14,12 @@ export type PersonaType = {
 const { Option } = Select;
 const PersonaDetailsForm: React.FC<PersonaType> = (props) => {
   const LEVELS = [
-    "No knowledge",
-    "Novice",
-    "Advanced Beginner",
-    "Competent",
-    "Proficient",
-    "Expert"
+    'No knowledge',
+    'Novice',
+    'Advanced Beginner',
+    'Competent',
+    'Proficient',
+    'Expert',
   ];
   const [detailsForm] = Form.useForm();
 
@@ -97,7 +97,6 @@ const PersonaDetailsForm: React.FC<PersonaType> = (props) => {
                 ))}
               </Select>
             </Form.Item>
-
           </Col>
 
           <Col span={8} className="gutter-row">
@@ -119,7 +118,6 @@ const PersonaDetailsForm: React.FC<PersonaType> = (props) => {
       </Form>
     </Card>
   );
-
 };
 
 export default PersonaDetailsForm;

@@ -171,16 +171,11 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
   const IntentOptions = [
     {
       name: 'Trust',
-      questions: [
-        'Which similar cases contributed to this outcome?'
-      ],
+      questions: ['Which similar cases contributed to this outcome?'],
     },
     {
       name: 'Transparency',
-      questions: [
-        'Which features contributed to this outcome?'
-      ],
-
+      questions: ['Which features contributed to this outcome?'],
     },
     {
       name: 'About',
@@ -188,7 +183,6 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
         'What is the AI model which decided the outcome?',
         'What data is this outcome based upon?',
       ],
-
     },
     {
       name: 'Actionable',
@@ -305,7 +299,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                   intent_cat={intent.name}
                   persona={persona}
                   usecaseId={usecaseId}
-                // questionnaire={personaState.evaluation_questionnaire || {}}
+                  // questionnaire={personaState.evaluation_questionnaire || {}}
                 />
               </Tabs.TabPane>
             </Tabs>
@@ -353,11 +347,11 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
               placeholder="Select an intent question"
               optionFilterProp="children"
 
-            // onChange={onChange}
-            // onSearch={onSearch}
-            // filterOption={(input, option) =>
-            //     option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            // }
+              // onChange={onChange}
+              // onSearch={onSearch}
+              // filterOption={(input, option) =>
+              //     option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              // }
             >
               {IntentOptions.map((category) => (
                 <OptGroup label={category.name} key={category.name}>
