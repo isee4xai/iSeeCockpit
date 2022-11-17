@@ -37,8 +37,6 @@ export async function currentUser(options?: { [key: string]: any }) {
 
     if (user) {
         const decodedJwt = parseJwt(user.token || '');
-
-        console.log(decodedJwt.exp * 1000)
         if (decodedJwt.exp * 1000 < Date.now()) {
             return {
                 success: false,
