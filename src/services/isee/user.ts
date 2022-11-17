@@ -16,7 +16,6 @@ export async function login(body: API.LoginParams, options?: { [key: string]: an
         if (data.status == 200) {
             let result = await data.json();
             await localStorage.setItem('isee_user', JSON.stringify(result));
-            await localStorage.setItem('isee_token', result.token);
             result.status = "ok"
             return result || "";
         } else {
@@ -34,11 +33,22 @@ export async function login(body: API.LoginParams, options?: { [key: string]: an
 };
 
 export async function currentUser(options?: { [key: string]: any }) {
-    var isee_user = localStorage.getItem('isee_user');
-    if (isee_user) {
-        return {
-            success: true,
-            data: JSON.parse(isee_user)
+    var user: API.CurrentUser = JSON.parse(localStorage.getItem('isee_user') || '');
+
+    if (user) {
+        const decodedJwt = parseJwt(user.token || '');
+
+        console.log(decodedJwt.exp * 1000)
+        if (decodedJwt.exp * 1000 < Date.now()) {
+            return {
+                success: false,
+                data: {}
+            }
+        } else {
+            return {
+                success: true,
+                data: user
+            }
         }
     } else {
         return {
@@ -49,15 +59,30 @@ export async function currentUser(options?: { [key: string]: any }) {
 }
 
 export function getToken() {
-    var token = localStorage.getItem('isee_token');
-    if (token) {
-        return token as string;
+    // var user = localStorage.getItem('isee_user');
+    var user: API.CurrentUser = JSON.parse(localStorage.getItem('isee_user') || '');
+
+    if (!user) {
+        return '';
+    } else {
+        var token = user.token
+        if (token) {
+            return token as string;
+        }
     }
+
     return '';
 }
 
 
 export function logout() {
-    localStorage.removeItem('isee_token');
     localStorage.removeItem('isee_user');
 }
+
+const parseJwt = (token: string) => {
+    try {
+        return JSON.parse(atob(token.split(".")[1]));
+    } catch (e) {
+        return null;
+    }
+};
