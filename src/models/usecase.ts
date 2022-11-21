@@ -8,6 +8,7 @@ export interface Usecase {
   published: boolean;
   name: string;
   goal?: string;
+  domain?: string;
   status?: string;
   settings?: UsecaseSettings;
   stats?: {

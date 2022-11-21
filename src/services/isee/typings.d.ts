@@ -13,6 +13,10 @@ declare namespace API {
     name?: string;
   };
 
+  type OntoPair = {
+    key?: string,
+    label?: string
+  }
   type LoginResult = {
     status?: string;
     type?: string;
