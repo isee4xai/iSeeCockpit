@@ -63,6 +63,13 @@
     access: 'designUser',
     component: './chatbot/DialogQuestionnaires',
   },
+  {
+    path: '/explainers',
+    name: 'Explainer Library',
+    icon: 'QuestionOutlined',
+    // access: 'designUser',
+    component: './explainers/Explainers',
+  },
   // {
   //   path: '/design',
   //   icon: 'crown',
