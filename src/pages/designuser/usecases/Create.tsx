@@ -146,8 +146,7 @@ const Create: React.FC<Params> = (props) => {
     if (
       // updateSettings.ai_method?.length > 0 &&
       updateSettings.ai_task != '' &&
-      updateSettings.data_type != '' &&
-      updateSettings.model_outcome != ''
+      updateSettings.data_type != ''
     ) {
       updateSettings.completed = true;
     } else {
@@ -287,11 +286,11 @@ const Create: React.FC<Params> = (props) => {
             }
             extra={genExtra()}
             headStyle={{ backgroundColor: '#fafafa', border: '1px solid #d9d9d9' }}
-            // actions={[
-            //   <Button type="primary" htmlType="submit">
-            //     Save AI Model Settings
-            //   </Button>,
-            // ]}
+          // actions={[
+          //   <Button type="primary" htmlType="submit">
+          //     Save AI Model Settings
+          //   </Button>,
+          // ]}
           >
             <Form
               name="basic"
@@ -368,21 +367,6 @@ const Create: React.FC<Params> = (props) => {
                         </Radio>
                       ))}
                     </Radio.Group>
-                  </Form.Item>
-
-                  <Form.Item
-                    label="Model Outcomes"
-                    name="model_outcome"
-                    tooltip="This is a required field"
-                    rules={[{ required: false, message: 'Input is required!' }]}
-                  >
-                    <Select>
-                      {DATA_FILEDS.ModelOutcome.map((option) => (
-                        <Option key={option} value={option}>
-                          {option}
-                        </Option>
-                      ))}
-                    </Select>
                   </Form.Item>
 
                   <Form.Item

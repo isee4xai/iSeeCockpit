@@ -80,7 +80,6 @@ const Welcome: React.FC = () => {
         ai_task: '',
         // ai_method: [],
         data_type: '',
-        model_outcome: '',
         ml_model: '',
         model_mode: 'file',
         completed: false,
@@ -121,7 +120,7 @@ const Welcome: React.FC = () => {
             name="name"
             rules={[{ required: true, message: 'Input is required!' }]}
           >
-            <Input />
+            <Input placeholder="Name of the usecase" />
           </Form.Item>
 
           <Form.Item
@@ -129,7 +128,7 @@ const Welcome: React.FC = () => {
             name="domain"
             rules={[{ required: false, message: 'Input is required!' }]}
           >
-            <Select>
+            <Select placeholder="Select Domain" >
               <Select.Option value="finance">Finance</Select.Option>
               <Select.Option value="healthcare">Healthcare</Select.Option>
               <Select.Option value="technology">Technology</Select.Option>
@@ -141,7 +140,7 @@ const Welcome: React.FC = () => {
             name="goal"
             rules={[{ required: false, message: 'Input is required!' }]}
           >
-            <Input />
+            <Input placeholder="Goal of my usecase is to..." />
           </Form.Item>
         </Form>
       </Modal>
