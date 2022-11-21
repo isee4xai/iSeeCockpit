@@ -3,6 +3,7 @@ import PersonaTabs from '@/components/iSee/persona/PersonaTabs';
 import DATA_FILEDS from '@/models/common';
 import type { Persona } from '@/models/persona';
 import type { Usecase, UsecaseSettings } from '@/models/usecase';
+import { get_usecase_fields } from '@/services/isee/ontology';
 import {
   api_create_persona,
   api_delete,
@@ -25,6 +26,7 @@ import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import {
   Button,
   Card,
+  Cascader,
   Col,
   Form,
   Input,
@@ -67,14 +69,17 @@ const Create: React.FC<Params> = (props) => {
   const [isSettingChanged, SetIsSettingChanged] = useState(false);
 
   const [settingsForm] = Form.useForm();
-
+  const [ontoValues, setOntoValues] = useState<API.OntoParams>();
   const [usecase, setUsecase] = useState<Usecase>({ _id: '0', name: '', published: false });
 
   useEffect(() => {
     (async () => {
       const res_usecase = await api_get(props.match.params.id);
-
+      console.log("RUNNING FIRST QUERY")
       console.log(res_usecase);
+
+      const onto_params = await get_usecase_fields();
+      setOntoValues(onto_params)
 
       setUsecase(res_usecase);
       if (!res_usecase) {
@@ -110,17 +115,23 @@ const Create: React.FC<Params> = (props) => {
       completed: false,
       details: {
         name: values.name,
-        domain_level: '',
-        ai_level: '',
+        domain_knowledge_level: null,
+        ai_knowledge_level: null,
       },
       intents: [],
     };
 
-    setPersonas([...personas, new_persona]);
     console.log('Success Create Persona:', new_persona);
-    await api_create_persona(usecase._id, new_persona);
-    handleOk();
-    message.success('Succesfully Added Persona');
+    const added_persona = await api_create_persona(usecase._id, new_persona);
+    if (added_persona) {
+      new_persona._id = added_persona._id
+      setPersonas([...personas, new_persona]);
+      handleOk();
+      message.success('Succesfully Added Persona');
+    } else {
+      message.error('Error Adding Persona');
+    }
+
   }
 
   // - End
@@ -163,6 +174,11 @@ const Create: React.FC<Params> = (props) => {
     message.success('Succesfully saved AI Model Settings');
     SetIsSettingChanged(false);
   }
+
+  const filterCascader = (inputValue: string, path: API.OntoOption[]) =>
+    path.some(
+      (option) => (option.label as string).toLowerCase().indexOf(inputValue.toLowerCase()) > -1,
+    );
 
   const genExtra = () => (
     <Space size="middle">
@@ -309,19 +325,15 @@ const Create: React.FC<Params> = (props) => {
             >
               <Row gutter={20}>
                 <Col span={12} className="gutter-row">
+
                   <Form.Item
                     label="AI Task"
                     name="ai_task"
                     tooltip="This is a required field"
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
-                    <Select>
-                      {DATA_FILEDS.AITask.map((option) => (
-                        <Option key={option} value={option}>
-                          {option}
-                        </Option>
-                      ))}
-                    </Select>
+                    <Cascader fieldNames={{ label: 'label', value: 'key', children: 'children' }} options={ontoValues?.AI_TASK.children} showSearch={{ filterCascader }} placeholder="Select the AI Task" changeOnSelect />
+
                   </Form.Item>
 
                   <Form.Item
@@ -330,13 +342,9 @@ const Create: React.FC<Params> = (props) => {
                     tooltip="This is a required field"
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
-                    <Select mode="multiple" allowClear>
-                      {DATA_FILEDS.AIMethod.map((option) => (
-                        <Option key={option} value={option}>
-                          {option}
-                        </Option>
-                      ))}
-                    </Select>
+
+                    <Cascader fieldNames={{ label: 'label', value: 'key', children: 'children' }} options={ontoValues?.AI_METHOD.children} showSearch={{ filterCascader }} placeholder="Select one or more AI Methods" changeOnSelect multiple maxTagCount="responsive" />
+
                   </Form.Item>
 
                   <Form.Item
@@ -346,9 +354,9 @@ const Create: React.FC<Params> = (props) => {
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
                     <Radio.Group>
-                      {DATA_FILEDS.DatasetType.map((option) => (
-                        <Radio key={option} value={option}>
-                          {option}
+                      {ontoValues?.DATASET_TYPE.map((option) => (
+                        <Radio key={option.key} value={option.key}>
+                          {option.label}
                         </Radio>
                       ))}
                     </Radio.Group>
@@ -361,9 +369,9 @@ const Create: React.FC<Params> = (props) => {
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
                     <Radio.Group>
-                      {DATA_FILEDS.Datatype.map((option) => (
-                        <Radio key={option} value={option}>
-                          {option}
+                      {ontoValues?.DATA_TYPE.map((option) => (
+                        <Radio key={option.key} value={option.key}>
+                          {option.label}
                         </Radio>
                       ))}
                     </Radio.Group>
@@ -425,7 +433,7 @@ const Create: React.FC<Params> = (props) => {
                   )}
                 </Col>
                 <Col span={12} className="gutter-row">
-                  <AssetmentField types={DATA_FILEDS.AssetmentType} />
+                  <AssetmentField types={ontoValues?.AI_MODEL_A_METRIC} />
                 </Col>
               </Row>
             </Form>
@@ -440,7 +448,7 @@ const Create: React.FC<Params> = (props) => {
             extra={genPersona()}
             headStyle={{ backgroundColor: '#fafafa', border: '1px solid #d9d9d9' }}
           >
-            <PersonaTabs usecaseId={usecaseId} setPersonas={setPersonas} personas={personas} />
+            <PersonaTabs usecaseId={usecaseId} setPersonas={setPersonas} personas={personas} ontoValues={ontoValues} />
           </Card>
 
           {/* New Persona Popup  */}

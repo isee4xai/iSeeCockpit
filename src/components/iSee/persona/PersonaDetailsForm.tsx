@@ -9,18 +9,12 @@ export type PersonaType = {
   persona: Persona;
   updatePersona?: any;
   changed?: any;
+  ontoValues?: API.OntoParams
 };
 
 const { Option } = Select;
 const PersonaDetailsForm: React.FC<PersonaType> = (props) => {
-  const LEVELS = [
-    'No knowledge',
-    'Novice',
-    'Advanced Beginner',
-    'Competent',
-    'Proficient',
-    'Expert',
-  ];
+
   const [detailsForm] = Form.useForm();
 
   const [isChanged, setIsChanged] = useState(false);
@@ -86,13 +80,13 @@ const PersonaDetailsForm: React.FC<PersonaType> = (props) => {
           <Col span={8} className="gutter-row">
             <Form.Item
               label="Domain Knowledge Level"
-              name="domain_level"
+              name="domain_knowledge_level"
               rules={[{ required: false, message: 'Input is required!' }]}
             >
-              <Select>
-                {LEVELS.map((option) => (
-                  <Option key={option} value={option}>
-                    {option}
+              <Select placeholder="Select Knowledge Level">
+                {props.ontoValues?.KNOWLEDGE_LEVEL.map((option) => (
+                  <Option key={option.key} value={option.key}>
+                    {option.label}
                   </Option>
                 ))}
               </Select>
@@ -102,13 +96,13 @@ const PersonaDetailsForm: React.FC<PersonaType> = (props) => {
           <Col span={8} className="gutter-row">
             <Form.Item
               label="AI Knowledge Level"
-              name="knowledge_level"
+              name="ai_knowledge_level"
               rules={[{ required: false, message: 'Input is required!' }]}
             >
-              <Select>
-                {LEVELS.map((option) => (
-                  <Option key={option} value={option}>
-                    {option}
+              <Select placeholder="Select Knowledge Level">
+                {props.ontoValues?.KNOWLEDGE_LEVEL.map((option) => (
+                  <Option key={option.key} value={option.key}>
+                    {option.label}
                   </Option>
                 ))}
               </Select>

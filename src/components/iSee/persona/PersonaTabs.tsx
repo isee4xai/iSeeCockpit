@@ -11,6 +11,7 @@ export type PersonaType = {
   usecaseId: string;
   personas: Persona[];
   setPersonas: any;
+  ontoValues?: API.OntoParams
 };
 
 const PersonaTabs: React.FC<PersonaType> = (props) => {
@@ -73,7 +74,7 @@ const PersonaTabs: React.FC<PersonaType> = (props) => {
               style={{ borderColor: getColor(index) }}
               extra={genExtra2(persona)}
             >
-              <PersonaDetailsForm persona={persona} usecaseId={usecaseId} />
+              <PersonaDetailsForm persona={persona} usecaseId={usecaseId} ontoValues={props.ontoValues} />
 
               <PersonaIntents
                 usecaseId={usecaseId}
