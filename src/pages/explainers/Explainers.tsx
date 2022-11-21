@@ -1,131 +1,220 @@
 /* eslint-disable react/no-array-index-key */
 import {
-  LikeOutlined,
-  LineChartOutlined,
   PlusOutlined,
-  RocketOutlined,
-  SettingOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-
-
 import { PageContainer } from '@ant-design/pro-layout';
 import {
   Button,
-  Card,
-  Col,
   Form,
   Input,
   message,
   Modal,
   PageHeader,
-  Row,
   Select,
-  Statistic,
   Tag,
-  Space, Table
+  Table,
+  Typography
 } from 'antd';
-import Meta from 'antd/lib/card/Meta';
 import React, { useEffect, useState } from 'react';
 
-import type { Usecase } from '@/models/usecase';
-import { api_create, api_get_all } from '@/services/isee/usecases';
+import type { Explainer } from '@/models/explainer';
+import { api_create, api_get_all } from '@/services/isee/explainers';
+import { template } from 'lodash';
 
-interface DataType {
-  key: string;
-  name: string;
-  age: number;
-  address: string;
-  tags: string[];
-}
-const columns: ColumnsType<DataType> = [
+const columns: ColumnsType<Explainer> = [
   {
     title: 'Explainer',
     dataIndex: 'name',
     key: 'name',
     render: text => <a>{text}</a>,
+    fixed: 'left',
+    width: '8%',
   },
   {
-    title: 'ExplainabilityTechnique',
-    dataIndex: 'age',
-    key: 'age',
+    title: 'Description',
+    dataIndex: 'explainer_description',
+    key: 'explainer_description',
+    render: text => <Typography.Text ellipsis={true}>{text}</Typography.Text>,
+  },
+  {
+    title: 'Explainability Technique',
+    dataIndex: 'technique',
+    key: 'technique',
   },
   {
     title: 'Dataset Type',
-    dataIndex: 'address',
-    key: 'address',
+    dataIndex: 'dataset_type',
+    key: 'dataset_type',
   },
   {
-    title: 'Tags',
-    key: 'tags',
-    dataIndex: 'tags',
-    render: (_, { tags }) => (
+    title: 'Explanation Type',
+    dataIndex: 'explanation_type',
+    key: 'explanation_type',
+  },
+  {
+    title: 'Explanation Description',
+    dataIndex: 'explanation_description',
+    key: 'explanation_description',
+    render: text => <Typography.Text ellipsis={true}>{text}</Typography.Text>,
+  },
+  {
+    title: 'Explainer Concurrentness',
+    dataIndex: 'concurrentness',
+    key: 'concurrentness',
+  },
+  {
+    title: 'Explainer Portability',
+    dataIndex: 'portability',
+    key: 'portability',
+  },
+  {
+    title: 'Explanation Scope',
+    dataIndex: 'scope',
+    key: 'scope',
+  },
+  {
+    title: 'Explanation Target',
+    dataIndex: 'target',
+    key: 'target',
+  },
+  {
+    title: 'Presentation Format',
+    dataIndex: 'presentations',
+    key: 'presentations',
+    render: (_, { presentations }) => (
       <>
-        {tags.map(tag => {
-          let color = tag.length > 5 ? 'geekblue' : 'green';
-          if (tag === 'loser') {
-            color = 'volcano';
-          }
+        {presentations?.map(temp => {
           return (
-            <Tag color={color} key={tag}>
-              {tag.toUpperCase()}
+            <Tag key={temp}>
+              {temp}
             </Tag>
           );
         })}
       </>
-    ),
+    )
   },
   {
-    title: 'Action',
-    key: 'action',
-    render: (_, record) => (
-      <Space size="middle">
-        <a>Invite {record.name}</a>
-        <a>Delete</a>
-      </Space>
-    ),
+    title: 'Computational Complexity',
+    dataIndex: 'complexity',
+    key: 'complexity',
   },
+  {
+    title: 'Applicable AI Methods',
+    dataIndex: 'ai_method',
+    key: 'ai_method',
+    render: (_, { ai_methods }) => (
+      <>
+        {ai_methods?.map(temp => {
+          return (
+            <Tag key={temp}>
+              {temp}
+            </Tag>
+          );
+        })}
+      </>
+    )
+  },
+  {
+    title: 'Applicable AI Tasks',
+    dataIndex: 'ai_tasks',
+    key: 'ai_tasks',
+    render: (_, { ai_tasks }) => (
+      <>
+        {ai_tasks?.map(temp => {
+          return (
+            <Tag key={temp}>
+              {temp}
+            </Tag>
+          );
+        })}
+      </>
+    )
+  },
+  {
+    title: 'Implementation Framework',
+    dataIndex: 'implementation',
+    key: 'implementation',
+  },
+  {
+    title: 'Metadata',
+    dataIndex: 'metadata',
+    key: 'metadata',
+    render: text => <code>{text}</code>,
+  }
 ];
 
-const data: DataType[] = [
+const data: Explainer[] = [
   {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
+    "name": "/Tabular/DicePublic",
+    "explainer_description": "This explainer will generate multiple counterfactuals for a given scenario",
+    "technique": "DiCE",
+    "dataset_type": "univariate",
+    "explanation_type": "Feature_Influence_Explanation",
+    "explanation_description": "Important features are at the beginning",
+    "concurrentness": "post-hoc",
+    "scope": "local",
+    "portability": "model-agnostic",
+    "target": "model",
+    "presentations": ["figure"],
+    "complexity": "Factorial_time",
+    "ai_methods": ["Instance_Based_Learning"],
+    "ai_tasks": ["Audio_Processing"],
+    "implementation": "tfv2",
+    "metadata": "{}"
   },
   {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser'],
+    "name": "/Tabular/DicePublic",
+    "explainer_description": "This explainer will generate multiple counterfactuals for a given scenario",
+    "technique": "LIME",
+    "dataset_type": "univariate",
+    "explanation_type": "Feature_Influence_Explanation",
+    "explanation_description": "Important features are at the beginning",
+    "concurrentness": "post-hoc",
+    "scope": "local",
+    "portability": "model-agnostic",
+    "target": "model",
+    "presentations": ["figure"],
+    "complexity": "Factorial_time",
+    "ai_methods": ["Instance_Based_Learning"],
+    "ai_tasks": ["Audio_Processing"],
+    "implementation": "tfv2",
+    "metadata": "{}"
   },
   {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
-  },
+    "name": "/Tabular/DicePublic",
+    "explainer_description": "This explainer will generate multiple counterfactuals for a given scenario",
+    "technique": "DisCERN",
+    "dataset_type": "univariate",
+    "explanation_type": "Feature_Influence_Explanation",
+    "explanation_description": "Important features are at the beginning",
+    "concurrentness": "post-hoc",
+    "scope": "local",
+    "portability": "model-agnostic",
+    "target": "model",
+    "presentations": ["figure"],
+    "complexity": "Factorial_time",
+    "ai_methods": ["Instance_Based_Learning"],
+    "ai_tasks": ["Audio_Processing"],
+    "implementation": "tfv2",
+    "metadata": "{}"
+  }
 ];
 
 
 const Explainers: React.FC = () => {
-  const style = {
-    boxShadow: '0 4px 4px 0 rgba(0, 0, 0, 0.2)',
-    border: '1px solid #e8e8e8',
-  };
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const [useCases, setUseCases] = useState([]);
+  const [explainers, setExplainers] = useState([]);
+
+  const { TextArea } = Input;
+
 
   useEffect(() => {
     (async () => {
       const data = await api_get_all();
-      setUseCases(data);
+      setExplainers(data);
     })();
   }, []);
 
@@ -143,43 +232,43 @@ const Explainers: React.FC = () => {
 
   async function get_all() {
     const data = await api_get_all();
-    setUseCases(data);
+    setExplainers(data);
   }
 
-  async function create(usecase: Usecase) {
-    console.log('Create Usecase:', usecase);
+  async function create(explainer: Explainer) {
+    console.log('Create Explainer:', JSON.stringify(explainer));
     handleOk();
-    await api_create(usecase);
+    await api_create(explainer);
     get_all();
-    message.success('Succesfully Added Usecase');
+    message.success('Succesfully Added Explainer');
   }
 
   const onFinish = (values: any) => {
-    const blank_obj: Usecase = {
-      published: false,
-      stats: {
-        runs: 0,
-        feedback: 0,
-      },
-      settings: {
-        ai_task: '',
-        // ai_method: [],
-        data_type: '',
-        ml_model: '',
-        model_mode: 'file',
-        completed: false,
-      },
+    const _obj: Explainer = {
       name: values.name,
-      goal: values.goal,
-      personas: [],
+      explainer_description: values.explainer_description,
+      technique: values.technique,
+      dataset_type: values.dataset_type,
+      explanation_type: values.explanation_type,
+      explanation_description: values.explanation_description,
+      concurrentness: values.concurrentness,
+      scope: values.scope,
+      portability: values.portability,
+      target: values.target,
+      presentations: values.presentations,
+      complexity: values.complexity,
+      ai_methods: values.ai_methods,
+      ai_tasks: values.ai_tasks,
+      implementation: values.implementation,
+      metadata: values.metadata
     };
-    create(blank_obj);
+    create(_obj);
   };
 
   return (
     <PageContainer>
       <Modal
-        title="Create new Usecase"
+        title="Create New Explainer"
         visible={isModalVisible}
         onCancel={handleCancel}
         footer={[
@@ -200,34 +289,237 @@ const Explainers: React.FC = () => {
           onFinish={onFinish}
           autoComplete="off"
         >
-          <Form.Item
-            label="Name of the usecase"
-            name="name"
-            rules={[{ required: true, message: 'Input is required!' }]}
-          >
-            <Input />
-          </Form.Item>
 
           <Form.Item
-            label="Domain"
-            name="domain"
-            rules={[{ required: false, message: 'Input is required!' }]}
+            label="Explainer"
+            name="name"
+            tooltip=""
+            rules={[{ required: true, message: 'Input is required!' }]}
           >
+            {/* https://explainers-dev.isee4xai.com/ */}
             <Select>
-              <Select.Option value="finance">Finance</Select.Option>
-              <Select.Option value="healthcare">Healthcare</Select.Option>
-              <Select.Option value="technology">Technology</Select.Option>
+              <Select.Option value="/Tabular/DicePublic">/Tabular/DicePublic</Select.Option>
+              <Select.Option value="/Tabular/Anchors">/Tabular/Anchors</Select.Option>
+              <Select.Option value="/Tabular/Anchors">/Tabular/Anchors</Select.Option>
+              <Select.Option value="/Images/GradCamTorch">/Images/GradCamTorch</Select.Option>
             </Select>
           </Form.Item>
 
           <Form.Item
-            label="Goal of the usecase"
-            name="goal"
-            rules={[{ required: false, message: 'Input is required!' }]}
+            label="Explainer Description"
+            name="explainer_description"
+            tooltip=""
+            rules={[{ required: true, message: 'Input is required!' }]}
           >
             <Input />
+
           </Form.Item>
+
+          <Form.Item
+            label="Explainability Technique"
+            name="technique"
+            tooltip=""
+            rules={[{ required: true, message: 'Input is required!' }]}
+          >
+            {/* http://www.w3id.org/iSeeOnto/explainer#ExplainabilityTechnique */}
+            <Select>
+              <Select.Option value="Data-driven">Data-driven</Select.Option>
+              <Select.Option value="DiCE">DiCE</Select.Option>
+              <Select.Option value="Knowledge_Extraction">Knowledge_Extraction</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Dataset Type"
+            name="dataset_type"
+            tooltip=""
+            rules={[{ required: true, message: 'Input is required!' }]}
+          >
+            {/* http://www.w3id.org/iSeeOnto/explainer#DatasetType */}
+            <Select>
+              <Select.Option value="text">text</Select.Option>
+              <Select.Option value="time_series">time_series</Select.Option>
+              <Select.Option value="univariate">univariate</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Explanation Type"
+            name="explanation_type"
+            tooltip=""
+            rules={[{ required: true, message: 'Input is required!' }]}
+          >
+            {/* http://linkedu.eu/dedalo/explanationPattern.owl#Explanation */}
+            <Select>
+              <Select.Option value="Neighbourhood_Explanation">Neighbourhood Explanation</Select.Option>
+              <Select.Option value="Feature_Influence_Explanation">Feature Influence Explanation</Select.Option>
+              <Select.Option value="Prototype_Explanation">Prototype Explanation</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Explanation Description"
+            name="explanation_description"
+            tooltip=""
+            rules={[{ required: true, message: 'Input is required!' }]}
+          >
+            <Input />
+
+          </Form.Item>
+
+          <Form.Item
+            label="Explainer Concurrentness"
+            name="concurrentness"
+            // http://www.w3id.org/iSeeOnto/explainer#ExplainerConcurrentness
+            tooltip=""
+            rules={[{ required: true, message: 'Input is required!' }]}
+          >
+            {/* http://www.w3id.org/iSeeOnto/explainer#ExplainerConcurrentness*/}
+            <Select>
+              <Select.Option value="ante-hoc">ante-hoc</Select.Option>
+              <Select.Option value="post-hoc">post-hoc</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Explainer Portability"
+            name="portability"
+            // http://www.w3id.org/iSeeOnto/explainer#Portability
+            tooltip=""
+            rules={[{ required: true, message: 'Input is required!' }]}
+          >
+            {/* http://www.w3id.org/iSeeOnto/explainer#Portability */}
+            <Select>
+              <Select.Option value="model-agnostic">Model-agnostic</Select.Option>
+              <Select.Option value="modelClassSpecific">Model-class specific</Select.Option>
+              <Select.Option value="modelSpecific">Model-specific</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Explanation Scope"
+            name="scope"
+            // http://www.w3id.org/iSeeOnto/explainer#ExplanationScope
+            tooltip=""
+            rules={[{ required: true, message: 'Input is required!' }]}
+          >
+            {/* http://www.w3id.org/iSeeOnto/explainer#ExplanationScope*/}
+            <Select>
+              <Select.Option value="cohort">cohort</Select.Option>
+              <Select.Option value="global">global</Select.Option>
+              <Select.Option value="local">local</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Explanation Target"
+            name="target"
+            // http://www.w3id.org/iSeeOnto/explainer#ExplanationTarget
+            tooltip=""
+            rules={[{ required: true, message: 'Input is required!' }]}
+          >
+            {/* http://www.w3id.org/iSeeOnto/explainer#ExplanationTarget*/}
+            <Select>
+              <Select.Option value="data">data</Select.Option>
+              <Select.Option value="prediction">prediction</Select.Option>
+              <Select.Option value="model">model</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Presentation format"
+            name="presentations"
+            tooltip=""
+            rules={[{ required: true, message: 'Input is required!' }]}
+          >
+            {/* multi-select */}
+            {/* http://semanticscience.org/resource/SIO_000015*/}
+            <Select>
+              <Select.Option value="database_table">database table</Select.Option>
+              <Select.Option value="figure">figure</Select.Option>
+              <Select.Option value="image">image</Select.Option>
+              <Select.Option value="chart">chart</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Computational Complexity"
+            name="complexity"
+            //http://www.w3id.org/iSeeOnto/explainer#ComputationalComplexity
+            tooltip=""
+            rules={[{ required: true, message: 'Input is required!' }]}
+          >
+            {/* http://www.w3id.org/iSeeOnto/explainer#Time_Complexity*/}
+            <Select>
+              <Select.Option value="Exponential_time">Exponential time</Select.Option>
+              <Select.Option value="Factorial_time">Factorial time</Select.Option>
+              <Select.Option value="Linearithmic_time">Linearithmic time</Select.Option>
+              <Select.Option value="Log-logarithmic_time">Log-logarithmic time</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Applicable AI Methods"
+            name="ai_methods"
+            tooltip=""
+            rules={[{ required: true, message: 'Input is required!' }]}
+          >
+            {/* multi-select */}
+            {/* https://purl.org/heals/eo#ArtificialIntelligenceMethod*/}
+            <Select>
+              <Select.Option value="Markov_Process_Model">Markov Process Model</Select.Option>
+              <Select.Option value="Instance_Based_Learning">Instance Based Learning</Select.Option>
+              <Select.Option value="Dimensionality_Reduction">Dimensionality Reduction</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Applicable AI Tasks"
+            name="ai_tasks"
+            tooltip=""
+            rules={[{ required: true, message: 'Input is required!' }]}
+          >
+            {/* multi-select */}
+            {/* https://purl.org/heals/eo#AITask */}
+            <Select>
+              <Select.Option value="AnomalyDetection">Anomaly Detection</Select.Option>
+              <Select.Option value="Audio_Processing">Audio Processing</Select.Option>
+              <Select.Option value="Autonomous_Driving">Autonomous Driving</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Implementation Framework"
+            name="implementation"
+            tooltip=""
+            rules={[{ required: true, message: 'Input is required!' }]}
+          >
+            {/* Ike to add */}
+            <Select>
+              <Select.Option value="tfv1">Tensorflow V1</Select.Option>
+              <Select.Option value="tfv2">Tensorflow V1</Select.Option>
+              <Select.Option value="pytorch">PyTorch</Select.Option>
+              <Select.Option value="sklearn">SKLearn</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Metadata"
+            name="metadata"
+            tooltip="Metadata derived from GitHub"
+            rules={[{ required: false }]}
+          >
+            <TextArea
+              autoSize
+              defaultValue=''
+              allowClear
+              size="large"
+            />
+          </Form.Item>
+
         </Form>
+
+
       </Modal>
 
       <PageHeader
@@ -244,64 +536,8 @@ const Explainers: React.FC = () => {
       />
       {/* <Card> */}
       {/* <Row gutter={20}> */}
-      <Table columns={columns} dataSource={data} />
-
-      {/* {useCases.map((usecase: Usecase, index: number) => (
-        <Col
-          key={index}
-          span={8}
-          xs={{ order: 1 }}
-          sm={{ order: 2 }}
-          md={{ order: 3 }}
-          lg={{ order: 4 }}
-        >
-          <Card
-            style={style}
-            key={'card' + index}
-            title={usecase.name}
-            extra={
-              (!usecase.published && <Tag color="red">Unpublished</Tag>) ||
-              (usecase.published && <Tag color="green">Published</Tag>)
-            }
-            actions={[
-              <Button key={'btn-settings'} type="text" href={'usecase/manage/' + usecase._id}>
-                <SettingOutlined color="green" />
-              </Button>,
-              <Button
-                key={'btn-analytics'}
-                type="text"
-                href={'usecase/analytics/' + usecase._id}
-              >
-                <LineChartOutlined />
-              </Button>,
-            ]}
-          >
-            <Meta description={usecase.goal} />
-            <br />
-            <Row gutter={16}>
-              <Col span={12}>
-                <Statistic
-                  title="Feedback"
-                  value={usecase.stats?.feedback}
-                  prefix={<LikeOutlined />}
-                />
-              </Col>
-              <Col span={12}>
-                <Statistic
-                  title="Runs"
-                  value={usecase.stats?.runs}
-                  prefix={<RocketOutlined />}
-                />
-              </Col>
-            </Row>
-          </Card>
-
-          <br />
-        </Col>
-      ))} */}
-      {/* </Row>
-      </Card> */}
-    </PageContainer>
+      <Table columns={columns} dataSource={data} scroll={{ x: 2300 }} />
+    </PageContainer >
   );
 };
 
