@@ -15,8 +15,8 @@ export interface Persona {
 
 export interface PersonaDetails {
   name: string;
-  domain_level?: string;
-  ai_level?: string;
+  domain_knowledge_level?: string | null;
+  ai_knowledge_level?: string | null;
 }
 
 export interface PersonaIntent {

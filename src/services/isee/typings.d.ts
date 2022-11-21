@@ -13,10 +13,28 @@ declare namespace API {
     name?: string;
   };
 
+
   type OntoPair = {
     key?: string,
     label?: string
   }
+
+  type OntoOption = {
+    key?: string;
+    label?: string;
+    parent?: string;
+    children?: OntoOption[];
+  }
+
+  type OntoParams = {
+    AI_METHOD: OntoOption[],
+    AI_TASK: OntoOption[],
+    DATA_TYPE: OntoPair[],
+    DATASET_TYPE: OntoPair[],
+    AI_MODEL_A_METRIC: OntoPair[],
+    KNOWLEDGE_LEVEL: OntoPair[],
+  }
+
   type LoginResult = {
     status?: string;
     type?: string;

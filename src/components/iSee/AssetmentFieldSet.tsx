@@ -2,7 +2,7 @@ import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Form, Button, Select, Input, Card, Space, Empty, Popconfirm } from 'antd';
 
 export type AssessmentType = {
-  types: string[];
+  types?: API.OntoPair[];
 };
 
 const AssetmentField: React.FC<AssessmentType> = (props) => {
@@ -38,11 +38,13 @@ const AssetmentField: React.FC<AssessmentType> = (props) => {
                       rules={[{ required: false, message: 'Input is required!' }]}
                     >
                       <Select style={{ width: 150 }} placeholder="Assesment Type">
-                        {props.types.map((option: any) => (
-                          <Select.Option key={option} value={option}>
-                            {option}
+
+                        {props.types?.map((option: any) => (
+                          <Select.Option key={option.key} value={option.key}>
+                            {option.label}
                           </Select.Option>
                         ))}
+
                       </Select>
                     </Form.Item>
                     <Form.Item

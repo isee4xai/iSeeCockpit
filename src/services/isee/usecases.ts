@@ -131,7 +131,7 @@ export async function api_create_persona(usecaseId: string | undefined, persona:
   if (!usecaseId) return usecaseId;
 
   try {
-    await fetch(`${BASE_URL}/${KEY}/${usecaseId}/persona`, {
+    const data = await fetch(`${BASE_URL}/${KEY}/${usecaseId}/persona`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -139,9 +139,10 @@ export async function api_create_persona(usecaseId: string | undefined, persona:
       },
       body: JSON.stringify(persona),
     });
-    return usecaseId;
+    const result = await data.json();
+    return result;
   } catch (error) {
-    return usecaseId;
+    return false;
   }
 }
 
