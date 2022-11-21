@@ -8,6 +8,7 @@ export interface Usecase {
   published: boolean;
   name: string;
   goal?: string;
+  domain?: string;
   status?: string;
   settings?: UsecaseSettings;
   stats?: {
@@ -21,7 +22,6 @@ export interface UsecaseSettings {
   ai_task?: string;
   ai_method?: [string];
   data_type?: string;
-  model_outcome?: string;
   model_mode?: string;
   ml_model?: string;
   assessments?: [string];

@@ -26,6 +26,7 @@ import React, { useEffect, useState } from 'react';
 
 import type { Usecase } from '@/models/usecase';
 import { api_create, api_get_all } from '@/services/isee/usecases';
+import { get_domains } from '@/services/isee/ontology';
 
 const Welcome: React.FC = () => {
   const style = {
@@ -36,6 +37,7 @@ const Welcome: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const [useCases, setUseCases] = useState([]);
+  const [domains, setDomains] = useState<API.OntoPair[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -45,6 +47,16 @@ const Welcome: React.FC = () => {
   }, []);
 
   const showModal = () => {
+    get_domains()
+      .then((response) => {
+        if (response) {
+          setDomains(response)
+        }
+      })
+      .catch((error) => {
+        console.log("onto-error: User Domains", error);
+        message.error("Error Reading Ontology - E501");
+      });
     setIsModalVisible(true);
   };
 
@@ -66,7 +78,7 @@ const Welcome: React.FC = () => {
     handleOk();
     await api_create(usecase);
     get_all();
-    message.success('Succesfully Added Usecase');
+    message.success('Succesfully Created New Usecase');
   }
 
   const onFinish = (values: any) => {
@@ -80,12 +92,12 @@ const Welcome: React.FC = () => {
         ai_task: '',
         // ai_method: [],
         data_type: '',
-        model_outcome: '',
         ml_model: '',
         model_mode: 'file',
         completed: false,
       },
       name: values.name,
+      domain: values.domain,
       goal: values.goal,
       personas: [],
     };
@@ -121,27 +133,30 @@ const Welcome: React.FC = () => {
             name="name"
             rules={[{ required: true, message: 'Input is required!' }]}
           >
-            <Input />
+            <Input placeholder="Name of the usecase" />
           </Form.Item>
 
           <Form.Item
             label="Domain"
             name="domain"
-            rules={[{ required: false, message: 'Input is required!' }]}
+            rules={[{ required: true, message: 'Please select a suitable domain!' }]}
           >
-            <Select>
-              <Select.Option value="finance">Finance</Select.Option>
-              <Select.Option value="healthcare">Healthcare</Select.Option>
-              <Select.Option value="technology">Technology</Select.Option>
+            <Select placeholder="Select Domain" >
+              {domains.map((option: API.OntoPair) => (
+                <Select.Option value={option.key} key={option.key}>
+                  {option.label}
+                </Select.Option>
+              ))}
+
             </Select>
           </Form.Item>
 
           <Form.Item
             label="Goal of the usecase"
             name="goal"
-            rules={[{ required: false, message: 'Input is required!' }]}
+            rules={[{ required: true, message: 'Input is required!' }]}
           >
-            <Input />
+            <Input placeholder="Goal of my usecase is to..." />
           </Form.Item>
         </Form>
       </Modal>
