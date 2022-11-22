@@ -4,10 +4,10 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 
 #ARG REACT_APP_ISEE_API
-#ENV REACT_APP_ISEE_API=$REACT_APP_ISEE_API
+ENV REACT_APP_ISEE_API=https://api-dev.isee4xai.com/api
 
 #ARG REACT_APP_ISEE_ONTOAPI
-#ENV REACT_APP_ISEE_ONTOAPI=$REACT_APP_ISEE_ONTOAPI
+ENV REACT_APP_ISEE_ONTOAPI=https://api-onto-dev.isee4xai.com/api 
 
 COPY package.json ./
 RUN npm i
