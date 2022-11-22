@@ -20,7 +20,7 @@ import {
 import React, { useEffect, useState } from 'react';
 
 import type { Explainer } from '@/models/explainer';
-import { api_create, api_get_all } from '@/services/isee/explainers';
+import { api_create, api_get_all, api_get_explainers_lib, api_get_explainers_lib_single } from '@/services/isee/explainers';
 import { template } from 'lodash';
 import { get_domains, get_explainer_fields } from '@/services/isee/ontology';
 
@@ -211,7 +211,9 @@ const Explainers: React.FC = () => {
   const [explainers, setExplainers] = useState([]);
 
   const [ontoValues, setOntoValues] = useState<API.OntoExplainerParams>();
+  const [explainersLib, setExplainersLib] = useState([])
 
+  const [form] = Form.useForm();
 
   const { TextArea } = Input;
 
@@ -235,6 +237,17 @@ const Explainers: React.FC = () => {
         message.error("Error Reading Ontology - E503");
       });
 
+    api_get_explainers_lib()
+      .then((response) => {
+        if (response) {
+          setExplainersLib(response)
+        }
+      })
+      .catch((error) => {
+        console.log("explainers-error: User Domains", error);
+        message.error("Error Reading Ontology - E500");
+      });
+
     setIsModalVisible(true);
   };
 
@@ -250,6 +263,23 @@ const Explainers: React.FC = () => {
     const data = await api_get_all();
     setExplainers(data);
   }
+
+  async function changeExplainer(selected: any) {
+
+    api_get_explainers_lib_single(selected)
+      .then((response) => {
+        form.setFieldsValue({
+          explainer_description: response._method_description,
+          metadata: response.meta
+        });
+      })
+      .catch((error) => {
+        console.log("explainers-error: User Domains", error);
+        message.error("Error Reading Ontology - E500");
+      });
+  };
+
+
 
   const filterCascader = (inputValue: string, path: API.OntoOption[]) =>
     path.some(
@@ -305,6 +335,7 @@ const Explainers: React.FC = () => {
         <Form
           id="create"
           name="create"
+          form={form}
           layout="vertical"
           labelCol={{ span: 0 }}
           initialValues={{ remember: true }}
@@ -318,13 +349,14 @@ const Explainers: React.FC = () => {
             tooltip=""
             rules={[{ required: true, message: 'Input is required!' }]}
           >
-            {/* https://explainers-dev.isee4xai.com/ */}
-            <Select>
-              <Select.Option value="/Tabular/DicePublic">/Tabular/DicePublic</Select.Option>
-              <Select.Option value="/Tabular/Anchors">/Tabular/Anchors</Select.Option>
-              <Select.Option value="/Tabular/Anchors">/Tabular/Anchors</Select.Option>
-              <Select.Option value="/Images/GradCamTorch">/Images/GradCamTorch</Select.Option>
+            <Select placeholder="Select Explainer" onChange={changeExplainer}>
+              {explainersLib.map((option) => (
+                <Select.Option key={option} value={option}>
+                  {option}
+                </Select.Option>
+              ))}
             </Select>
+
           </Form.Item>
 
           <Form.Item
