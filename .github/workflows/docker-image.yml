@@ -25,8 +25,8 @@ jobs:
           file: Dockerfile.dev
           tags: isee4xai/cockpit:dev
           build-args: |
-                REACT_APP_ISEE_API=${{REACT_APP_ISEE_API}}
-                REACT_APP_ISEE_ONTOAPI=${{REACT_APP_ISEE_ONTOAPI}}
+                REACT_APP_ISEE_API=${{ REACT_APP_ISEE_API }}
+                REACT_APP_ISEE_ONTOAPI=${{ REACT_APP_ISEE_ONTOAPI }}
           
   deploy:
     needs: build
