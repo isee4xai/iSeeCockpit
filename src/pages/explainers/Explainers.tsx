@@ -270,7 +270,7 @@ const Explainers: React.FC = () => {
       .then((response) => {
         form.setFieldsValue({
           explainer_description: response._method_description,
-          metadata: response.meta
+          metadata: JSON.stringify(response.meta, null, 4)
         });
       })
       .catch((error) => {
@@ -519,12 +519,15 @@ const Explainers: React.FC = () => {
             rules={[{ required: true, message: 'Input is required!' }]}
           >
             {/* http://www.w3id.org/iSeeOnto/explainer#Time_Complexity*/}
-            <Select>
-              <Select.Option value="Exponential_time">Exponential time</Select.Option>
-              <Select.Option value="Factorial_time">Factorial time</Select.Option>
-              <Select.Option value="Linearithmic_time">Linearithmic time</Select.Option>
-              <Select.Option value="Log-logarithmic_time">Log-logarithmic time</Select.Option>
+
+            <Select placeholder="Computational Complexity">
+              {ontoValues?.ComputationalComplexity.map((option) => (
+                <Select.Option key={option.key} value={option.key}>
+                  {option.label}
+                </Select.Option>
+              ))}
             </Select>
+
           </Form.Item>
 
           <Form.Item
@@ -566,11 +569,12 @@ const Explainers: React.FC = () => {
             rules={[{ required: true, message: 'Input is required!' }]}
           >
             {/* Ike to add */}
-            <Select>
-              <Select.Option value="tfv1">Tensorflow V1</Select.Option>
-              <Select.Option value="tfv2">Tensorflow V1</Select.Option>
-              <Select.Option value="pytorch">PyTorch</Select.Option>
-              <Select.Option value="sklearn">SKLearn</Select.Option>
+            <Select placeholder="Implementation Framework" mode="multiple">
+              {ontoValues?.Implementation_Framework.map((option) => (
+                <Select.Option key={option.key} value={option.key}>
+                  {option.label}
+                </Select.Option>
+              ))}
             </Select>
           </Form.Item>
 
@@ -583,8 +587,8 @@ const Explainers: React.FC = () => {
             <TextArea
               autoSize
               defaultValue=''
-              allowClear
               size="large"
+              disabled
             />
           </Form.Item>
 
