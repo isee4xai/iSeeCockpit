@@ -20,8 +20,8 @@ declare namespace API {
   }
 
   type OntoOption = {
-    key?: string;
-    label?: string;
+    key: string;
+    label: string;
     parent?: string;
     children?: OntoOption[];
   }
@@ -33,6 +33,20 @@ declare namespace API {
     DATASET_TYPE: OntoPair[],
     AI_MODEL_A_METRIC: OntoPair[],
     KNOWLEDGE_LEVEL: OntoPair[],
+  }
+
+  type OntoExplainerParams = {
+    ExplainabilityTechnique: OntoOption[],
+    DatasetType: OntoPair[],
+    Explanation: OntoPair[],
+    Concurrentness: OntoOption[],
+    Scope: OntoOption[],
+    Portability: OntoOption[],
+    Target: OntoOption[],
+    InformationContentEntity: OntoOption[],
+    ComputationalComplexity: OntoOption[],
+    AIMethod: OntoOption[],
+    AITask: OntoOption[]
   }
 
   type LoginResult = {

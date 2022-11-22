@@ -14,13 +14,15 @@ import {
   Select,
   Tag,
   Table,
-  Typography
+  Typography,
+  Cascader
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 import type { Explainer } from '@/models/explainer';
 import { api_create, api_get_all } from '@/services/isee/explainers';
 import { template } from 'lodash';
+import { get_domains, get_explainer_fields } from '@/services/isee/ontology';
 
 const columns: ColumnsType<Explainer> = [
   {
@@ -208,6 +210,9 @@ const Explainers: React.FC = () => {
 
   const [explainers, setExplainers] = useState([]);
 
+  const [ontoValues, setOntoValues] = useState<API.OntoExplainerParams>();
+
+
   const { TextArea } = Input;
 
 
@@ -219,6 +224,17 @@ const Explainers: React.FC = () => {
   }, []);
 
   const showModal = () => {
+    get_explainer_fields()
+      .then((response) => {
+        if (response) {
+          setOntoValues(response)
+        }
+      })
+      .catch((error) => {
+        console.log("onto-error: User Domains", error);
+        message.error("Error Reading Ontology - E503");
+      });
+
     setIsModalVisible(true);
   };
 
@@ -234,6 +250,12 @@ const Explainers: React.FC = () => {
     const data = await api_get_all();
     setExplainers(data);
   }
+
+  const filterCascader = (inputValue: string, path: API.OntoOption[]) =>
+    path.some(
+      (option) => (option.label as string).toLowerCase().indexOf(inputValue.toLowerCase()) > -1,
+    );
+
 
   async function create(explainer: Explainer) {
     console.log('Create Explainer:', JSON.stringify(explainer));
@@ -268,7 +290,7 @@ const Explainers: React.FC = () => {
   return (
     <PageContainer>
       <Modal
-        title="Create New Explainer"
+        title="Add New Explainer"
         visible={isModalVisible}
         onCancel={handleCancel}
         footer={[
@@ -322,11 +344,11 @@ const Explainers: React.FC = () => {
             rules={[{ required: true, message: 'Input is required!' }]}
           >
             {/* http://www.w3id.org/iSeeOnto/explainer#ExplainabilityTechnique */}
-            <Select>
-              <Select.Option value="Data-driven">Data-driven</Select.Option>
-              <Select.Option value="DiCE">DiCE</Select.Option>
-              <Select.Option value="Knowledge_Extraction">Knowledge_Extraction</Select.Option>
-            </Select>
+            <Cascader fieldNames={{ label: 'label', value: 'key', children: 'children' }}
+              options={ontoValues?.ExplainabilityTechnique.children}
+              showSearch={{ filterCascader }}
+              placeholder="Pick or Search Explainability Technique"
+              changeOnSelect />
           </Form.Item>
 
           <Form.Item
@@ -336,11 +358,15 @@ const Explainers: React.FC = () => {
             rules={[{ required: true, message: 'Input is required!' }]}
           >
             {/* http://www.w3id.org/iSeeOnto/explainer#DatasetType */}
-            <Select>
-              <Select.Option value="text">text</Select.Option>
-              <Select.Option value="time_series">time_series</Select.Option>
-              <Select.Option value="univariate">univariate</Select.Option>
+
+            <Select placeholder="Dataset Type">
+              {ontoValues?.DatasetType.map((option) => (
+                <Select.Option key={option.key} value={option.key}>
+                  {option.label}
+                </Select.Option>
+              ))}
             </Select>
+
           </Form.Item>
 
           <Form.Item
@@ -350,11 +376,11 @@ const Explainers: React.FC = () => {
             rules={[{ required: true, message: 'Input is required!' }]}
           >
             {/* http://linkedu.eu/dedalo/explanationPattern.owl#Explanation */}
-            <Select>
-              <Select.Option value="Neighbourhood_Explanation">Neighbourhood Explanation</Select.Option>
-              <Select.Option value="Feature_Influence_Explanation">Feature Influence Explanation</Select.Option>
-              <Select.Option value="Prototype_Explanation">Prototype Explanation</Select.Option>
-            </Select>
+            <Cascader fieldNames={{ label: 'label', value: 'key', children: 'children' }}
+              options={ontoValues?.Explanation.children}
+              showSearch={{ filterCascader }}
+              placeholder="Pick or Search Explainability Type"
+              changeOnSelect />
           </Form.Item>
 
           <Form.Item
@@ -375,10 +401,15 @@ const Explainers: React.FC = () => {
             rules={[{ required: true, message: 'Input is required!' }]}
           >
             {/* http://www.w3id.org/iSeeOnto/explainer#ExplainerConcurrentness*/}
-            <Select>
-              <Select.Option value="ante-hoc">ante-hoc</Select.Option>
-              <Select.Option value="post-hoc">post-hoc</Select.Option>
+
+            <Select placeholder="Explainer Concurrentness">
+              {ontoValues?.Concurrentness.map((option) => (
+                <Select.Option key={option.key} value={option.key}>
+                  {option.label}
+                </Select.Option>
+              ))}
             </Select>
+
           </Form.Item>
 
           <Form.Item
@@ -389,10 +420,12 @@ const Explainers: React.FC = () => {
             rules={[{ required: true, message: 'Input is required!' }]}
           >
             {/* http://www.w3id.org/iSeeOnto/explainer#Portability */}
-            <Select>
-              <Select.Option value="model-agnostic">Model-agnostic</Select.Option>
-              <Select.Option value="modelClassSpecific">Model-class specific</Select.Option>
-              <Select.Option value="modelSpecific">Model-specific</Select.Option>
+            <Select placeholder="Explainer Portability">
+              {ontoValues?.Portability.map((option) => (
+                <Select.Option key={option.key} value={option.key}>
+                  {option.label}
+                </Select.Option>
+              ))}
             </Select>
           </Form.Item>
 
@@ -404,10 +437,12 @@ const Explainers: React.FC = () => {
             rules={[{ required: true, message: 'Input is required!' }]}
           >
             {/* http://www.w3id.org/iSeeOnto/explainer#ExplanationScope*/}
-            <Select>
-              <Select.Option value="cohort">cohort</Select.Option>
-              <Select.Option value="global">global</Select.Option>
-              <Select.Option value="local">local</Select.Option>
+            <Select placeholder="Explanation Scope">
+              {ontoValues?.Scope.map((option) => (
+                <Select.Option key={option.key} value={option.key}>
+                  {option.label}
+                </Select.Option>
+              ))}
             </Select>
           </Form.Item>
 
@@ -419,10 +454,12 @@ const Explainers: React.FC = () => {
             rules={[{ required: true, message: 'Input is required!' }]}
           >
             {/* http://www.w3id.org/iSeeOnto/explainer#ExplanationTarget*/}
-            <Select>
-              <Select.Option value="data">data</Select.Option>
-              <Select.Option value="prediction">prediction</Select.Option>
-              <Select.Option value="model">model</Select.Option>
+            <Select placeholder="Explanation Target">
+              {ontoValues?.Target.map((option) => (
+                <Select.Option key={option.key} value={option.key}>
+                  {option.label}
+                </Select.Option>
+              ))}
             </Select>
           </Form.Item>
 
@@ -434,12 +471,12 @@ const Explainers: React.FC = () => {
           >
             {/* multi-select */}
             {/* http://semanticscience.org/resource/SIO_000015*/}
-            <Select>
-              <Select.Option value="database_table">database table</Select.Option>
-              <Select.Option value="figure">figure</Select.Option>
-              <Select.Option value="image">image</Select.Option>
-              <Select.Option value="chart">chart</Select.Option>
-            </Select>
+            <Cascader fieldNames={{ label: 'label', value: 'key', children: 'children' }}
+              options={ontoValues?.InformationContentEntity.children}
+              showSearch={{ filterCascader }}
+              placeholder="Pick or Search Presentation Formats"
+              multiple
+              changeOnSelect />
           </Form.Item>
 
           <Form.Item
@@ -466,11 +503,12 @@ const Explainers: React.FC = () => {
           >
             {/* multi-select */}
             {/* https://purl.org/heals/eo#ArtificialIntelligenceMethod*/}
-            <Select>
-              <Select.Option value="Markov_Process_Model">Markov Process Model</Select.Option>
-              <Select.Option value="Instance_Based_Learning">Instance Based Learning</Select.Option>
-              <Select.Option value="Dimensionality_Reduction">Dimensionality Reduction</Select.Option>
-            </Select>
+            <Cascader fieldNames={{ label: 'label', value: 'key', children: 'children' }}
+              options={ontoValues?.AIMethod.children}
+              showSearch={{ filterCascader }}
+              placeholder="Pick or Search AI Methods"
+              multiple
+              changeOnSelect />
           </Form.Item>
 
           <Form.Item
@@ -481,11 +519,12 @@ const Explainers: React.FC = () => {
           >
             {/* multi-select */}
             {/* https://purl.org/heals/eo#AITask */}
-            <Select>
-              <Select.Option value="AnomalyDetection">Anomaly Detection</Select.Option>
-              <Select.Option value="Audio_Processing">Audio Processing</Select.Option>
-              <Select.Option value="Autonomous_Driving">Autonomous Driving</Select.Option>
-            </Select>
+            <Cascader fieldNames={{ label: 'label', value: 'key', children: 'children' }}
+              options={ontoValues?.AIMethod.children}
+              showSearch={{ filterCascader }}
+              placeholder="Pick or Search AI Tasks"
+              multiple
+              changeOnSelect />
           </Form.Item>
 
           <Form.Item

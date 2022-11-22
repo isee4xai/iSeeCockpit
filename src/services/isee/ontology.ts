@@ -51,3 +51,24 @@ export async function get_usecase_fields() {
   }
 }
 
+export async function get_explainer_fields() {
+  try {
+    const data = await fetch(`${ONTOAPI_URL}/${KEY}/cockpit/ExplainerFields`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    });
+    const result = await data.json();
+    if (result.message) {
+      message.error("Error Reading Ontology - E003");
+      return false;
+    }
+
+    return result || false;
+  } catch (error) {
+    message.error("Error Reading Ontology - API Error");
+    return false;
+  }
+}
+
