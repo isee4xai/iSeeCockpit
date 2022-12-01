@@ -302,19 +302,10 @@ const Create: React.FC<Params> = (props) => {
             }
             extra={genExtra()}
             headStyle={{ backgroundColor: '#fafafa', border: '1px solid #d9d9d9' }}
-          // actions={[
-          //   <Button type="primary" htmlType="submit">
-          //     Save AI Model Settings
-          //   </Button>,
-          // ]}
           >
             <Form
               name="basic"
-              // layout="vertical"
               labelCol={{ span: 0 }}
-              // wrapperCol={{ span: 10 }}
-              // onFinish={onFinish}
-              // onFinishFailed={onFinishFailed}
               onFieldsChange={() => {
                 SetIsSettingChanged(true);
                 const updateSettings: UsecaseSettings = settingsForm.getFieldsValue();
@@ -325,7 +316,6 @@ const Create: React.FC<Params> = (props) => {
             >
               <Row gutter={20}>
                 <Col span={12} className="gutter-row">
-
                   <Form.Item
                     label="AI Task"
                     name="ai_task"
@@ -333,7 +323,6 @@ const Create: React.FC<Params> = (props) => {
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
                     <Cascader fieldNames={{ label: 'label', value: 'key', children: 'children' }} options={ontoValues?.AI_TASK.children} showSearch={{ filterCascader }} placeholder="Select the AI Task" changeOnSelect />
-
                   </Form.Item>
 
                   <Form.Item
@@ -342,9 +331,7 @@ const Create: React.FC<Params> = (props) => {
                     tooltip="This is a required field"
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
-
                     <Cascader fieldNames={{ label: 'label', value: 'key', children: 'children' }} options={ontoValues?.AI_METHOD.children} showSearch={{ filterCascader }} placeholder="Select one or more AI Methods" changeOnSelect multiple maxTagCount="responsive" />
-
                   </Form.Item>
 
                   <Form.Item
@@ -378,25 +365,37 @@ const Create: React.FC<Params> = (props) => {
                   </Form.Item>
 
                   <Form.Item
-                    label="Number of features"
+                    label="Number of Features"
                     name="num_features"
-                    tooltip="This is a required field"
-                    rules={[{ required: false, message: 'Input is required!' }]}
+                    tooltip=""
+                  // rules={[{ required: true, message: 'Input is required!' }]}
                   >
-                    <InputNumber />
+                    <Select placeholder="Number of Features">
+                      {ontoValues?.FEATURE_RANGE.map((option) => (
+                        <Select.Option key={option.key} value={option.key}>
+                          {option.label}
+                        </Select.Option>
+                      ))}
+                    </Select>
                   </Form.Item>
 
                   <Form.Item
                     label="Number of Instances"
                     name="num_instances"
-                    tooltip="This is a required field"
-                    rules={[{ required: false, message: 'Input is required!' }]}
+                    tooltip=""
+                  // rules={[{ required: true, message: 'Input is required!' }]}
                   >
-                    <InputNumber />
+                    <Select placeholder="Number of Instances">
+                      {ontoValues?.INSTANCE_RANGE.map((option) => (
+                        <Select.Option key={option.key} value={option.key}>
+                          {option.label}
+                        </Select.Option>
+                      ))}
+                    </Select>
                   </Form.Item>
 
                   <Form.Item
-                    label="ML Model Upload Method"
+                    label="Model Upload Method"
                     name="model_mode"
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
@@ -410,16 +409,33 @@ const Create: React.FC<Params> = (props) => {
                     </Radio.Group>
                   </Form.Item>
                   {settings?.model_mode == 'file' && (
-                    <Form.Item
-                      label="ML Model"
-                      name="model"
-                      tooltip="Please upload the model using any of the following file formats: json, h5, csv and pkl"
-                      rules={[{ required: false, message: 'Input is required!' }]}
-                    >
-                      <Upload {...uploadprops}>
-                        <Button icon={<UploadOutlined />}>Click to Upload Model</Button>
-                      </Upload>
-                    </Form.Item>
+                    <>
+                      <Form.Item
+                        label="Model File"
+                        name="model"
+                        tooltip="Please upload the model using any of the following file formats: json, h5, csv and pkl"
+                        rules={[{ required: false, message: 'Input is required!' }]}
+                      >
+                        <Upload {...uploadprops}>
+                          <Button icon={<UploadOutlined />}>Click to Upload Model</Button>
+                        </Upload>
+                      </Form.Item>
+
+                      <Form.Item
+                        label="Implementation Framework"
+                        name="model_backend"
+                        tooltip=""
+                      // rules={[{ required: true, message: 'Input is required!' }]}
+                      >
+                        <Select placeholder="Implementation Framework">
+                          {ontoValues?.IMPLEMENTATION_FRAMEWORK.map((option) => (
+                            <Select.Option key={option.key} value={option.key}>
+                              {option.label}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    </>
                   )}
                   {settings?.model_mode == 'api' && (
                     <Form.Item

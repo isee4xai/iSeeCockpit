@@ -568,7 +568,6 @@ const Explainers: React.FC = () => {
             tooltip=""
             rules={[{ required: true, message: 'Input is required!' }]}
           >
-            {/* Ike to add */}
             <Select placeholder="Implementation Framework" mode="multiple">
               {ontoValues?.Implementation_Framework.map((option) => (
                 <Select.Option key={option.key} value={option.key}>
