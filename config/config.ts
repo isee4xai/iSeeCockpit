@@ -10,9 +10,12 @@ export default defineConfig({
   dva: {
     hmr: true,
   },
+  locale: {
+    default: 'en-US',
+  },
   layout: {
     // https://umijs.org/zh-CN/plugins/plugin-layout
-    locale: false,
+    locale: true,
     siderWidth: 208,
     ...defaultSettings,
   },

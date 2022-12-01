@@ -3,6 +3,7 @@
 
 declare namespace API {
   type CurrentUser = {
+    _id?: string;
     name?: string;
     token?: string;
     email?: string;
@@ -33,6 +34,10 @@ declare namespace API {
     DATASET_TYPE: OntoPair[],
     AI_MODEL_A_METRIC: OntoPair[],
     KNOWLEDGE_LEVEL: OntoPair[],
+    IMPLEMENTATION_FRAMEWORK: OntoPair[],
+    FEATURE_RANGE: OntoPair[],
+    INSTANCE_RANGE: OntoPair[]
+
   }
 
   type OntoExplainerParams = {
@@ -46,7 +51,8 @@ declare namespace API {
     InformationContentEntity: OntoOption[],
     ComputationalComplexity: OntoOption[],
     AIMethod: OntoOption[],
-    AITask: OntoOption[]
+    AITask: OntoOption[],
+    Implementation_Framework: OntoOption[],
   }
 
   type LoginResult = {
