@@ -21,221 +21,175 @@ import React, { useEffect, useState } from 'react';
 
 import type { Explainer } from '@/models/explainer';
 import { api_create, api_get_all, api_get_explainers_lib, api_get_explainers_lib_single } from '@/services/isee/explainers';
-import { template } from 'lodash';
-import { get_domains, get_explainer_fields } from '@/services/isee/ontology';
-
-const columns: ColumnsType<Explainer> = [
-  {
-    title: 'Explainer',
-    dataIndex: 'name',
-    key: 'name',
-    render: text => <a>{text}</a>,
-    fixed: 'left',
-    width: '8%',
-  },
-  {
-    title: 'Description',
-    dataIndex: 'explainer_description',
-    key: 'explainer_description',
-    render: text => <Typography.Text ellipsis={true}>{text}</Typography.Text>,
-  },
-  {
-    title: 'Explainability Technique',
-    dataIndex: 'technique',
-    key: 'technique',
-  },
-  {
-    title: 'Dataset Type',
-    dataIndex: 'dataset_type',
-    key: 'dataset_type',
-  },
-  {
-    title: 'Explanation Type',
-    dataIndex: 'explanation_type',
-    key: 'explanation_type',
-  },
-  {
-    title: 'Explanation Description',
-    dataIndex: 'explanation_description',
-    key: 'explanation_description',
-    render: text => <Typography.Text ellipsis={true}>{text}</Typography.Text>,
-  },
-  {
-    title: 'Explainer Concurrentness',
-    dataIndex: 'concurrentness',
-    key: 'concurrentness',
-  },
-  {
-    title: 'Explainer Portability',
-    dataIndex: 'portability',
-    key: 'portability',
-  },
-  {
-    title: 'Explanation Scope',
-    dataIndex: 'scope',
-    key: 'scope',
-  },
-  {
-    title: 'Explanation Target',
-    dataIndex: 'target',
-    key: 'target',
-  },
-  {
-    title: 'Presentation Format',
-    dataIndex: 'presentations',
-    key: 'presentations',
-    render: (_, { presentations }) => (
-      <>
-        {presentations?.map(temp => {
-          return (
-            <Tag key={temp}>
-              {temp}
-            </Tag>
-          );
-        })}
-      </>
-    )
-  },
-  {
-    title: 'Computational Complexity',
-    dataIndex: 'complexity',
-    key: 'complexity',
-  },
-  {
-    title: 'Applicable AI Methods',
-    dataIndex: 'ai_method',
-    key: 'ai_method',
-    render: (_, { ai_methods }) => (
-      <>
-        {ai_methods?.map(temp => {
-          return (
-            <Tag key={temp}>
-              {temp}
-            </Tag>
-          );
-        })}
-      </>
-    )
-  },
-  {
-    title: 'Applicable AI Tasks',
-    dataIndex: 'ai_tasks',
-    key: 'ai_tasks',
-    render: (_, { ai_tasks }) => (
-      <>
-        {ai_tasks?.map(temp => {
-          return (
-            <Tag key={temp}>
-              {temp}
-            </Tag>
-          );
-        })}
-      </>
-    )
-  },
-  {
-    title: 'Implementation Framework',
-    dataIndex: 'implementation',
-    key: 'implementation',
-  },
-  {
-    title: 'Metadata',
-    dataIndex: 'metadata',
-    key: 'metadata',
-    render: text => <code>{text}</code>,
-  }
-];
-
-const data: Explainer[] = [
-  {
-    "name": "/Tabular/DicePublic",
-    "explainer_description": "This explainer will generate multiple counterfactuals for a given scenario",
-    "technique": "DiCE",
-    "dataset_type": "univariate",
-    "explanation_type": "Feature_Influence_Explanation",
-    "explanation_description": "Important features are at the beginning",
-    "concurrentness": "post-hoc",
-    "scope": "local",
-    "portability": "model-agnostic",
-    "target": "model",
-    "presentations": ["figure"],
-    "complexity": "Factorial_time",
-    "ai_methods": ["Instance_Based_Learning"],
-    "ai_tasks": ["Audio_Processing"],
-    "implementation": "tfv2",
-    "metadata": "{}"
-  },
-  {
-    "name": "/Tabular/DicePublic",
-    "explainer_description": "This explainer will generate multiple counterfactuals for a given scenario",
-    "technique": "LIME",
-    "dataset_type": "univariate",
-    "explanation_type": "Feature_Influence_Explanation",
-    "explanation_description": "Important features are at the beginning",
-    "concurrentness": "post-hoc",
-    "scope": "local",
-    "portability": "model-agnostic",
-    "target": "model",
-    "presentations": ["figure"],
-    "complexity": "Factorial_time",
-    "ai_methods": ["Instance_Based_Learning"],
-    "ai_tasks": ["Audio_Processing"],
-    "implementation": "tfv2",
-    "metadata": "{}"
-  },
-  {
-    "name": "/Tabular/DicePublic",
-    "explainer_description": "This explainer will generate multiple counterfactuals for a given scenario",
-    "technique": "DisCERN",
-    "dataset_type": "univariate",
-    "explanation_type": "Feature_Influence_Explanation",
-    "explanation_description": "Important features are at the beginning",
-    "concurrentness": "post-hoc",
-    "scope": "local",
-    "portability": "model-agnostic",
-    "target": "model",
-    "presentations": ["figure"],
-    "complexity": "Factorial_time",
-    "ai_methods": ["Instance_Based_Learning"],
-    "ai_tasks": ["Audio_Processing"],
-    "implementation": "tfv2",
-    "metadata": "{}"
-  }
-];
+import { get_explainer_fields } from '@/services/isee/ontology';
 
 
 const Explainers: React.FC = () => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const [explainers, setExplainers] = useState([]);
+  const [explainers, setExplainers] = useState<Explainer[]>([]);
 
   const [ontoValues, setOntoValues] = useState<API.OntoExplainerParams>();
   const [explainersLib, setExplainersLib] = useState([])
 
   const [form] = Form.useForm();
 
-  const { TextArea } = Input;
 
+  const columns: ColumnsType<Explainer> = [
+    {
+      title: 'Explainer',
+      dataIndex: 'name',
+      key: 'name',
+      render: text => <a>{text}</a>,
+      fixed: 'left',
+      width: '8%',
+    },
+    {
+      title: 'Description',
+      dataIndex: 'explainer_description',
+      key: 'explainer_description',
+      render: text => <Typography.Text ellipsis={true}>{text}</Typography.Text>,
+    },
+    {
+      title: 'Explainability Technique',
+      dataIndex: 'technique',
+      key: 'technique',
+      render: text =>
+        <Cascader fieldNames={{ label: 'label', value: 'key', children: 'children' }}
+          options={ontoValues?.ExplainabilityTechnique.children}
+          value={text}
+          placeholder="Pick or Search Explainability Technique"
+          changeOnSelect />
+
+    },
+    {
+      title: 'Dataset Type',
+      dataIndex: 'dataset_type',
+      key: 'dataset_type',
+      render: text =>
+        <Select placeholder="Dataset Type" value={text} disabled bordered={false} >
+          {ontoValues?.DatasetType.map((option) => (
+            <Select.Option key={"op-" + option.key} value={option.key} >
+              {option.label}
+            </Select.Option>
+          ))}
+        </Select>
+
+    },
+    {
+      title: 'Explanation Type',
+      dataIndex: 'explanation_type',
+      key: 'explanation_type',
+    },
+    {
+      title: 'Explanation Description',
+      dataIndex: 'explanation_description',
+      key: 'explanation_description',
+      render: text => <Typography.Text ellipsis={true}>{text}</Typography.Text>,
+    },
+    {
+      title: 'Explainer Concurrentness',
+      dataIndex: 'concurrentness',
+      key: 'concurrentness',
+    },
+    {
+      title: 'Explainer Portability',
+      dataIndex: 'portability',
+      key: 'portability',
+    },
+    {
+      title: 'Explanation Scope',
+      dataIndex: 'scope',
+      key: 'scope',
+    },
+    {
+      title: 'Explanation Target',
+      dataIndex: 'target',
+      key: 'target',
+    },
+    {
+      title: 'Presentation Format',
+      dataIndex: 'presentations',
+      key: 'presentations',
+      render: (_, { presentations }) => (
+        <>
+          {presentations?.map(temp => {
+            return (
+              <Tag key={temp}>
+                {temp}
+              </Tag>
+            );
+          })}
+        </>
+      )
+    },
+    {
+      title: 'Computational Complexity',
+      dataIndex: 'complexity',
+      key: 'complexity',
+    },
+    {
+      title: 'Applicable AI Methods',
+      dataIndex: 'ai_methods',
+      key: 'ai_methods',
+      render: (_, { ai_methods }) => (
+        <>
+          {ai_methods?.map(temp => {
+            return (
+              <Tag key={temp}>
+                {temp}
+              </Tag>
+            );
+          })}
+        </>
+      )
+    },
+    {
+      title: 'Applicable AI Tasks',
+      dataIndex: 'ai_tasks',
+      key: 'ai_tasks',
+      render: (_, { ai_tasks }) => (
+        <>
+          {ai_tasks?.map(temp => {
+            return (
+              <Tag key={temp}>
+                {temp}
+              </Tag>
+            );
+          })}
+        </>
+      )
+    },
+    {
+      title: 'Implementation Framework',
+      dataIndex: 'implementation',
+      key: 'implementation',
+    },
+    {
+      title: 'Metadata',
+      dataIndex: 'metadata',
+      key: 'metadata',
+      render: text => <code>{text}</code>,
+    }
+  ];
+
+
+  const { TextArea } = Input;
 
   useEffect(() => {
     (async () => {
+      const fields = await get_explainer_fields()
+      setOntoValues(fields)
+      console.log(fields)
+
       const data = await api_get_all();
+      console.log(data)
       setExplainers(data);
     })();
   }, []);
 
   const showModal = () => {
-    get_explainer_fields()
-      .then((response) => {
-        if (response) {
-          setOntoValues(response)
-        }
-      })
-      .catch((error) => {
-        console.log("onto-error: User Domains", error);
-        message.error("Error Reading Ontology - E503");
-      });
 
     api_get_explainers_lib()
       .then((response) => {
@@ -555,7 +509,7 @@ const Explainers: React.FC = () => {
             {/* multi-select */}
             {/* https://purl.org/heals/eo#AITask */}
             <Cascader fieldNames={{ label: 'label', value: 'key', children: 'children' }}
-              options={ontoValues?.AIMethod.children}
+              options={ontoValues?.AITask.children}
               showSearch={{ filterCascader }}
               placeholder="Pick or Search AI Tasks"
               multiple
@@ -610,7 +564,7 @@ const Explainers: React.FC = () => {
       />
       {/* <Card> */}
       {/* <Row gutter={20}> */}
-      <Table columns={columns} dataSource={data} scroll={{ x: 2300 }} />
+      <Table columns={columns} dataSource={explainers} scroll={{ x: 2300 }} />
     </PageContainer >
   );
 };
