@@ -1,98 +1,191 @@
 const DATA_FILEDS = {
-  AITask: [
-    'Abductive Task',
-    'Rule Based',
-    'Deductive Task',
-    'Inductive Task',
-    'Forecasting',
-    'Anomaly Detection',
-    'Audio Processing',
-    'Autonomous Driving',
-    'Classification',
-    'Binary Classification',
-    'Multi-class Classification',
-    'Multi-label Classification',
-    'Clustering',
-    'Divisive Clustering',
-    'Hierarchical Clustering',
-    'Computational Linguistics',
-    'Automatic Speech Recognition',
-    'Machine Translation',
-    'Text Summarisation',
-    'Computer Vision',
-    'Edge Detection',
-    'Face Recognition',
-    'Image Detection',
-    'Image Generation',
-    'Image Restoration',
-    'Image Segmentation',
-    'Object Tracking',
-    'Video Motion Tracking',
-    'Forcasting',
-    'Information Retrieval',
-    'Ranking',
-    'Recommendation',
-    'Optimisation',
-    'Regression',
-    'Signal Processing',
-  ],
-  DatasetType: ['multivariate', 'univariate', 'image', 'text', 'time-series'],
-  AIMethod: [
-    'Computer Heuristics',
-    'Metaheuristics',
-    'Convolutional Neural Network',
-    'Dimensionality Reduction',
-    'Discrete Cosine Transformation',
-    'Flexible Discriminant Analysis',
-    'Fourier Transformation',
-    'Linear Discriminant Analysis',
-    'Mixture Discriminant Analysis',
-    'Partial Least Squares Regression',
-    'Principal Component Analysis',
-    'Quadratic Discriminant Analysis',
-    'Sammon Mapping',
-    't-SNE',
-    'Fuzzy Logic',
-    'Instance Based Learning',
-    'Case Based Reasoning',
-    'k-Nearest Neighbour',
-    'Knowledge based Systems',
-    'Expert Systems',
-    'Knowledge Bases',
-    'Biological Ontologies',
-    'Machine Learning',
-    'Reinforcement Learning',
-    'Policy-based Reinforcement Learning',
-    'Q-Learning',
-    'SARSA',
-    'Temporal Difference',
-    'Supervised Machine Learning',
-    'Decision Tree',
-    'Deep Belief Network',
-    'Ensemble Method',
-    'AdaBoost',
-    'Bootstrapped Aggregation',
-    'Gradient Boosting',
-    'Gradient Tree Boosting',
-  ],
-  Datatype: ['categorical', 'numerical', 'image', 'ordinal'],
-  ModelOutcome: ['Binary', 'Multi-Class', 'Range'],
-  AssetmentType: [
-    'Accuracy',
-    'F1 Score',
-    'Precision',
-    'Recall',
-    'AUC',
-    'Error Rate',
-    'Top K Accuracy',
-    'Jaccard Score',
-    'Explained Variance',
-    'Mean Absolute Error',
-    'Mean Squared Error',
-    'Adjusted Mutual Info Score',
-    'Adjusted Rand Score',
-    'Completeness Score',
-    'Mutual Info Score',
+  INTENT_QUESTIONS: [
+    {
+      "name": "http://www.w3id.org/iSeeOnto/user#Debugging",
+      "label": "Debugging",
+      "questions": [
+        {
+          "text": "Is this the same outcome for others like this instance?",
+          "target": "http://www.w3id.org/iSeeOnto/aimodel#Dataset"
+        },
+        {
+          "text": "Is this instance a common occurrence?",
+          "target": "http://www.w3id.org/iSeeOnto/aimodel#Dataset"
+        }
+      ]
+    },
+    {
+      "name": "http://www.w3id.org/iSeeOnto/user#Transparency",
+      "label": "Transparency",
+      "questions": [
+        {
+          "text": "How much evidence have you considered to build the AI system?",
+          "target": "http://www.w3id.org/iSeeOnto/aimodel#Dataset"
+        },
+        {
+          "text": "How much evidence have you considered to make this prediction?",
+          "target": "http://www.w3id.org/iSeeOnto/aimodel#Dataset"
+        },
+        {
+          "text": "What are the possible outcomes?",
+          "target": "http://www.w3id.org/iSeeOnto/aimodel#Dataset"
+        },
+        {
+          "text": "What features are used?",
+          "target": "http://www.w3id.org/iSeeOnto/aimodel#Dataset"
+        },
+        {
+          "text": "To what extent does feature X impact the AI system?",
+          "target": "https://purl.org/heals/eo#ArtificialIntelligenceMethod"
+        },
+        {
+          "text": "What are the important features for the system?",
+          "target": "https://purl.org/heals/eo#ArtificialIntelligenceMethod"
+        },
+        {
+          "text": "What features does the system consider?",
+          "target": "https://purl.org/heals/eo#ArtificialIntelligenceMethod"
+        },
+        {
+          "text": "What is the scope of the AI system's capability?",
+          "target": "https://purl.org/heals/eo#ArtificialIntelligenceMethod"
+        },
+        {
+          "text": "How does the model respond to feature X?",
+          "target": "https://purl.org/heals/eo#ArtificialIntelligenceMethod"
+        },
+        {
+          "text": "To what extent does feature X impact the prediction?",
+          "target": "https://purl.org/heals/eo#SystemRecommendation"
+        },
+        {
+          "text": "How does feature X impact the prediction?",
+          "target": "https://purl.org/heals/eo#SystemRecommendation"
+        },
+        {
+          "text": "What are the necessary features that guarantee this prediction?",
+          "target": "https://purl.org/heals/eo#SystemRecommendation"
+        },
+        {
+          "text": "Why is instance X given prediction Y?",
+          "target": "https://purl.org/heals/eo#SystemRecommendation"
+        },
+        {
+          "text": "Which feature contributed to prediction Y?",
+          "target": "https://purl.org/heals/eo#SystemRecommendation"
+        }
+      ]
+    },
+    {
+      "name": "http://www.w3id.org/iSeeOnto/user#Performance",
+      "label": "Performance",
+      "questions": [
+        {
+          "text": "Which instances get prediction Y?",
+          "target": "http://www.w3id.org/iSeeOnto/aimodel#Dataset"
+        },
+        {
+          "text": "What are the results when other people use the AI System?",
+          "target": "https://purl.org/heals/eo#ArtificialIntelligenceMethod"
+        },
+        {
+          "text": "How reliable is the system?",
+          "target": "https://purl.org/heals/eo#ArtificialIntelligenceMethod"
+        },
+        {
+          "text": "In what situations does the system make errors?",
+          "target": "https://purl.org/heals/eo#ArtificialIntelligenceMethod"
+        },
+        {
+          "text": "What are the limitations of the system?",
+          "target": "https://purl.org/heals/eo#ArtificialIntelligenceMethod"
+        },
+        {
+          "text": "In what situations is the system likely to be correct?",
+          "target": "https://purl.org/heals/eo#ArtificialIntelligenceMethod"
+        },
+        {
+          "text": "How confident/accurate that this is the right prediction?",
+          "target": "https://purl.org/heals/eo#SystemRecommendation"
+        }
+      ]
+    },
+    {
+      "name": "http://www.w3id.org/iSeeOnto/user#Comprehensibility",
+      "label": "Comprehensibility",
+      "questions": [
+        {
+          "text": "What is the system overall logic?",
+          "target": "https://purl.org/heals/eo#ArtificialIntelligenceMethod"
+        },
+        {
+          "text": "What kind of algorithm is used in the system?",
+          "target": "https://purl.org/heals/eo#ArtificialIntelligenceMethod"
+        },
+        {
+          "text": "What does {term} mean?",
+          "target": "https://purl.org/heals/eo#ArtificialIntelligenceMethod"
+        },
+        {
+          "text": "How to improve the system performance?",
+          "target": "https://purl.org/heals/eo#ArtificialIntelligenceMethod"
+        }
+      ]
+    },
+    {
+      "name": "http://www.w3id.org/iSeeOnto/user#Effectiveness",
+      "label": "Effectiveness",
+      "questions": [
+        {
+          "text": "What does this prediction mean?",
+          "target": "https://purl.org/heals/eo#SystemRecommendation"
+        },
+        {
+          "text": "What kind of instance would get the same prediction?",
+          "target": "https://purl.org/heals/eo#SystemRecommendation"
+        },
+        {
+          "text": "What would the system predict if features X changed to Y?",
+          "target": "https://purl.org/heals/eo#SystemRecommendation"
+        }
+      ]
+    },
+    {
+      "name": "http://www.w3id.org/iSeeOnto/user#Actionability",
+      "label": "Actionability",
+      "questions": [
+        {
+          "text": "What kind of instance would get a different prediction?",
+          "target": "https://purl.org/heals/eo#SystemRecommendation"
+        },
+        {
+          "text": "How much can I change feature X to get the same prediction?",
+          "target": "https://purl.org/heals/eo#SystemRecommendation"
+        },
+        {
+          "text": "How to get a different prediction?",
+          "target": "https://purl.org/heals/eo#SystemRecommendation"
+        },
+        {
+          "text": "How to change the instance to get a different prediction?",
+          "target": "https://purl.org/heals/eo#SystemRecommendation"
+        },
+        {
+          "text": "Why is prediction X not Y?",
+          "target": "https://purl.org/heals/eo#SystemRecommendation"
+        },
+      ]
+    },
+    {
+      "name": "http://www.w3id.org/iSeeOnto/user#Compliancy",
+      "label": "Compliancy",
+      "questions": [
+        {
+          "text": "Why are instances A and B given different predictions?",
+          "target": "https://purl.org/heals/eo#SystemRecommendation"
+        }
+      ]
+    }
   ],
   IntentType: [
     'Debugging',

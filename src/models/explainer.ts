@@ -14,6 +14,6 @@ export interface Explainer {
     complexity?: string;
     ai_methods?: string[];
     ai_tasks?: string[];
-    implementation?: string;
+    implementation?: string[];
     metadata?: string;
 }

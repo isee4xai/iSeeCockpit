@@ -2,6 +2,7 @@ import type { Persona, PersonaIntent } from '@/models/persona';
 import {
   api_persona_delete_intent,
   api_persona_new_intent,
+  api_persona_query_set_default,
   api_persona_query_strategies,
   api_persona_update_intent,
 } from '@/services/isee/usecases';
@@ -27,6 +28,8 @@ import {
 } from 'antd';
 import { useState } from 'react';
 import QuestionnaireTab from '../question/QuestionnaireTab';
+import DATA_FILEDS from '@/models/common';
+import { IntentQuestion } from '@/models/questionnaire';
 
 const { Panel } = Collapse;
 const { Option, OptGroup } = Select;
@@ -92,8 +95,8 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
     </>
   );
 
-  const removeQuestion = async (intent: PersonaIntent, question: string) => {
-    const questions = intent.questions?.filter((q) => q !== question);
+  const removeQuestion = async (intent: PersonaIntent, question: IntentQuestion) => {
+    const questions = intent.questions?.filter((q) => q.id !== question.id);
 
     if ((questions || []).length === 0) {
       api_persona_delete_intent(usecaseId, personaState._id, intent.id);
@@ -133,6 +136,29 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
     setTimeout(hide, 2000);
     const strategies = await api_persona_query_strategies(usecaseId, personaState._id, intent.id);
     intent.strategies = strategies
+    intent.strategy_selected = false
+
+    setPersonaState((old) => ({
+      ...old,
+      intents: personaState.intents?.map((i) => {
+        return i;
+      }),
+    }));
+  };
+
+  const setSelectedStrategy = async (event: any, intent: PersonaIntent, strategy: any) => {
+
+    message.config({
+      top: 400,
+    });
+    const hide = message.loading(
+      'Setting as default strategy...',
+      0,
+    );
+    await api_persona_query_set_default(usecaseId, personaState._id, intent.id, strategy.id);
+    setTimeout(hide, 2000);
+    strategy.selected = event
+    intent.strategy_selected = true
     setPersonaState((old) => ({
       ...old,
       intents: personaState.intents?.map((i) => {
@@ -142,16 +168,15 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
   };
 
   const onFinishNewIntent = async (values: any) => {
-    const newintent = values.name.split('#');
-    const intent_cat = newintent[0];
-    const intent_question = newintent[1];
-    console.log('values:', newintent);
-    console.log('persona:', persona);
+    const newintent = JSON.parse(values.name)
+    const intent_cat = newintent.category;
+    let intent_question = newintent.question;
+    intent_question.id = 'iq-' + Math.floor(Math.random() * 100000) + 1;
 
     let exists = false;
     let unique = true;
     personaState.intents?.forEach((intent) => {
-      if (intent.name == intent_cat) {
+      if (intent.name == intent_cat.name) {
         if (intent.questions?.includes(intent_question)) {
           unique = false;
         } else {
@@ -165,7 +190,8 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
       if (!exists) {
         const blank_intent: PersonaIntent = {
           id: 'intent-' + Math.floor(Math.random() * 100000) + 1,
-          name: intent_cat,
+          name: intent_cat.name,
+          label: intent_cat.label,
           completed: false,
           evaluation: {
             _id: 'eval-' + Math.floor(Math.random() * 100000) + 1,
@@ -177,50 +203,19 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
         personaState.intents?.push(blank_intent);
         await api_persona_new_intent(usecaseId, personaState._id, blank_intent);
       } else {
-        const intent = personaState.intents?.find((inte) => inte.name == intent_cat);
+        const intent = personaState.intents?.find((inte) => inte.name == intent_cat.name);
         if (intent) {
           await api_persona_update_intent(usecaseId, personaState._id, intent.id, intent);
         }
       }
     }
-
     // setPersonas([...personas, blank_obj]);
-    console.log('Success:', persona);
+    // console.log('Success:', persona);
     handleOk();
     message.success('Succesfully Added Intent Question');
   };
 
   // - End
-
-  const IntentOptions = [
-    {
-      name: 'Trust',
-      questions: ['Which similar cases contributed to this outcome?'],
-    },
-    {
-      name: 'Transparency',
-      questions: ['Which features contributed to this outcome?'],
-    },
-    {
-      name: 'About',
-      questions: [
-        'What is the AI model which decided the outcome?',
-        'What data is this outcome based upon?',
-      ],
-    },
-    {
-      name: 'Actionable',
-      questions: ['How can I change the outcome?', 'What should I change to change the outcome?'],
-    },
-    {
-      name: 'Debugging',
-      questions: ['Why was this outcome generated?'],
-    },
-    {
-      name: 'Performance',
-      questions: ['How confident was the outcome?', 'How accurate is the AI model?'],
-    },
-  ];
 
   return (
     <Card
@@ -247,7 +242,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
       <Collapse key={'intent-collapse-' + personaState._id}>
         {personaState.intents?.map((intent) => (
           <Panel
-            header={getHeader(intent.name)}
+            header={getHeader(intent.label + "")}
             key={'panel-intent-' + intent.id}
             extra={genIntentStatus(intent)}
           >
@@ -258,17 +253,17 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                     {intent.questions?.map((question) => {
                       return (
                         <List.Item
-                          key={'intent-question-' + question}
+                          key={question.id}
                           actions={[
                             <Popconfirm
-                              key={'delete-intent-question-' + question}
+                              key={'delete-intent-question-' + question.id}
                               title={'Are you sure to delete?'}
                               onConfirm={() => removeQuestion(intent, question)}
                               okText="Yes"
                               cancelText="No"
                             >
                               <Button
-                                key={'intent-question-' + question + '-delete'}
+                                key={'intent-question-' + question.text + '-delete'}
                                 danger={true}
                                 size="small"
                                 className="dynamic-delete-button"
@@ -277,7 +272,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                             </Popconfirm>,
                           ]}
                         >
-                          {question}
+                          {question.text}
                         </List.Item>
                       );
                     })}
@@ -292,8 +287,11 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                         <Card size="small" title={strategy.name}
                           extra={
                             <>
-                              <p>Select Strategy:&nbsp;
+                              <p>Set as Default:&nbsp;
                                 <Switch
+                                  checked={strategy.selected}
+                                  disabled={intent.strategy_selected}
+                                  onClick={(event) => setSelectedStrategy(event, intent, strategy)}
                                   checkedChildren={<CheckOutlined />}
                                   unCheckedChildren={<CloseOutlined />}
                                 />
@@ -311,14 +309,14 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                               <Tag color="blue">{m}</Tag>
                             ))}
                           </p>
-                          <Button href={"https://editor-dev.isee4xai.com/#/id/" + strategy.tree} target="_blank" type="primary" block shape="round" icon={<EyeOutlined />} >
-                            View Strategy
-                          </Button>
+                          {(!intent.strategy_selected || strategy.selected) &&
+                            <Button href={"https://editor-dev.isee4xai.com/#/id/" + strategy.tree} target="_blank" type="primary" block shape="round" icon={<EyeOutlined />} >
+                              View Strategy
+                            </Button>
+                          }
                         </Card>
                       </Col>
                     ))}
-
-
                   </Row>
                 }
 
@@ -329,7 +327,19 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                     onClick={() => getStrategies(intent)}
                     icon={<RocketFilled />}
                   >
-                    Generate Explanation Strategy
+                    Retrieve Explanation Strategies
+                  </Button>
+                )}
+
+                {intent.strategy_selected && (
+                  <Button
+                    type="primary"
+                    style={{ marginLeft: 10 }}
+                    danger
+                    onClick={() => getStrategies(intent)}
+                    icon={<RocketFilled />}
+                  >
+                    Retrieve Strategies Again
                   </Button>
                 )}
               </Tabs.TabPane>
@@ -395,14 +405,14 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
             //     option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
             // }
             >
-              {IntentOptions.map((category) => (
-                <OptGroup label={category.name} key={category.name}>
+              {DATA_FILEDS.INTENT_QUESTIONS.map((category) => (
+                <OptGroup label={category.label} key={category.name}>
                   {category.questions.map((question) => (
                     <Option
-                      key={category.name + '#' + question}
-                      value={category.name + '#' + question}
+                      key={category.name + "#" + question.text + '#' + question.target}
+                      value={JSON.stringify({ category: category, question: question })}
                     >
-                      {question}
+                      {question.text}
                     </Option>
                   ))}
                 </OptGroup>
