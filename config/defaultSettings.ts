@@ -15,6 +15,9 @@ const Settings: LayoutSettings & {
   logo: '/isee_icon.png',
   headerHeight: 48,
   splitMenus: false,
+  menu: {
+    locale: false
+  }
 };
 
 export default Settings;

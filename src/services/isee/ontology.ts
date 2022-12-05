@@ -46,7 +46,21 @@ export async function get_usecase_fields() {
 
     return result || false;
   } catch (error) {
+    console.log("Error Reading Ontology - API Error");
     message.error("Error Reading Ontology - API Error");
+    const blank: API.OntoParams = {
+      AI_METHOD: [],
+      AI_TASK: [],
+      DATA_TYPE: [],
+      DATASET_TYPE: [],
+      AI_MODEL_A_METRIC: [],
+      KNOWLEDGE_LEVEL: [],
+      IMPLEMENTATION_FRAMEWORK: [],
+      FEATURE_RANGE: [],
+      INSTANCE_RANGE: []
+    }
+    return blank;
+
     return false;
   }
 }
