@@ -1,7 +1,7 @@
 // @ts-ignore
 
 // import type { Intent } from "./intent";
-import type { Questionnaire } from './questionnaire';
+import type { IntentQuestion, Questionnaire } from './questionnaire';
 
 /* eslint-disable */
 export interface Persona {
@@ -23,10 +23,12 @@ export interface PersonaIntent {
   id: string;
   completed: boolean;
   name: string;
+  label?: string;
   uuid?: string;
   ref?: string;
-  questions?: string[];
+  questions?: IntentQuestion[];
   explanation?: string;
+  strategy_selected?: boolean;
   strategies?: any[];
   evaluation: Questionnaire; //todo?
 }

@@ -5,6 +5,12 @@ export interface Questionnaire {
   questions?: Question[];
 }
 
+export interface IntentQuestion {
+  text?: string;
+  id?: string;
+  target?: string;
+}
+
 export interface Question {
   id?: string;
   content?: string;
