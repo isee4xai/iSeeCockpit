@@ -2,9 +2,10 @@ import type { Persona, PersonaIntent } from '@/models/persona';
 import {
   api_persona_delete_intent,
   api_persona_new_intent,
+  api_persona_query_strategies,
   api_persona_update_intent,
 } from '@/services/isee/usecases';
-import { DeleteOutlined, PlusOutlined, RocketFilled } from '@ant-design/icons';
+import { CheckOutlined, CloseOutlined, DeleteOutlined, EyeOutlined, PlusOutlined, RocketFilled } from '@ant-design/icons';
 import {
   Button,
   Card,
@@ -17,8 +18,10 @@ import {
   message,
   Modal,
   Popconfirm,
+  Progress,
   Row,
   Select,
+  Switch,
   Tabs,
   Tag,
 } from 'antd';
@@ -115,6 +118,27 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
         }),
       }));
     }
+  };
+
+  const getStrategies = async (intent: PersonaIntent) => {
+
+    message.config({
+      top: 400,
+    });
+    const hide = message.loading(
+      'Retrieving explanation strategies from iSee CBR...',
+      0,
+    );
+    // Dismiss manually and asynchronously
+    setTimeout(hide, 2000);
+    const strategies = await api_persona_query_strategies(usecaseId, personaState._id, intent.id);
+    intent.strategies = strategies
+    setPersonaState((old) => ({
+      ...old,
+      intents: personaState.intents?.map((i) => {
+        return i;
+      }),
+    }));
   };
 
   const onFinishNewIntent = async (values: any) => {
@@ -261,30 +285,48 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                 </Row>
               </Tabs.TabPane>
               <Tabs.TabPane tab="Explanation Strategy" key="3">
-                {loadStrat && <Image width={600} preview={false} src="/strat.png" />}
+                {intent.strategies &&
+                  <Row gutter={[20, 20]}>
+                    {intent.strategies?.map((strategy) => (
+                      <Col span={12}>
+                        <Card size="small" title={strategy.name}
+                          extra={
+                            <>
+                              <p>Select Strategy:&nbsp;
+                                <Switch
+                                  checkedChildren={<CheckOutlined />}
+                                  unCheckedChildren={<CloseOutlined />}
+                                />
+                              </p>
+                            </>
+                          }
+                        >
+                          <div>
+                            <Progress percent={strategy.percentage} status="active" strokeColor={{ from: '#108ee9', to: '#87d068' }} style={{ paddingRight: 20 }} />
+                          </div>
+                          <p>Explaination Methods:&nbsp;
+                          </p>
+                          <p>
+                            {strategy.methods.map((m: string) => (
+                              <Tag color="blue">{m}</Tag>
+                            ))}
+                          </p>
+                          <Button href={"https://editor-dev.isee4xai.com/#/id/" + strategy.tree} target="_blank" type="primary" block shape="round" icon={<EyeOutlined />} >
+                            View Strategy
+                          </Button>
+                        </Card>
+                      </Col>
+                    ))}
 
-                {!loadStrat && (
+
+                  </Row>
+                }
+
+                {!intent.strategies && (
                   <Button
-                    // danger={true}
-                    // size="small"
                     type="primary"
                     style={{ marginLeft: 10 }}
-                    // className="dynamic-delete-button"
-                    onClick={async (event) => {
-                      event.stopPropagation();
-                      message.config({
-                        top: 400,
-                      });
-                      const hide = message.loading(
-                        'Retrieving explanation strategies from iSee CBR...',
-                        0,
-                      );
-                      // Dismiss manually and asynchronously
-                      setTimeout(hide, 2000);
-                      await new Promise((r) => setTimeout(r, 2000));
-
-                      setLoadStrat(true);
-                    }}
+                    onClick={() => getStrategies(intent)}
                     icon={<RocketFilled />}
                   >
                     Generate Explanation Strategy
@@ -299,7 +341,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                   intent_cat={intent.name}
                   persona={persona}
                   usecaseId={usecaseId}
-                  // questionnaire={personaState.evaluation_questionnaire || {}}
+                // questionnaire={personaState.evaluation_questionnaire || {}}
                 />
               </Tabs.TabPane>
             </Tabs>
@@ -347,11 +389,11 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
               placeholder="Select an intent question"
               optionFilterProp="children"
 
-              // onChange={onChange}
-              // onSearch={onSearch}
-              // filterOption={(input, option) =>
-              //     option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              // }
+            // onChange={onChange}
+            // onSearch={onSearch}
+            // filterOption={(input, option) =>
+            //     option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            // }
             >
               {IntentOptions.map((category) => (
                 <OptGroup label={category.name} key={category.name}>
@@ -369,7 +411,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
           </Form.Item>
         </Form>
       </Modal>
-    </Card>
+    </Card >
   );
 };
 

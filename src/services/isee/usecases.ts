@@ -262,6 +262,32 @@ export async function api_persona_update_intent(
   }
 }
 
+
+export async function api_persona_query_strategies(
+  usecaseId: string | undefined,
+  personaId: string | undefined,
+  intentId: string | undefined,
+) {
+  if (!usecaseId || !personaId) return usecaseId;
+
+  try {
+    const data = await fetch(`${BASE_URL}/cbr/${usecaseId}/persona/${personaId}/intent/${intentId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': getToken(),
+      },
+    });
+    const result = await data.json();
+
+    return result;
+  } catch (error) {
+    return [];
+  }
+}
+
+
+
 export async function api_intent_stat(
   usecaseId: string | undefined,
   personaId: string | undefined,

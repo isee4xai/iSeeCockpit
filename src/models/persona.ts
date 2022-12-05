@@ -27,5 +27,6 @@ export interface PersonaIntent {
   ref?: string;
   questions?: string[];
   explanation?: string;
+  strategies?: any[];
   evaluation: Questionnaire; //todo?
 }
