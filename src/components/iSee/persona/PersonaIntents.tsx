@@ -284,7 +284,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                   <Row gutter={[20, 20]}>
                     {intent.strategies?.map((strategy) => (
                       <Col span={12}>
-                        <Card size="small" title={strategy.name}
+                        <Card size="small" title={strategy.name.replace('http://www.w3id.org/iSeeOnto/explanationexperience/', '')}
                           extra={
                             <>
                               <p>Set as Default:&nbsp;
