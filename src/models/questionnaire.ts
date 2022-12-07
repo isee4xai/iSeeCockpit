@@ -14,13 +14,11 @@ export interface IntentQuestion {
 export interface Question {
   id?: string;
   content?: string;
-  responseType?: string;
+  responseType?: ResponseType;
   intent?: string;
   dimension?: string;
-  answer?: string[];
-  responseOptions?: {
-    val: string;
-  }[];
+  answer?: Response[];
+  responseOptions?: Response[];
   required?: boolean;
   completed?: boolean;
   validators?: {
@@ -34,4 +32,18 @@ export interface Interaction {
   personaId: string;
   usecaseId: string;
   questions: Question[];
+}
+
+export const enum ResponseType {
+  RADIO = "Radio",
+  CHECK = "Checkbox",
+  LIKERT = "Likert",
+  NUMBER = "Number",
+  INFO = "Info",
+  OPEN = "Free-Text"
+}
+
+export interface Response {
+  id?: string;
+  content?: string;
 }

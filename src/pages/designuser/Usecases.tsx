@@ -5,6 +5,7 @@ import {
   PlusOutlined,
   RocketOutlined,
   SettingOutlined,
+  CommentOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import {
@@ -206,6 +207,9 @@ const Welcome: React.FC = () => {
                     href={'usecase/analytics/' + usecase._id}
                   >
                     <LineChartOutlined />
+                  </Button>,
+                  <Button key={'btn-settings'} type="text" href={'/dialogue/' + usecase._id}>
+                    <CommentOutlined color="green" />
                   </Button>,
                 ]}
               >

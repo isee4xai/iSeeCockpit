@@ -70,7 +70,8 @@
     "react-draggable": "^4.4.5",
     "react-helmet-async": "^1.2.0",
     "umi": "^3.5.0",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "websocket": "^1.0.34"
   },
   "devDependencies": {
     "@ant-design/pro-cli": "^2.1.0",

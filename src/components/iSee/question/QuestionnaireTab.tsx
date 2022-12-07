@@ -1,7 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 import QuestionnaireEditor from '@/components/iSee/question/toolkit/QuestionnaireEditor';
 import type { Persona } from '@/models/persona';
-import type { Question, Questionnaire } from '@/models/questionnaire';
+import type { Question, Questionnaire, Response } from '@/models/questionnaire';
 import { api_get_all } from '@/services/isee/questionnaires';
 import { api_persona_update_intent } from '@/services/isee/usecases';
 import {
@@ -110,10 +110,20 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
     message.success({ content: 'Succesfully Added Question', duration: 2 });
   };
 
+  const nextResId = () => "res-" + Math.floor(Math.random() * 100000) + 1;
+
   const addQuestion = () => {
+    const r1: Response = {
+      id: nextResId(),
+      content: "Option 1"
+    }
+    const r2: Response = {
+      id: nextResId(),
+      content: "Option 1"
+    }
     const blank_obj: Question = {
       id: 'q-' + uuidv4(),
-      responseOptions: [{ val: 'Option 1' }, { val: 'Option 2' }],
+      responseOptions: [r1, r2],
     };
 
     const append = [blank_obj, ...questions];
@@ -142,7 +152,7 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
       } else if (!question.responseOptions || question.responseOptions.length === 1) {
         error.push('There should be multiple options');
       }
-    } else if (question.responseType === 'Nnumber') {
+    } else if (question.responseType === 'Number') {
       if (question?.validators?.max !== undefined && question?.validators?.min !== undefined) {
         if (question.validators?.max < question.validators?.min) {
           error.push('Max should be greater than Min');

@@ -1,15 +1,16 @@
+import { Response } from '@/models/questionnaire';
 import { Checkbox } from 'antd';
 import React from 'react';
 
 const AnswerCheckbox: React.FC<{
-  listAnswer: string[];
+  listAnswer: Response[];
   onChange: (options: any) => void;
 }> = ({ listAnswer, onChange }) => {
   return (
     <Checkbox.Group onChange={onChange}>
-      {listAnswer.map((element: any, idx: number) => (
-        <Checkbox value={element.val} key={idx}>
-          {element.val}
+      {listAnswer.map((element: Response, idx: number) => (
+        <Checkbox value={element} key={idx}>
+          {element.content}
         </Checkbox>
       ))}
     </Checkbox.Group>

@@ -207,7 +207,7 @@ const DATA_FILEDS = {
     'Performance',
     'Custom',
   ],
-  QUESTION_METRIC: ['Free-Text', 'Number', 'Radio', 'Checkbox', 'Likert'],
+  QUESTION_METRIC: ['Free-Text', 'Number', 'Radio', 'Checkbox', 'Likert', 'Info'],
 };
 
 export default DATA_FILEDS;

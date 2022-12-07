@@ -51,7 +51,7 @@ const QuestionForm: React.FC<{
   const handleOptionChange = useCallback((options: string[]) => {
     setState((old) => ({
       ...old,
-      responseOptions: options.map((opt) => ({ val: opt })),
+      responseOptions: Object.keys(options).map((key) => ({ id: "res-" + Math.floor(Math.random() * 100000) + 1, content: options[key] })),
     }));
   }, []);
 
@@ -155,6 +155,21 @@ const QuestionForm: React.FC<{
                 <Select.Option
                   value={
                     state.dimension &&
+                      ![
+                        'Goodness',
+                        'Satisfaction',
+                        'Mental Model',
+                        'Curiosity',
+                        'Trust',
+                        'Performance',
+                      ].includes(state.dimension) &&
+                      state.dimension.trim()
+                      ? state.dimension
+                      : 'Custom'
+                  }
+                >
+                  <SettingOutlined className="selectIcon" /> -{' '}
+                  {state.dimension &&
                     ![
                       'Goodness',
                       'Satisfaction',
@@ -164,21 +179,6 @@ const QuestionForm: React.FC<{
                       'Performance',
                     ].includes(state.dimension) &&
                     state.dimension.trim()
-                      ? state.dimension
-                      : 'Custom'
-                  }
-                >
-                  <SettingOutlined className="selectIcon" /> -{' '}
-                  {state.dimension &&
-                  ![
-                    'Goodness',
-                    'Satisfaction',
-                    'Mental Model',
-                    'Curiosity',
-                    'Trust',
-                    'Performance',
-                  ].includes(state.dimension) &&
-                  state.dimension.trim()
                     ? state.dimension
                     : 'Custom'}
                 </Select.Option>
@@ -235,17 +235,17 @@ const QuestionForm: React.FC<{
           ) : state.responseType === 'Radio' ? (
             <RadioInput
               onChange={handleOptionChange}
-              options={question?.responseOptions?.map((opt) => opt.val)}
+              options={question?.responseOptions?.map((opt) => opt.content ?? '')}
             />
           ) : state.responseType === 'Checkbox' ? (
             <CheckboxInput
               onChange={handleOptionChange}
-              options={question?.responseOptions?.map((opt) => opt.val)}
+              options={question?.responseOptions?.map((opt) => opt.content ?? '')}
             />
           ) : state.responseType === 'Likert' ? (
             <LikertInput
               onChange={handleOptionChange}
-              options={question?.responseOptions?.map((opt) => opt.val)}
+              options={question?.responseOptions?.map((opt) => opt.content ?? '')}
             />
           ) : (
             <Empty description={'Please, choose a question type !'} />
