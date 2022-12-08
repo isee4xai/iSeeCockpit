@@ -11,6 +11,7 @@ export interface Usecase {
   domain?: string;
   status?: string;
   settings?: UsecaseSettings;
+  model?: UsecaseModel;
   stats?: {
     runs: number;
     feedback: number;
@@ -23,13 +24,19 @@ export interface UsecaseSettings {
   ai_method?: [string];
   data_type?: string;
   dataset_type?: string;
-  model_mode?: string;
-  model_alias?: string;
-  model_backend?: string;
-  model_source?: string;
-  model_attributes?: object;
   assessments?: [string];
   completed?: boolean;
   num_features?: number;
   num_instances?: number;
+}
+
+export interface UsecaseModel {
+  mode?: string;
+  alias?: string;
+  backend?: string;
+  source_file?: string;
+  source_api?: string;
+  dataset_file?: string;
+  attributes?: any;
+  completed?: boolean;
 }

@@ -2,7 +2,7 @@ import AssetmentField from '@/components/iSee/AssetmentFieldSet';
 import PersonaTabs from '@/components/iSee/persona/PersonaTabs';
 import DATA_FILEDS from '@/models/common';
 import type { Persona } from '@/models/persona';
-import type { Usecase, UsecaseSettings } from '@/models/usecase';
+import type { Usecase, UsecaseModel, UsecaseSettings } from '@/models/usecase';
 import { get_usecase_fields } from '@/services/isee/ontology';
 import {
   api_create_persona,
@@ -15,7 +15,10 @@ import {
 import {
   CheckOutlined,
   CloseOutlined,
+  CopyFilled,
   DeleteOutlined,
+  DeploymentUnitOutlined,
+  ExperimentOutlined,
   PlusOutlined,
   SaveOutlined,
   SettingOutlined,
@@ -28,6 +31,7 @@ import {
   Card,
   Cascader,
   Col,
+  Divider,
   Form,
   Input,
   InputNumber,
@@ -45,6 +49,7 @@ import {
   Tag,
   Upload,
 } from 'antd';
+import TextArea from 'antd/lib/input/TextArea';
 import React, { useEffect, useState } from 'react';
 const { Option } = Select;
 
@@ -68,7 +73,14 @@ const Create: React.FC<Params> = (props) => {
   const [settings, setSettings] = useState<UsecaseSettings>();
   const [isSettingChanged, SetIsSettingChanged] = useState(false);
 
+  const [model, setModel] = useState<UsecaseModel>();
+  const [isModelChanged, setIsModelChanged] = useState(false);
+
+
   const [settingsForm] = Form.useForm();
+  const [modelForm] = Form.useForm();
+
+
   const [ontoValues, setOntoValues] = useState<API.OntoParams>();
   const [usecase, setUsecase] = useState<Usecase>({ _id: '0', name: '', published: false });
 
@@ -87,7 +99,9 @@ const Create: React.FC<Params> = (props) => {
       } else {
         setPageStatus('200');
         settingsForm.setFieldsValue(res_usecase.settings);
+        modelForm.setFieldsValue(res_usecase.model);
         setSettings(res_usecase.settings);
+        setModel(res_usecase.model);
         setPersonas(res_usecase.personas);
       }
     })();
@@ -141,7 +155,7 @@ const Create: React.FC<Params> = (props) => {
     action: '',
     onChange(info: any) {
       if (info.file.status !== 'uploading') {
-        // console.log(info.file, info.fileList);
+        console.log(info.file, info.fileList);
       }
       if (info.file.status === 'done') {
         message.success(`${info.file.name} file uploaded successfully`);
@@ -175,6 +189,31 @@ const Create: React.FC<Params> = (props) => {
     SetIsSettingChanged(false);
   }
 
+  async function saveModel() {
+    const updateModel: UsecaseModel = modelForm.getFieldsValue();
+
+    if (
+      updateModel.mode != '' &&
+      updateModel.backend != ''
+    ) {
+      updateModel.completed = true;
+    } else {
+      updateModel.completed = false;
+    }
+
+    setModel(updateModel);
+
+
+
+    // const test = await api_update_settings(usecase._id, {
+    //   ...usecase,
+    //   settings: { ...updateSettings },
+    // });
+    console.log('Success Update updateModel:', updateModel);
+    message.success('Succesfully saved AI Model updateModel');
+    setIsModelChanged(false);
+  }
+
   const filterCascader = (inputValue: string, path: API.OntoOption[]) =>
     path.some(
       (option) => (option.label as string).toLowerCase().indexOf(inputValue.toLowerCase()) > -1,
@@ -195,6 +234,22 @@ const Create: React.FC<Params> = (props) => {
 
       {(!settings?.completed && <Tag color="red">Pending</Tag>) ||
         (settings?.completed && <Tag color="green">Completed</Tag>)}
+    </Space>
+  );
+  const genExtraUpload = () => (
+    <Space size="middle">
+      <Button
+        type="primary"
+        onClick={() => saveModel()}
+        disabled={!isModelChanged}
+        htmlType="button"
+        className="r-10"
+        icon={<SaveOutlined />}
+      >
+        Upload AI Model
+      </Button>
+      {(!model?.completed && <Tag color="red">Pending</Tag>) ||
+        (model?.completed && <Tag color="green">Completed</Tag>)}
     </Space>
   );
 
@@ -315,7 +370,7 @@ const Create: React.FC<Params> = (props) => {
               autoComplete="off"
             >
               <Row gutter={20}>
-                <Col span={12} className="gutter-row">
+                <Col span={16} className="gutter-row">
                   <Form.Item
                     label="AI Task"
                     name="ai_task"
@@ -394,12 +449,62 @@ const Create: React.FC<Params> = (props) => {
                     </Select>
                   </Form.Item>
 
+                </Col>
+                <Col span={8} className="gutter-row">
+                  <AssetmentField types={ontoValues?.AI_MODEL_A_METRIC} />
+                </Col>
+              </Row>
+            </Form>
+          </Card>
+
+          <Card
+            title={
+              <h4>
+                <ExperimentOutlined /> AI Model Upload
+              </h4>
+            }
+            extra={genExtraUpload()}
+            headStyle={{ backgroundColor: '#fafafa', border: '1px solid #d9d9d9' }}
+          >
+
+            <Form
+              name="basic"
+              labelCol={{ span: 0 }}
+              onFieldsChange={() => {
+                setIsModelChanged(true);
+                const updateModel: UsecaseModel = modelForm.getFieldsValue();
+                setModel(updateModel);
+              }}
+              form={modelForm}
+              autoComplete="off"
+            >
+
+              <Row gutter={20}>
+                <Col span={16} className="gutter-row">
                   <Form.Item
                     label="Model Upload Method"
-                    name="model_mode"
+                    name="mode"
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
-                    <Radio.Group buttonStyle="solid">
+                    <Radio.Group buttonStyle="solid" onChange={() => {
+                      console.log("CLICKED HALOW")
+                      if (settings?.data_type == "http://www.w3id.org/iSeeOnto/explainer#text") {
+
+                        let updateModel: UsecaseModel = modelForm.getFieldsValue();
+
+                        updateModel.attributes =
+                          JSON.stringify({
+                            "target_values": [["Negative", "Neutral", "Positive"]],
+                            "target_names": ["class"],
+                            "features": {
+                              "text": {},
+                              "class": [0, 1, 2]
+                            }
+                          }, undefined, 4);
+                        modelForm.setFieldsValue(updateModel)
+
+                      }
+                    }}>
                       <Radio.Button key="file" value="file">
                         Model File Upload (.h5, .pkl..)
                       </Radio.Button>
@@ -408,22 +513,11 @@ const Create: React.FC<Params> = (props) => {
                       </Radio.Button>
                     </Radio.Group>
                   </Form.Item>
-                  {settings?.model_mode == 'file' && (
+                  {model?.mode == 'file' && (
                     <>
                       <Form.Item
-                        label="Model File"
-                        name="model"
-                        tooltip="Please upload the model using any of the following file formats: json, h5, csv and pkl"
-                        rules={[{ required: false, message: 'Input is required!' }]}
-                      >
-                        <Upload {...uploadprops}>
-                          <Button icon={<UploadOutlined />}>Click to Upload Model</Button>
-                        </Upload>
-                      </Form.Item>
-
-                      <Form.Item
                         label="Implementation Framework"
-                        name="model_backend"
+                        name="backend"
                         tooltip=""
                       // rules={[{ required: true, message: 'Input is required!' }]}
                       >
@@ -435,12 +529,36 @@ const Create: React.FC<Params> = (props) => {
                           ))}
                         </Select>
                       </Form.Item>
+
+                      {/* {(!settings?.ai_method && !settings?.mo)} */}
+                      <Form.Item
+                        label="Model File"
+                        name="source_file"
+                        tooltip="Please upload the model using any of the following file formats: json, h5, csv and pkl"
+                        rules={[{ required: false, message: 'Input is required!' }]}
+                      >
+                        <Upload {...uploadprops}>
+                          <Button icon={<UploadOutlined />}>Select Model File .pkl</Button>
+                        </Upload>
+                      </Form.Item>
+
+                      <Form.Item
+                        label="Sample Dataset File"
+                        name="dataset_file"
+                        tooltip="Please upload a sample dataset file in .csv"
+                        rules={[{ required: false, message: 'Input is required!' }]}
+                      >
+                        <Upload {...uploadprops}>
+                          <Button icon={<UploadOutlined />}>Select Dataset File .csv</Button>
+                        </Upload>
+                      </Form.Item>
+
                     </>
                   )}
-                  {settings?.model_mode == 'api' && (
+                  {model?.mode == 'api' && (
                     <Form.Item
                       label="ML Model API URL (POST)"
-                      name="model"
+                      name="source_api"
                       tooltip="More instructions in the future"
                       rules={[{ required: false, message: 'Input is required!' }]}
                     >
@@ -448,10 +566,38 @@ const Create: React.FC<Params> = (props) => {
                     </Form.Item>
                   )}
                 </Col>
-                <Col span={12} className="gutter-row">
-                  <AssetmentField types={ontoValues?.AI_MODEL_A_METRIC} />
+                <Col span={8} >
+                  <Card
+                    size="small"
+                    title={'Configuration'}
+                    extra={
+                      <Button
+                        className="dynamic-delete-button"
+                        // danger={true}
+                        size="small"
+                        // onClick={() => add()}
+                        icon={<CopyFilled />}
+                      >
+                        Copy Code
+                      </Button>
+                    }
+                  >
+                    <Form.Item
+                      // label="model_attributes Framework"
+                      name="attributes"
+                      tooltip=""
+
+                    // rules={[{ required: true, message: 'Input is required!' }]}
+                    >
+                      <TextArea placeholder="Configuration Code" autoSize  >
+
+                      </TextArea>
+
+                    </Form.Item>
+                  </Card>
                 </Col>
               </Row>
+
             </Form>
           </Card>
 

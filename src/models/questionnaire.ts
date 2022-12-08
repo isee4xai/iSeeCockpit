@@ -34,7 +34,7 @@ export interface Interaction {
   questions: Question[];
 }
 
-export const enum ResponseType {
+export enum ResponseType {
   RADIO = "Radio",
   CHECK = "Checkbox",
   LIKERT = "Likert",
