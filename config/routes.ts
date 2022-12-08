@@ -57,11 +57,12 @@
     component: './QuestionnairesNew',
   },
   {
-    path: '/chatbot',
-    name: 'Chatbot',
-    icon: 'RobotOutlined',
+    path: '/dialogue/:id',
+    hideInMenu: true,
     access: 'designUser',
+    name: 'Dialogue',
     component: './chatbot/DialogQuestionnaires',
+    exact: false,
   },
   {
     path: '/explainers',

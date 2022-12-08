@@ -10,7 +10,7 @@ import './QuestionnaireEditor.less';
 
 import { v4 as uuidv4 } from 'uuid';
 
-import type { Question } from '@/models/questionnaire';
+import type { Question, Response } from '@/models/questionnaire';
 
 import useDrag from '@/components/iSee/question/toolkit/useDrag';
 
@@ -49,7 +49,7 @@ const QuestionnaireEditor: React.FC<{
       !(
         defaultQuestions &&
         JSON.stringify(removeAttr([...defaultQuestions], '_id')) ===
-          JSON.stringify(removeAttr([...questions], '_id'))
+        JSON.stringify(removeAttr([...questions], '_id'))
       )
     )
       onChange(questions);
@@ -85,12 +85,22 @@ const QuestionnaireEditor: React.FC<{
 
   const nextId = () => `q-${uuidv4()}`;
 
+  const nextResId = () => "res-" + Math.floor(Math.random() * 100000) + 1;
+
   const handleAddbutton = () => {
+    const r1: Response = {
+      id: nextResId(),
+      content: "Option 1"
+    }
+    const r2: Response = {
+      id: nextResId(),
+      content: "Option 2"
+    }
     setQuestions([
       ...questions,
       {
         id: nextId(),
-        responseOptions: [{ val: 'option 1' }, { val: 'option 2' }],
+        responseOptions: [r1, r2],
         dimension: '',
         content: '',
       },

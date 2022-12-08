@@ -1,25 +1,29 @@
 import { Radio, Space } from 'antd';
 import React from 'react';
+import { Response } from '@/models/questionnaire';
+import './Chatbot.less';
+
 
 const AnswerRadio = ({ listAnswer, onChange }) => {
-  const [value, setValue] = React.useState();
+  const [value, setValue] = React.useState<Response>();
 
-  const isChanged = (e) => {
+  const isChanged = (e: any) => {
     setValue(e.target.value);
   };
 
   return (
     <div>
       <Radio.Group onChange={isChanged} value={value}>
-        <Space size={20} direction="horizontal" wrap id="spaceRadio">
-          {listAnswer.map((element: any, idx: number) => (
+        <Space size={10} direction="horizontal" wrap id="spaceRadio">
+          {listAnswer.map((element: Response, idx: number) => (
             <Radio.Button
               onChange={onChange}
-              value={element.val}
+              value={element}
               key={'radio' + idx}
               className="radioButton"
+              style={{ border: 0 }}
             >
-              {element.val}
+              <div dangerouslySetInnerHTML={{ __html: element.content ?? '' }} />
             </Radio.Button>
           ))}
         </Space>
