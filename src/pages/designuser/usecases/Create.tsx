@@ -30,6 +30,7 @@ import {
   Button,
   Card,
   Cascader,
+  Checkbox,
   Col,
   Divider,
   Form,
@@ -410,13 +411,13 @@ const Create: React.FC<Params> = (props) => {
                     tooltip="This is a required field"
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
-                    <Radio.Group>
+                    <Checkbox.Group >
                       {ontoValues?.DATA_TYPE.map((option) => (
-                        <Radio key={option.key} value={option.key}>
+                        <Checkbox key={option.key} value={option.key}>
                           {option.label}
-                        </Radio>
+                        </Checkbox>
                       ))}
-                    </Radio.Group>
+                    </Checkbox.Group>
                   </Form.Item>
 
                   <Form.Item
