@@ -22,7 +22,7 @@ export interface Usecase {
 export interface UsecaseSettings {
   ai_task?: string;
   ai_method?: [string];
-  data_type?: string;
+  data_type?: [string];
   dataset_type?: string;
   assessments?: [string];
   completed?: boolean;
