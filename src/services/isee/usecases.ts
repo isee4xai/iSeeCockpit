@@ -93,6 +93,37 @@ export const api_update_settings = async (id: string | undefined, settings: Usec
   return data;
 };
 
+
+export const api_model_upload = async (id: string | undefined, usecase: Usecase) => {
+  if (!id) return false;
+
+  console.log(usecase.model)
+
+  var headers = new Headers();
+  headers.append("Accept", "*/*");
+  headers.append("Connection", "keep-alive");
+  headers.append("x-access-token", getToken());
+
+  var formdata = new FormData();
+  formdata.append("source_file", usecase.model?.source_file, "aimodel.pkl");
+  formdata.append("dataset_file", usecase.model?.dataset_file, "data.csv");
+  formdata.append("mode", "file");
+  formdata.append("backend", usecase.model?.backend + "");
+  formdata.append("attributes", JSON.stringify(JSON.parse(usecase.model?.attributes)));
+  formdata.append("completed", usecase.model?.completed + "");
+
+
+  const data = await fetch(`${BASE_URL}/${KEY}/${id}/model`, {
+    method: 'PATCH',
+    headers: headers,
+    body: formdata,
+    redirect: 'follow'
+  });
+
+
+  return data;
+};
+
 export async function api_delete(id: string) {
   try {
     const data = await fetch(`${BASE_URL}/${KEY}/${id}`, {
