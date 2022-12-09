@@ -18,6 +18,7 @@ import {
   List,
   message,
   Modal,
+  notification,
   Popconfirm,
   Progress,
   Row,
@@ -133,10 +134,16 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
       0,
     );
     // Dismiss manually and asynchronously
-    setTimeout(hide, 2000);
     const strategies = await api_persona_query_strategies(usecaseId, personaState._id, intent.id);
     intent.strategies = strategies
     intent.strategy_selected = false
+    hide();
+
+    notification.success({
+      message: 'Retrieved Strategies for "' + intent.label + '" Intent',
+      placement: 'top',
+      duration: 3,
+    });
 
     setPersonaState((old) => ({
       ...old,
@@ -156,7 +163,8 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
       0,
     );
     await api_persona_query_set_default(usecaseId, personaState._id, intent.id, strategy.id);
-    setTimeout(hide, 2000);
+
+    hide()
     strategy.selected = event
     intent.strategy_selected = strategy.tree
     setPersonaState((old) => ({

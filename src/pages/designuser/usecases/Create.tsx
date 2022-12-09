@@ -26,6 +26,7 @@ import {
 } from '@ant-design/icons';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import {
+  Alert,
   Button,
   Card,
   Cascader,
@@ -122,6 +123,7 @@ const Create: React.FC<Params> = (props) => {
     setIsModalVisible(false);
   };
 
+
   async function onFinishPersona(values: any) {
     const new_persona: Persona = {
       _id: 'persona-' + Math.floor(Math.random() * 100000) + 1,
@@ -179,7 +181,7 @@ const Create: React.FC<Params> = (props) => {
       'Uploading model and data file. Please wait...',
       0,
     );
-    const test = await api_model_upload(usecase._id, {
+    const apicall = await api_model_upload(usecase._id, {
       ...usecase,
       model: { ...updateModel },
     });
@@ -198,8 +200,13 @@ const Create: React.FC<Params> = (props) => {
 
     setModel(updateModel);
 
-    console.log('Success Update updateModel:', test);
-    message.success('Succesfully saved AI Model updateModel');
+    // console.log('Success Update updateModel:', test);
+    // message.success('Succesfully saved AI Model');
+    notification.success({
+      message: 'Succesfully saved AI Model and Dataset',
+      placement: 'top',
+      duration: 3,
+    });
     setIsModelChanged(false);
   }
 
@@ -485,26 +492,8 @@ const Create: React.FC<Params> = (props) => {
                     name="mode"
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
-                    <Radio.Group buttonStyle="solid" onChange={() => {
-                      console.log("CLICKED HALOW")
-                      if (settings?.data_type == "http://www.w3id.org/iSeeOnto/explainer#text") {
-
-                        let updateModel: UsecaseModel = modelForm.getFieldsValue();
-
-                        updateModel.attributes =
-                          JSON.stringify({
-                            "target_values": [["Negative", "Neutral", "Positive"]],
-                            "target_names": ["class"],
-                            "features": {
-                              "text": {},
-                              "class": [0, 1, 2]
-                            }
-                          }, undefined, 4);
-                        modelForm.setFieldsValue(updateModel)
-
-                      }
-                    }}>
-                      <Radio.Button key="file" value="file">
+                    <Radio.Group buttonStyle="solid">
+                      <Radio.Button key="file" value="file" >
                         Model File Upload (.h5, .pkl..)
                       </Radio.Button>
                       <Radio.Button key="api" value="api">
@@ -535,6 +524,7 @@ const Create: React.FC<Params> = (props) => {
                         tooltip="Please upload the model using any of the following file formats: json, h5, csv and pkl"
                       >
                         <input placeholder="Select .pkl file" type="file" onChange={handleFileInputModel} />
+                        {model?.source_file && <Tag color="green">Model Uploaded</Tag>}
                       </Form.Item>
 
                       <Form.Item
@@ -542,6 +532,7 @@ const Create: React.FC<Params> = (props) => {
                         tooltip="Please upload a sample dataset file in .csv"
                       >
                         <input placeholder="Select .csv file" type="file" onChange={handleFileInputData} />
+                        {model?.dataset_file && <Tag color="green">Dataset Uploaded</Tag>}
 
                       </Form.Item>
 
