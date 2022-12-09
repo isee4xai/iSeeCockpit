@@ -2,9 +2,9 @@ import { w3cwebsocket as W3CWebSocket } from "websocket";
 
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { Button, Card, Input, Layout, Space } from 'antd';
+import { Avatar, Button, Card, Col, Input, Layout, PageHeader, Row, Space } from 'antd';
 
-import { EllipsisOutlined } from '@ant-design/icons';
+import { EllipsisOutlined, ReloadOutlined, RobotFilled, RobotOutlined, SearchOutlined, SendOutlined, SmileOutlined, UserOutlined } from '@ant-design/icons';
 
 import { WS_URL } from '@/services/isee/api.config';
 
@@ -16,6 +16,7 @@ import AnswerCheckbox from '@/components/iSee/chatbot/AnswerCheckbox';
 import AnswerRadio from '@/components/iSee/chatbot/AnswerRadio';
 import { Question, Response, ResponseType } from '@/models/questionnaire';
 import { currentUser } from '@/services/isee/user';
+import { PageContainer } from "@ant-design/pro-layout";
 
 export type Params = {
   match: {
@@ -77,9 +78,14 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
   const addQuestion = useCallback(function (currentQuestion) {
     setDialogComp((oldQuestionComp) => [
       ...oldQuestionComp,
-      <div className="question" key={'question' + oldQuestionComp}>
-        {parse(currentQuestion?.content ?? '') as JSX.Element}
-      </div>,
+      <>
+        <div style={{ display: 'inline-block' }}>
+          <Avatar size={48} icon={<SmileOutlined />} className="question-avatar" />
+          <div className="question" key={'question' + oldQuestionComp}>
+            {parse(currentQuestion?.content ?? '') as JSX.Element}
+          </div>
+        </div>
+      </>,
     ]);
   }, []);
 
@@ -256,63 +262,83 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
 
   return (
     <>
-      <Card
-        title="iSee ChatBot"
-        extra={<a onClick={() => window.location.reload()}>Restart</a>}
-        id="card"
-      >
-        <Layout id="layout">
-          <Content id="content-card">{[...dialogComp.slice().reverse()]}</Content>
-          <Footer id="footer">
-            <Space align="center" direction="vertical">
-              {answer}
-              <Space direction="horizontal">
-                <Input
-                  type={responseType === ResponseType.NUMBER ? 'number' : 'text'}
-                  placeholder={
-                    responseType === ResponseType.NUMBER
-                      ? 'Response :   min :' +
-                      question?.validators?.min +
-                      ' max : ' +
-                      question?.validators?.max
-                      : 'Response'
-                  }
-                  value={
-                    // delete the number if it's not between validators min/max
-                    responseType === ResponseType.NUMBER && question?.validators && answer
-                      ? parseInt(answer[0]?.content) >= question?.validators?.min &&
-                        parseInt(answer[0]?.content) <= question?.validators?.max
-                        ? answer[0]?.content
-                        : parseInt('')
-                      : answer[0]?.content
-                  }
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
-                  disabled={
-                    responseType === ResponseType.RADIO ||
-                    responseType === ResponseType.CHECK ||
-                    responseType === ResponseType.LIKERT ||
-                    responseType === ResponseType.INFO
-                  }
-                  id="input"
-                />
-                <Button
-                  type="primary"
-                  onClick={sendAndReceive}
-                  disabled={
-                    (text == '' && (responseType == ResponseType.OPEN || responseType == ResponseType.NUMBER)) ||
-                    (!check && responseType == ResponseType.CHECK) ||
-                    (!radio && responseType == ResponseType.RADIO) ||
-                    (!likert && responseType == ResponseType.LIKERT) ||
-                    responseType == ResponseType.INFO
-                  }
-                >
-                  Send
-                </Button>
-              </Space>
+      {/* <PageContainer title="" > */}
+
+
+      {/* <Card
+          title="iSee Dialog Manager"
+          extra={<a onClick={() => window.location.reload()}>Restart</a>}
+          id="card"
+        > */}
+      <Layout id="layout">
+        <PageHeader
+          ghost={false}
+          key="head1"
+          style={{ borderRadius: '25px 25px 0 0' }}
+          title="iSee Dialog Manager"
+          extra={[
+            <Button shape="round" key={'create-btn'} type="primary" onClick={() => window.location.reload()} style={{ width: '100%' }}>
+              <ReloadOutlined /> Restart
+            </Button>,
+          ]}
+        />
+        <Content id="content-card">{[...dialogComp.slice().reverse()]}</Content>
+        <Footer id="footer" style={{ borderRadius: '0 0 25px 25px' }}>
+          <Space align="center" direction="vertical">
+            {answer}
+            <Space direction="horizontal">
+              <Input
+                size="large"
+                style={{ borderRadius: '25px' }}
+                type={responseType === ResponseType.NUMBER ? 'number' : 'text'}
+                placeholder={
+                  responseType === ResponseType.NUMBER
+                    ? 'Response :   min :' +
+                    question?.validators?.min +
+                    ' max : ' +
+                    question?.validators?.max
+                    : 'Response'
+                }
+                value={
+                  // delete the number if it's not between validators min/max
+                  responseType === ResponseType.NUMBER && question?.validators && answer
+                    ? parseInt(answer[0]?.content) >= question?.validators?.min &&
+                      parseInt(answer[0]?.content) <= question?.validators?.max
+                      ? answer[0]?.content
+                      : parseInt('')
+                    : answer[0]?.content
+                }
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
+                disabled={
+                  responseType === ResponseType.RADIO ||
+                  responseType === ResponseType.CHECK ||
+                  responseType === ResponseType.LIKERT ||
+                  responseType === ResponseType.INFO
+                }
+                id="input"
+              />
+              <Button
+                type="primary"
+                shape="round"
+                size="large"
+                onClick={sendAndReceive}
+                disabled={
+                  (text == '' && (responseType == ResponseType.OPEN || responseType == ResponseType.NUMBER)) ||
+                  (!check && responseType == ResponseType.CHECK) ||
+                  (!radio && responseType == ResponseType.RADIO) ||
+                  (!likert && responseType == ResponseType.LIKERT) ||
+                  responseType == ResponseType.INFO
+                }
+              >
+                Send
+                <SendOutlined />
+              </Button>
             </Space>
-          </Footer>
-        </Layout>
-      </Card>
+          </Space>
+        </Footer >
+      </Layout>
+      {/* </Card> */}
+      {/* </PageContainer> */}
     </>
   );
 };
