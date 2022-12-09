@@ -158,7 +158,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
     await api_persona_query_set_default(usecaseId, personaState._id, intent.id, strategy.id);
     setTimeout(hide, 2000);
     strategy.selected = event
-    intent.strategy_selected = true
+    intent.strategy_selected = strategy.tree
     setPersonaState((old) => ({
       ...old,
       intents: personaState.intents?.map((i) => {
@@ -310,7 +310,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                             ))}
                           </p>
                           {(!intent.strategy_selected || strategy.selected) &&
-                            <Button href={"https://editor-dev.isee4xai.com/#/id/" + strategy.tree} target="_blank" type="primary" block shape="round" icon={<EyeOutlined />} >
+                            <Button href={"https://editor-dev.isee4xai.com/#/vid/" + strategy.tree} target="_blank" type="primary" block shape="round" icon={<EyeOutlined />} >
                               View Strategy
                             </Button>
                           }
