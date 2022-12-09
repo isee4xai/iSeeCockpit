@@ -2,9 +2,9 @@ import { w3cwebsocket as W3CWebSocket } from "websocket";
 
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { Avatar, Button, Card, Col, Input, Layout, PageHeader, Row, Space } from 'antd';
+import { Avatar, Button, Input, Layout, PageHeader, Space } from 'antd';
 
-import { EllipsisOutlined, ReloadOutlined, RobotFilled, RobotOutlined, SearchOutlined, SendOutlined, SmileOutlined, UserOutlined } from '@ant-design/icons';
+import { EllipsisOutlined, ReloadOutlined, SendOutlined } from '@ant-design/icons';
 
 import { WS_URL } from '@/services/isee/api.config';
 
@@ -16,7 +16,6 @@ import AnswerCheckbox from '@/components/iSee/chatbot/AnswerCheckbox';
 import AnswerRadio from '@/components/iSee/chatbot/AnswerRadio';
 import { Question, Response, ResponseType } from '@/models/questionnaire';
 import { currentUser } from '@/services/isee/user';
-import { PageContainer } from "@ant-design/pro-layout";
 
 export type Params = {
   match: {
@@ -80,7 +79,7 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
       ...oldQuestionComp,
       <>
         <div style={{ display: 'inline-block' }}>
-          <Avatar size={48} icon={<SmileOutlined />} className="question-avatar" />
+          <Avatar shape="square" src="/isee_icon.png" className="question-avatar" />
           <div className="question" key={'question' + oldQuestionComp}>
             {parse(currentQuestion?.content ?? '') as JSX.Element}
           </div>
