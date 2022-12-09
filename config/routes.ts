@@ -16,7 +16,7 @@
     access: 'designUser',
     name: 'Usecases',
     icon: 'home',
-    component: './designuser/Usecases'
+    component: './designuser/Usecases',
   },
   {
     path: '/usecase/manage/:id',
@@ -49,13 +49,13 @@
     icon: 'question',
     component: './CreateQuestionnaires',
   },
-  {
-    path: '/questionnaires-toolkit',
-    name: 'Questionnaires toolkit',
-    icon: 'EditOutlined',
-    access: 'designUser',
-    component: './QuestionnairesNew',
-  },
+  // {
+  //   path: '/questionnaires-toolkit',
+  //   name: 'Questionnaires toolkit',
+  //   icon: 'EditOutlined',
+  //   access: 'designUser',
+  //   component: './QuestionnairesNew',
+  // },
   {
     path: '/dialogue/:id',
     hideInMenu: true,
