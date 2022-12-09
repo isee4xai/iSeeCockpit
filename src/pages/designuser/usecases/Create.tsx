@@ -9,20 +9,19 @@ import {
   api_delete,
   api_get,
   api_get_casestructure,
+  api_model_upload,
   api_publish,
   api_update_settings,
 } from '@/services/isee/usecases';
 import {
   CheckOutlined,
   CloseOutlined,
-  CopyFilled,
   DeleteOutlined,
-  DeploymentUnitOutlined,
   ExperimentOutlined,
   PlusOutlined,
+  QuestionCircleOutlined,
   SaveOutlined,
   SettingOutlined,
-  UploadOutlined,
   UserSwitchOutlined,
 } from '@ant-design/icons';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
@@ -32,10 +31,8 @@ import {
   Cascader,
   Checkbox,
   Col,
-  Divider,
   Form,
   Input,
-  InputNumber,
   message,
   Modal,
   notification,
@@ -48,7 +45,6 @@ import {
   Space,
   Switch,
   Tag,
-  Upload,
 } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import React, { useEffect, useState } from 'react';
@@ -69,6 +65,9 @@ const Create: React.FC<Params> = (props) => {
   const [pageStatus, setPageStatus] = useState('');
   // const { id } = useParams();
 
+  message.config({
+    top: 400,
+  });
   const usecaseId = props.match.params.id;
 
   const [settings, setSettings] = useState<UsecaseSettings>();
@@ -76,11 +75,11 @@ const Create: React.FC<Params> = (props) => {
 
   const [model, setModel] = useState<UsecaseModel>();
   const [isModelChanged, setIsModelChanged] = useState(false);
-
+  const [modelData, setModelData] = useState(false);
+  const [modelSource, setModelSource] = useState(false);
 
   const [settingsForm] = Form.useForm();
   const [modelForm] = Form.useForm();
-
 
   const [ontoValues, setOntoValues] = useState<API.OntoParams>();
   const [usecase, setUsecase] = useState<Usecase>({ _id: '0', name: '', published: false });
@@ -108,7 +107,7 @@ const Create: React.FC<Params> = (props) => {
     })();
   }, [props.match.params.id, settingsForm]);
 
-  // New Persona Popu Functions
+  // New Persona Popup Functions
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const showModal = () => {
@@ -170,9 +169,8 @@ const Create: React.FC<Params> = (props) => {
     const updateSettings: UsecaseSettings = settingsForm.getFieldsValue();
 
     if (
-      // updateSettings.ai_method?.length > 0 &&
-      updateSettings.ai_task != '' &&
-      updateSettings.data_type != ''
+      updateSettings.ai_task != ''
+      // TODO: MORE VALIDAATIONS LATER
     ) {
       updateSettings.completed = true;
     } else {
@@ -193,9 +191,24 @@ const Create: React.FC<Params> = (props) => {
   async function saveModel() {
     const updateModel: UsecaseModel = modelForm.getFieldsValue();
 
+    updateModel.source_file = modelSource
+    updateModel.dataset_file = modelData
+    updateModel.completed = model?.completed
+    const loading = message.loading(
+      'Uploading model and data file. Please wait...',
+      0,
+    );
+    const test = await api_model_upload(usecase._id, {
+      ...usecase,
+      model: { ...updateModel },
+    });
+
+    loading()
+
     if (
       updateModel.mode != '' &&
       updateModel.backend != ''
+      // TODO: MORE VALIDAATIONS LATER
     ) {
       updateModel.completed = true;
     } else {
@@ -204,13 +217,7 @@ const Create: React.FC<Params> = (props) => {
 
     setModel(updateModel);
 
-
-
-    // const test = await api_update_settings(usecase._id, {
-    //   ...usecase,
-    //   settings: { ...updateSettings },
-    // });
-    console.log('Success Update updateModel:', updateModel);
+    console.log('Success Update updateModel:', test);
     message.success('Succesfully saved AI Model updateModel');
     setIsModelChanged(false);
   }
@@ -268,6 +275,16 @@ const Create: React.FC<Params> = (props) => {
       <Tag color="red">Pending</Tag>
     </Space>
   );
+
+  const handleFileInputModel = (e: any) => {
+    setModelSource(e.target.files[0]);
+    setIsModelChanged(true);
+  }
+
+  const handleFileInputData = (e: any) => {
+    setModelData(e.target.files[0]);
+    setIsModelChanged(true);
+  }
 
   return (
     <>
@@ -534,24 +551,17 @@ const Create: React.FC<Params> = (props) => {
                       {/* {(!settings?.ai_method && !settings?.mo)} */}
                       <Form.Item
                         label="Model File"
-                        name="source_file"
                         tooltip="Please upload the model using any of the following file formats: json, h5, csv and pkl"
-                        rules={[{ required: false, message: 'Input is required!' }]}
                       >
-                        <Upload {...uploadprops}>
-                          <Button icon={<UploadOutlined />}>Select Model File .pkl</Button>
-                        </Upload>
+                        <input placeholder="Select .pkl file" type="file" onChange={handleFileInputModel} />
                       </Form.Item>
 
                       <Form.Item
                         label="Sample Dataset File"
-                        name="dataset_file"
                         tooltip="Please upload a sample dataset file in .csv"
-                        rules={[{ required: false, message: 'Input is required!' }]}
                       >
-                        <Upload {...uploadprops}>
-                          <Button icon={<UploadOutlined />}>Select Dataset File .csv</Button>
-                        </Upload>
+                        <input placeholder="Select .csv file" type="file" onChange={handleFileInputData} />
+
                       </Form.Item>
 
                     </>
@@ -574,23 +584,25 @@ const Create: React.FC<Params> = (props) => {
                     extra={
                       <Button
                         className="dynamic-delete-button"
+                        target='_blank'
+                        href='https://drive.google.com/file/d/1XrHy9U9UV3i8U2I5V_lM_upFANgtn7lG/view' // TODO: Change with another method
                         // danger={true}
                         size="small"
                         // onClick={() => add()}
-                        icon={<CopyFilled />}
+                        icon={<QuestionCircleOutlined />}
                       >
-                        Copy Code
+                        More Info
                       </Button>
                     }
                   >
                     <Form.Item
-                      // label="model_attributes Framework"
+                      label=""
                       name="attributes"
-                      tooltip=""
+
 
                     // rules={[{ required: true, message: 'Input is required!' }]}
                     >
-                      <TextArea placeholder="Configuration Code" autoSize  >
+                      <TextArea placeholder="Configuration Code"  >
 
                       </TextArea>
 

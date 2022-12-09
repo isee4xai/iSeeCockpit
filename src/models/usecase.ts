@@ -34,9 +34,9 @@ export interface UsecaseModel {
   mode?: string;
   alias?: string;
   backend?: string;
-  source_file?: string;
+  source_file?: any;
   source_api?: string;
-  dataset_file?: string;
+  dataset_file?: any;
   attributes?: any;
   completed?: boolean;
 }
