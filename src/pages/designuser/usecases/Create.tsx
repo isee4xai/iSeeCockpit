@@ -123,7 +123,6 @@ const Create: React.FC<Params> = (props) => {
   };
 
   async function onFinishPersona(values: any) {
-    // We need to update this blank model if we change the object
     const new_persona: Persona = {
       _id: 'persona-' + Math.floor(Math.random() * 100000) + 1,
       completed: false,
@@ -145,25 +144,7 @@ const Create: React.FC<Params> = (props) => {
     } else {
       message.error('Error Adding Persona');
     }
-
   }
-
-  // - End
-
-  const uploadprops = {
-    name: 'file',
-    action: '',
-    onChange(info: any) {
-      if (info.file.status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
-      if (info.file.status === 'done') {
-        message.success(`${info.file.name} file uploaded successfully`);
-      } else if (info.file.status === 'error') {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-  };
 
   async function saveSettings() {
     const updateSettings: UsecaseSettings = settingsForm.getFieldsValue();
