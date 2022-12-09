@@ -79,7 +79,7 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
       ...oldQuestionComp,
       <>
         <div style={{ display: 'inline-block' }}>
-          <Avatar shape="square" src="/isee_icon.png" className="question-avatar" />
+          <Avatar size={44} shape="circle" src="/isee_icon_wide.png" className="question-avatar" />
           <div className="question" key={'question' + oldQuestionComp}>
             {parse(currentQuestion?.content ?? '') as JSX.Element}
           </div>
