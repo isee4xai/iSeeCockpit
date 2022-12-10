@@ -16,7 +16,9 @@ import {
 import {
   CheckOutlined,
   CloseOutlined,
+  CopyOutlined,
   DeleteOutlined,
+  DownloadOutlined,
   ExperimentOutlined,
   PlusOutlined,
   QuestionCircleOutlined,
@@ -318,17 +320,52 @@ const Create: React.FC<Params> = (props) => {
                   style={{ margin: '0 1rem' }}
                   onClick={async () => {
                     const json = await api_get_casestructure(usecase._id || '');
+                    const json_formatted = JSON.stringify(json, null, 2)
 
                     notification.open({
                       message: json.length + ' Cases - ' + 'iSee Case Structure Export',
                       description: (
-                        <pre>
-                          <code>{JSON.stringify(json, null, 2)}</code>
-                        </pre>
+                        <div>
+                          <pre style={{ marginBottom: 0 }}>
+                            <code>{json_formatted}</code>
+                          </pre>
+                          <div style={{ right: 20, position: 'absolute' }}>
+                            <Button
+                              onClick={() => {
+                                navigator.clipboard.writeText(json_formatted);
+                                message.success("Copied to Clipboard")
+                              }}
+                              icon={<CopyOutlined />}
+                            >
+                              Copy
+                            </Button>
+                            &nbsp;
+                            <Button
+                              type="primary"
+
+                              onClick={() => {
+                                var a = document.createElement("a")
+                                a.href = URL.createObjectURL(
+                                  new Blob([json_formatted], { type: "application/json" })
+                                )
+                                a.download = "isee-export-" + usecaseId + ".json"
+                                a.click()
+                              }}
+                              icon={<DownloadOutlined />}
+                            >
+                              Download
+                            </Button>
+                          </div>
+                        </div>
                       ),
+                      duration: 0,
                       onClick: () => {
                         console.log('Export Clicked!');
                       },
+                      style: {
+                        width: '80%',
+                      },
+                      placement: 'top'
                     });
                   }}
                   htmlType="button"
@@ -336,7 +373,7 @@ const Create: React.FC<Params> = (props) => {
                 >
                   Export JSON
                 </Button>{' '}
-                <Popconfirm
+                < Popconfirm
                   title={'Are you sure to delete?'}
                   onConfirm={async () => {
                     await api_delete(usecase._id || '');
@@ -355,11 +392,11 @@ const Create: React.FC<Params> = (props) => {
             ]}
           />
 
-          <Card
+          < Card
             title={
-              <h4>
+              < h4 >
                 <SettingOutlined /> AI Model Settings
-              </h4>
+              </h4 >
             }
             extra={genExtra()}
             headStyle={{ backgroundColor: '#fafafa', border: '1px solid #d9d9d9' }}
@@ -461,7 +498,7 @@ const Create: React.FC<Params> = (props) => {
                 </Col>
               </Row>
             </Form>
-          </Card>
+          </Card >
 
           <Card
             title={
@@ -630,7 +667,7 @@ const Create: React.FC<Params> = (props) => {
               </Form.Item>
             </Form>
           </Modal>
-        </PageHeaderWrapper>
+        </PageHeaderWrapper >
       )}
     </>
   );
