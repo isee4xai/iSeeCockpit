@@ -55,12 +55,12 @@ const Explainers: React.FC = () => {
       title: 'Explainability Technique',
       dataIndex: 'technique',
       key: 'technique',
-      render: text =>
-        <Cascader fieldNames={{ label: 'label', value: 'key', children: 'children' }}
-          options={ontoValues?.ExplainabilityTechnique.children}
-          value={text}
-          placeholder="Pick or Search Explainability Technique"
-          changeOnSelect />
+      //   render: text =>
+      //     <Cascader fieldNames={{ label: 'label', value: 'key', children: 'children' }}
+      //       options={ontoValues?.ExplainabilityTechnique.children}
+      //       value={text}
+      //       placeholder="Pick or Search Explainability Technique"
+      //       changeOnSelect />
 
     },
     {
@@ -115,10 +115,11 @@ const Explainers: React.FC = () => {
       render: (_, { presentations }) => (
         <>
           {presentations?.map(temp => {
-            return (
-              <Tag key={temp}>
-                {temp}
-              </Tag>
+            return (<>
+              <li key={temp} >
+                - {temp}
+              </li>
+            </>
             );
           })}
         </>
@@ -136,10 +137,11 @@ const Explainers: React.FC = () => {
       render: (_, { ai_methods }) => (
         <>
           {ai_methods?.map(temp => {
-            return (
-              <Tag key={temp}>
-                {temp}
-              </Tag>
+            return (<>
+              <li key={temp} >
+                - {temp}
+              </li>
+            </>
             );
           })}
         </>
@@ -152,10 +154,11 @@ const Explainers: React.FC = () => {
       render: (_, { ai_tasks }) => (
         <>
           {ai_tasks?.map(temp => {
-            return (
-              <Tag key={temp}>
-                {temp}
-              </Tag>
+            return (<>
+              <li key={temp} >
+                - {temp}
+              </li>
+            </>
             );
           })}
         </>
