@@ -329,7 +329,10 @@ const Create: React.FC<Params> = (props) => {
                           <pre style={{ marginBottom: 0 }}>
                             <code>{json_formatted}</code>
                           </pre>
-                          <div style={{ right: 20, position: 'absolute' }}>
+                          <div style={{
+                            display: 'flex',
+                            float: 'right'
+                          }}>
                             <Button
                               onClick={() => {
                                 navigator.clipboard.writeText(json_formatted);
