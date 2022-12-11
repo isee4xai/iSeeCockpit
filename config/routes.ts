@@ -71,6 +71,13 @@
     // access: 'designUser',
     component: './explainers/Explainers',
   },
+  {
+    path: 'https://editor-dev.isee4xai.com/',
+    name: 'Strategy Editor',
+    icon: 'LineChartOutlined',
+    access: 'designUser',
+    component: './404',
+  },
   // {
   //   path: '/design',
   //   icon: 'crown',
