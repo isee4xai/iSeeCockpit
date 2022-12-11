@@ -21,8 +21,9 @@ const PersonaTabs: React.FC<PersonaType> = (props) => {
 
   const genExtra2 = (persona: Persona) => (
     <div>
-      {!persona.completed && <Tag color="red">Incomplete Persona</Tag>}
-      {persona.completed && <Tag color="success">Completed Persona</Tag>}
+      {/* TODO: FIX LATER */}
+      {/* {!persona.completed && <Tag color="red">Incomplete Persona</Tag>}
+      {persona.completed && <Tag color="success">Completed Persona</Tag>} */}
 
       <Popconfirm
         title={'Are you sure to delete?'}

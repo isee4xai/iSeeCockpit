@@ -45,10 +45,13 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
   const { persona, updatePersona, usecaseId } = props;
   const [personaState, setPersonaState] = useState(persona);
 
-  const genIntentStatus = (intent: PersonaIntent) => (
-    <div>
-      {!intent.completed && <Tag color="red">Incomplete Intent</Tag>}
-      {intent.completed && <Tag color="success">Completed Intent</Tag>}
+  const genIntentStatus = (intent: PersonaIntent) => {
+    let intent_status = intent.strategy_selected && (intent?.evaluation?.questions && intent?.evaluation?.questions?.length > 0) || false;
+
+    console.log("genIntentStatus", intent_status)
+    return (<div>
+      {!intent_status && <Tag color="red">Incomplete Intent</Tag>}
+      {intent_status && <Tag color="success">Completed Intent</Tag>}
 
       <Popconfirm
         title={'Are you sure to delete?'}
@@ -72,8 +75,8 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
           icon={<DeleteOutlined />}
         />
       </Popconfirm>
-    </div>
-  );
+    </div>)
+  };
 
   // New Persona Popup Functions
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -124,6 +127,23 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
     }
   };
 
+  const updateIntentEvaluation = async (intent: PersonaIntent, questions: any) => {
+    console.log(intent)
+    console.log(questions)
+    const evaluation = { questions: questions }
+
+    setPersonaState((old) => ({
+      ...old,
+      intents: personaState.intents?.map((i) => {
+        if (i.id === intent.id) {
+          return { ...i, evaluation };
+        }
+        return i;
+      }),
+    }));
+
+  };
+
   const getStrategies = async (intent: PersonaIntent) => {
 
     message.config({
@@ -139,11 +159,14 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
     intent.strategy_selected = false
     hide();
 
-    notification.success({
-      message: 'Retrieved Strategies for "' + intent.label + '" Intent',
-      placement: 'top',
-      duration: 3,
-    });
+    if (strategies.length > 0) {
+      notification.success({
+        message: 'Retrieved Strategies for "' + intent.label + '" Intent',
+        placement: 'top',
+        duration: 3,
+      });
+    }
+
 
     setPersonaState((old) => ({
       ...old,
@@ -355,10 +378,10 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                 <QuestionnaireTab
                   key={'qtab-' + personaState._id}
                   evaluation={intent.evaluation}
-                  updatePersona={updatePersona}
                   intent_cat={intent.name}
                   persona={persona}
                   usecaseId={usecaseId}
+                  updateIntentEvaluation={updateIntentEvaluation}
                 // questionnaire={personaState.evaluation_questionnaire || {}}
                 />
               </Tabs.TabPane>

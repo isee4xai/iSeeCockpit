@@ -1,4 +1,4 @@
-import { PlusCircleOutlined, HolderOutlined, ImportOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, HolderOutlined, ImportOutlined, } from '@ant-design/icons';
 import Draggable from 'react-draggable';
 import QuestionForm from '@/components/iSee/question/toolkit/QuestionForm';
 import { Button, Modal, notification } from 'antd';
@@ -30,9 +30,10 @@ const QuestionnaireEditor: React.FC<{
     '1.5rem',
   );
 
-  useEffect(() => {
-    setQuestions(defaultQuestions || []);
-  }, [defaultQuestions, setQuestions]);
+  // useEffect(() => {
+  //   console.log("RUNNNING HERE ", defaultQuestions)
+  //   setQuestions(defaultQuestions || []);
+  // }, [defaultQuestions, setQuestions]);
 
   const removeAttr = (list: Question[], attr: string) => {
     return list.map((elmnt: Question) => {
@@ -45,6 +46,7 @@ const QuestionnaireEditor: React.FC<{
   };
 
   useEffect(() => {
+    console.log("useEffect Q Editor", questions)
     if (
       !(
         defaultQuestions &&
