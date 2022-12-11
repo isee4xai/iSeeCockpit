@@ -262,7 +262,7 @@ const Create: React.FC<Params> = (props) => {
       >
         Create New Persona
       </Button>
-      <Tag color="red">Pending</Tag>
+      {/* <Tag color="red">Pending</Tag> */}
     </Space>
   );
 

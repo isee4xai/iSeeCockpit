@@ -316,7 +316,10 @@ export async function api_persona_query_strategies(
       },
     });
     const result = await data.json();
-
+    if (result.message) {
+      message.error("Strategy Retrieval Failed! Make sure you have completed the AI Model Settings.")
+      return []
+    };
     return result;
   } catch (error) {
     return [];
@@ -340,6 +343,10 @@ export async function api_persona_query_set_default(
       },
     });
     const result = await data.json();
+    if (result.message) {
+      message.error("Strategy Retrieval Failed! Make sure you have completed the AI Model Settings.")
+      return []
+    };
 
     return result;
   } catch (error) {

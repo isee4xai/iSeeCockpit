@@ -67,14 +67,14 @@
   {
     path: '/explainers',
     name: 'Explainer Library',
-    icon: 'QuestionOutlined',
+    icon: 'BulbOutlined',
     // access: 'designUser',
     component: './explainers/Explainers',
   },
   {
     path: 'https://editor-dev.isee4xai.com/',
     name: 'Strategy Editor',
-    icon: 'LineChartOutlined',
+    icon: 'EditOutlined',
     access: 'designUser',
     component: './404',
   },

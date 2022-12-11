@@ -44,12 +44,14 @@ const Explainers: React.FC = () => {
       render: text => <a>{text}</a>,
       fixed: 'left',
       width: '8%',
+
     },
     {
       title: 'Description',
       dataIndex: 'explainer_description',
       key: 'explainer_description',
-      render: text => <Typography.Text ellipsis={true}>{text}</Typography.Text>,
+      width: 500,
+      render: text => <Typography.Text ellipsis={false}>{text}</Typography.Text>,
     },
     {
       title: 'Explainability Technique',
@@ -127,8 +129,8 @@ const Explainers: React.FC = () => {
     },
     {
       title: 'Computational Complexity',
-      dataIndex: 'complexity',
-      key: 'complexity',
+      dataIndex: 'computational_complexity',
+      key: 'computational_complexity',
     },
     {
       title: 'Applicable AI Methods',
@@ -169,12 +171,12 @@ const Explainers: React.FC = () => {
       dataIndex: 'implementation',
       key: 'implementation',
     },
-    {
-      title: 'Metadata',
-      dataIndex: 'metadata',
-      key: 'metadata',
-      render: text => <code>{text}</code>,
-    }
+    // {
+    //   title: 'Metadata',
+    //   dataIndex: 'metadata',
+    //   key: 'metadata',
+    //   render: text => <code>{text}</code>,
+    // }
   ];
 
 
@@ -182,6 +184,14 @@ const Explainers: React.FC = () => {
 
   useEffect(() => {
     (async () => {
+      message.config({
+        top: 400,
+      });
+      const hide = message.loading(
+        'Please wait.. Retrieving explainers from iSee Ontology...',
+        0,
+      );
+
       const fields = await get_explainer_fields()
       setOntoValues(fields)
       console.log(fields)
@@ -189,6 +199,8 @@ const Explainers: React.FC = () => {
       const data = await api_get_all();
       console.log(data)
       setExplainers(data);
+      hide();
+
     })();
   }, []);
 
@@ -217,8 +229,16 @@ const Explainers: React.FC = () => {
   };
 
   async function get_all() {
+    message.config({
+      top: 400,
+    });
+    const hide = message.loading(
+      'Retrieving explainers from iSee Ontology...',
+      0,
+    );
     const data = await api_get_all();
     setExplainers(data);
+    hide();
   }
 
   async function changeExplainer(selected: any) {
@@ -567,7 +587,13 @@ const Explainers: React.FC = () => {
       />
       {/* <Card> */}
       {/* <Row gutter={20}> */}
-      <Table columns={columns} dataSource={explainers} scroll={{ x: 2300 }} />
+      <Table columns={columns} dataSource={explainers} scroll={{ x: 2300 }}
+
+        expandable={{
+          expandedRowRender: (record) => <p>Metadata:<br></br><code>{record.metadata}</code></p>,
+          rowExpandable: (record) => record.name !== 'Not Expandable',
+        }}
+      />
     </PageContainer >
   );
 };

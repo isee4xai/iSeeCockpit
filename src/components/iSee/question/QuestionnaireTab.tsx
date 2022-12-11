@@ -27,14 +27,14 @@ import {
   Tooltip,
 } from 'antd';
 import Modal from 'antd/lib/modal/Modal';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import './QuestionnaireTab.less';
 
 export type PersonaType = {
   evaluation: Questionnaire;
-  updatePersona?: any;
+  updateIntentEvaluation?: any;
   persona: Persona;
   usecaseId: string;
   intent_cat: string;
@@ -50,7 +50,7 @@ const questionTypeToIcon = {
 
 const QuestionnaireTab: React.FC<PersonaType> = ({
   evaluation,
-  updatePersona,
+  updateIntentEvaluation,
   persona,
   usecaseId,
   intent_cat,
@@ -81,11 +81,16 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
     setIsQuestionModal2Visible(false);
   };
 
-  const updateQuestions = (temp: Question[]) => {
-    const temp_persona = evaluation;
-    evaluation.questions = temp;
-    updatePersona(temp_persona);
-  };
+  // Callback fix for issue with multiple options
+  const handleQuestionChange = useCallback(
+    (newQuestions: Question[]) => {
+      // console.log("handleQuestionChange", newQuestions)
+      // setQuestions(newQuestions);
+      setIsChangedQuestion(true);
+      setQuestions(() => newQuestions);
+    },
+    [setQuestions],
+  );
 
   const onFinish2 = (values: any) => {
     if (values.questions.length > 0) setIsChangedQuestion(true);
@@ -105,8 +110,6 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
     handleOkQ2();
 
     setQuestions([...questions, ...questionList]);
-    updateQuestions([...questions, ...questionList]);
-
     message.success({ content: 'Succesfully Added Question', duration: 2 });
   };
 
@@ -130,7 +133,6 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
 
     setIsChangedQuestion(true);
     setQuestions(append);
-    updateQuestions(append);
 
     message.success({ content: 'Succesfully Added Question', duration: 2 });
   };
@@ -180,6 +182,8 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
           evaluation: { questions },
         });
       }
+
+      updateIntentEvaluation(intent, questions);
 
       notification.success({
         message: 'Saved Evaluation Questionnaire',
@@ -255,10 +259,12 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
               noImport
               // noAdd
               defaultQuestions={questions}
-              onChange={(newQuestions) => {
-                setQuestions(newQuestions);
-                setIsChangedQuestion(true);
-              }}
+              onChange={handleQuestionChange}
+            // onChange={(newQuestions) => {
+            //   console.log("newQuestions", newQuestions)
+            //   setQuestions(newQuestions);
+            //   setIsChangedQuestion(true);
+            // }}
             />
           ) : (
             <Empty description={'Please add a question'} />
@@ -295,7 +301,7 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
         >
           <Form.Item
             shouldUpdate
-            label="select a questionnaire"
+            label="Select a Questionnaire"
             name="questionnaire"
             tooltip="This is a required field"
             initialValue={importQuestionnaire}
@@ -312,7 +318,7 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
           {importQuestionnaire && (
             <Form.Item
               className="question-select-checkbox"
-              label="select questions"
+              label="Select Questions"
               name="questions"
               tooltip="This is a required field"
               rules={[{ required: true, message: 'Input is required!' }]}
