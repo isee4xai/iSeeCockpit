@@ -217,7 +217,7 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
           return oldArray;
         });
         resolve();
-      }, 500);
+      }, 200);
     });
   }
 

@@ -43,7 +43,7 @@ const Explainers: React.FC = () => {
       key: 'name',
       render: text => <a>{text}</a>,
       fixed: 'left',
-      width: '8%',
+      width: '7%',
 
     },
     {
@@ -57,6 +57,7 @@ const Explainers: React.FC = () => {
       title: 'Explainability Technique',
       dataIndex: 'technique',
       key: 'technique',
+      render: text => <>{text.split("#")[text.split("#").length - 1]}</>
       //   render: text =>
       //     <Cascader fieldNames={{ label: 'label', value: 'key', children: 'children' }}
       //       options={ontoValues?.ExplainabilityTechnique.children}
@@ -70,7 +71,7 @@ const Explainers: React.FC = () => {
       dataIndex: 'dataset_type',
       key: 'dataset_type',
       render: text =>
-        <Select placeholder="Dataset Type" value={text} disabled bordered={false} >
+        <Select placeholder="Dataset Type" value={text} bordered={false} >
           {ontoValues?.DatasetType.map((option) => (
             <Select.Option key={"op-" + option.key} value={option.key} >
               {option.label}
@@ -83,32 +84,39 @@ const Explainers: React.FC = () => {
       title: 'Explanation Type',
       dataIndex: 'explanation_type',
       key: 'explanation_type',
+      render: text => <>{text.split("#")[text.split("#").length - 1].split("_").join(" ")}</>
     },
     {
       title: 'Explanation Description',
       dataIndex: 'explanation_description',
       key: 'explanation_description',
-      render: text => <Typography.Text ellipsis={true}>{text}</Typography.Text>,
+      width: 400,
+      // render: text => <Typography.Text ellipsis={false}>{text}</Typography.Text>,
+      render: text => <Typography.Text ellipsis={false}>{text}</Typography.Text>,
     },
     {
       title: 'Explainer Concurrentness',
       dataIndex: 'concurrentness',
       key: 'concurrentness',
+      render: text => <>{text.split("#")[text.split("#").length - 1]}</>
     },
     {
       title: 'Explainer Portability',
       dataIndex: 'portability',
       key: 'portability',
+      render: text => <>{text.split("#")[text.split("#").length - 1]}</>
     },
     {
       title: 'Explanation Scope',
       dataIndex: 'scope',
       key: 'scope',
+      render: text => <>{text.split("#")[text.split("#").length - 1]}</>
     },
     {
       title: 'Explanation Target',
       dataIndex: 'target',
       key: 'target',
+      render: text => <>{text.split("#")[text.split("#").length - 1]}</>
     },
     {
       title: 'Presentation Format',
@@ -119,7 +127,7 @@ const Explainers: React.FC = () => {
           {presentations?.map(temp => {
             return (<>
               <li key={temp} >
-                - {temp}
+                - {temp.split("/")[temp.split("/").length - 1]}
               </li>
             </>
             );
@@ -131,17 +139,19 @@ const Explainers: React.FC = () => {
       title: 'Computational Complexity',
       dataIndex: 'computational_complexity',
       key: 'computational_complexity',
+      render: text => <>{text.split("#")[text.split("#").length - 1].split("_").join(" ")}</>
     },
     {
       title: 'Applicable AI Methods',
       dataIndex: 'ai_methods',
       key: 'ai_methods',
+      width: '6%',
       render: (_, { ai_methods }) => (
         <>
           {ai_methods?.map(temp => {
             return (<>
               <li key={temp} >
-                - {temp}
+                - {temp.search("#") != -1 ? temp.split("#")[temp.split("#").length - 1] : temp.split("/")[temp.split("/").length - 1]}
               </li>
             </>
             );
@@ -158,7 +168,7 @@ const Explainers: React.FC = () => {
           {ai_tasks?.map(temp => {
             return (<>
               <li key={temp} >
-                - {temp}
+                - {temp.search("#") != -1 ? temp.split("#")[temp.split("#").length - 1] : temp.split("/")[temp.split("/").length - 1]}
               </li>
             </>
             );
@@ -170,6 +180,18 @@ const Explainers: React.FC = () => {
       title: 'Implementation Framework',
       dataIndex: 'implementation',
       key: 'implementation',
+      render: (_, { implementation }) => (
+        <>
+          {implementation?.map(temp => {
+            return (<>
+              <li key={temp} >
+                - {temp.search("#") != -1 ? temp.split("#")[temp.split("#").length - 1] : temp.split("/")[temp.split("/").length - 1]}
+              </li>
+            </>
+            );
+          })}
+        </>
+      )
     },
     // {
     //   title: 'Metadata',
@@ -587,7 +609,7 @@ const Explainers: React.FC = () => {
       />
       {/* <Card> */}
       {/* <Row gutter={20}> */}
-      <Table columns={columns} dataSource={explainers} scroll={{ x: 2300 }}
+      <Table columns={columns} dataSource={explainers} scroll={{ x: 3000 }}
 
         expandable={{
           expandedRowRender: (record) => <p>Metadata:<br></br><code>{record.metadata}</code></p>,
