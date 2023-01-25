@@ -34,6 +34,7 @@ import {
   Cascader,
   Checkbox,
   Col,
+  Divider,
   Form,
   Input,
   message,
@@ -90,11 +91,11 @@ const Create: React.FC<Params> = (props) => {
   useEffect(() => {
     (async () => {
       const res_usecase = await api_get(props.match.params.id);
-      console.log("RUNNING FIRST QUERY")
+      console.log('RUNNING FIRST QUERY');
       console.log(res_usecase);
 
       const onto_params = await get_usecase_fields();
-      setOntoValues(onto_params)
+      setOntoValues(onto_params);
 
       setUsecase(res_usecase);
       if (!res_usecase) {
@@ -125,7 +126,6 @@ const Create: React.FC<Params> = (props) => {
     setIsModalVisible(false);
   };
 
-
   async function onFinishPersona(values: any) {
     const new_persona: Persona = {
       _id: 'persona-' + Math.floor(Math.random() * 100000) + 1,
@@ -141,7 +141,7 @@ const Create: React.FC<Params> = (props) => {
     console.log('Success Create Persona:', new_persona);
     const added_persona = await api_create_persona(usecase._id, new_persona);
     if (added_persona) {
-      new_persona._id = added_persona._id
+      new_persona._id = added_persona._id;
       setPersonas([...personas, new_persona]);
       handleOk();
       message.success('Succesfully Added Persona');
@@ -176,19 +176,16 @@ const Create: React.FC<Params> = (props) => {
   async function saveModel() {
     const updateModel: UsecaseModel = modelForm.getFieldsValue();
 
-    updateModel.source_file = modelSource
-    updateModel.dataset_file = modelData
-    updateModel.completed = model?.completed
-    const loading = message.loading(
-      'Uploading model and data file. Please wait...',
-      0,
-    );
+    updateModel.source_file = modelSource;
+    updateModel.dataset_file = modelData;
+    updateModel.completed = model?.completed;
+    const loading = message.loading('Uploading model and data file. Please wait...', 0);
     const apicall = await api_model_upload(usecase._id, {
       ...usecase,
       model: { ...updateModel },
     });
 
-    loading()
+    loading();
 
     if (
       updateModel.mode != '' &&
@@ -269,12 +266,12 @@ const Create: React.FC<Params> = (props) => {
   const handleFileInputModel = (e: any) => {
     setModelSource(e.target.files[0]);
     setIsModelChanged(true);
-  }
+  };
 
   const handleFileInputData = (e: any) => {
     setModelData(e.target.files[0]);
     setIsModelChanged(true);
-  }
+  };
 
   return (
     <>
@@ -320,7 +317,7 @@ const Create: React.FC<Params> = (props) => {
                   style={{ margin: '0 1rem' }}
                   onClick={async () => {
                     const json = await api_get_casestructure(usecase._id || '');
-                    const json_formatted = JSON.stringify(json, null, 2)
+                    const json_formatted = JSON.stringify(json, null, 2);
 
                     notification.open({
                       message: json.length + ' Cases - ' + 'iSee Case Structure Export',
@@ -329,14 +326,16 @@ const Create: React.FC<Params> = (props) => {
                           <pre style={{ marginBottom: 0 }}>
                             <code>{json_formatted}</code>
                           </pre>
-                          <div style={{
-                            display: 'flex',
-                            float: 'right'
-                          }}>
+                          <div
+                            style={{
+                              display: 'flex',
+                              float: 'right',
+                            }}
+                          >
                             <Button
                               onClick={() => {
                                 navigator.clipboard.writeText(json_formatted);
-                                message.success("Copied to Clipboard")
+                                message.success('Copied to Clipboard');
                               }}
                               icon={<CopyOutlined />}
                             >
@@ -345,14 +344,13 @@ const Create: React.FC<Params> = (props) => {
                             &nbsp;
                             <Button
                               type="primary"
-
                               onClick={() => {
-                                var a = document.createElement("a")
+                                var a = document.createElement('a');
                                 a.href = URL.createObjectURL(
-                                  new Blob([json_formatted], { type: "application/json" })
-                                )
-                                a.download = "isee-export-" + usecaseId + ".json"
-                                a.click()
+                                  new Blob([json_formatted], { type: 'application/json' }),
+                                );
+                                a.download = 'isee-export-' + usecaseId + '.json';
+                                a.click();
                               }}
                               icon={<DownloadOutlined />}
                             >
@@ -368,7 +366,7 @@ const Create: React.FC<Params> = (props) => {
                       style: {
                         width: '80%',
                       },
-                      placement: 'top'
+                      placement: 'top',
                     });
                   }}
                   htmlType="button"
@@ -376,7 +374,7 @@ const Create: React.FC<Params> = (props) => {
                 >
                   Export JSON
                 </Button>{' '}
-                < Popconfirm
+                <Popconfirm
                   title={'Are you sure to delete?'}
                   onConfirm={async () => {
                     await api_delete(usecase._id || '');
@@ -395,11 +393,12 @@ const Create: React.FC<Params> = (props) => {
             ]}
           />
 
-          < Card
+          {/* AI MODEL SETTINGS  */}
+          <Card
             title={
-              < h4 >
+              <h4>
                 <SettingOutlined /> AI Model Settings
-              </h4 >
+              </h4>
             }
             extra={genExtra()}
             headStyle={{ backgroundColor: '#fafafa', border: '1px solid #d9d9d9' }}
@@ -417,27 +416,55 @@ const Create: React.FC<Params> = (props) => {
             >
               <Row gutter={20}>
                 <Col span={16} className="gutter-row">
+                  <div hidden={settings?.ai_method}>
+                    <Alert message="Let's start by describing the AI model..." type="info" />
+                    <br></br>
+                  </div>
                   <Form.Item
                     label="AI Task"
                     name="ai_task"
                     tooltip="This is a required field"
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
-                    <Cascader fieldNames={{ label: 'label', value: 'key', children: 'children' }} options={ontoValues?.AI_TASK.children} showSearch={{ filterCascader }} placeholder="Select the AI Task" changeOnSelect />
+                    <Cascader
+                      fieldNames={{ label: 'label', value: 'key', children: 'children' }}
+                      options={ontoValues?.AI_TASK.children}
+                      showSearch={{ filterCascader }}
+                      placeholder="Search AI Tasks..."
+                      changeOnSelect
+                    />
                   </Form.Item>
 
                   <Form.Item
                     label="AI Method"
                     name="ai_method"
+                    hidden={!settings?.ai_task}
                     tooltip="This is a required field"
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
-                    <Cascader fieldNames={{ label: 'label', value: 'key', children: 'children' }} options={ontoValues?.AI_METHOD.children} showSearch={{ filterCascader }} placeholder="Select one or more AI Methods" changeOnSelect multiple maxTagCount="responsive" />
+                    <Cascader
+                      fieldNames={{ label: 'label', value: 'key', children: 'children' }}
+                      options={ontoValues?.AI_METHOD.children}
+                      showSearch={{ filterCascader }}
+                      placeholder="Search AI Methods..."
+                      changeOnSelect
+                      multiple
+                      maxTagCount="responsive"
+                    />
                   </Form.Item>
+
+                  <div hidden={!settings?.ai_method}>
+                    <Divider>Data Settings</Divider>
+                    <div hidden={settings?.num_instances}>
+                      <Alert message="Now tell us a little bit about your data..." type="info" />
+                      <br></br>
+                    </div>
+                  </div>
 
                   <Form.Item
                     label="Dataset Type"
                     name="dataset_type"
+                    hidden={!settings?.ai_method}
                     tooltip="This is a required field"
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
@@ -453,10 +480,11 @@ const Create: React.FC<Params> = (props) => {
                   <Form.Item
                     label="Data Type"
                     name="data_type"
+                    hidden={!settings?.dataset_type}
                     tooltip="This is a required field"
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
-                    <Checkbox.Group >
+                    <Checkbox.Group>
                       {ontoValues?.DATA_TYPE.map((option) => (
                         <Checkbox key={option.key} value={option.key}>
                           {option.label}
@@ -466,10 +494,11 @@ const Create: React.FC<Params> = (props) => {
                   </Form.Item>
 
                   <Form.Item
+                    hidden={!settings?.data_type}
                     label="Number of Features"
                     name="num_features"
                     tooltip=""
-                  // rules={[{ required: true, message: 'Input is required!' }]}
+                    // rules={[{ required: true, message: 'Input is required!' }]}
                   >
                     <Select placeholder="Number of Features">
                       {ontoValues?.FEATURE_RANGE.map((option) => (
@@ -481,10 +510,11 @@ const Create: React.FC<Params> = (props) => {
                   </Form.Item>
 
                   <Form.Item
+                    hidden={!settings?.num_features}
                     label="Number of Instances"
                     name="num_instances"
                     tooltip=""
-                  // rules={[{ required: true, message: 'Input is required!' }]}
+                    // rules={[{ required: true, message: 'Input is required!' }]}
                   >
                     <Select placeholder="Number of Instances">
                       {ontoValues?.INSTANCE_RANGE.map((option) => (
@@ -495,15 +525,39 @@ const Create: React.FC<Params> = (props) => {
                     </Select>
                   </Form.Item>
 
+                  <div hidden={!settings?.num_instances}>
+                    <Divider>Model Performance</Divider>
+                    <div hidden={settings?.completed}>
+                      <Alert
+                        message="What is your model performance like (e.g. Accuracy 80%)"
+                        type="info"
+                      />
+                      <br></br>
+                    </div>
+                    <AssetmentField types={ontoValues?.AI_MODEL_A_METRIC} />
+                    <br></br>
+                    <Button
+                      type="primary"
+                      onClick={() => saveSettings()}
+                      disabled={!isSettingChanged}
+                      htmlType="button"
+                      className="r-10"
+                      icon={<SaveOutlined />}
+                    >
+                      Save AI Model Settings
+                    </Button>
+                  </div>
                 </Col>
                 <Col span={8} className="gutter-row">
-                  <AssetmentField types={ontoValues?.AI_MODEL_A_METRIC} />
+                  {/* <AssetmentField types={ontoValues?.AI_MODEL_A_METRIC} /> */}
                 </Col>
               </Row>
             </Form>
-          </Card >
+          </Card>
 
+          {/* AI MODEL UPLAOD */}
           <Card
+            hidden={!settings?.completed}
             title={
               <h4>
                 <ExperimentOutlined /> AI Model Upload
@@ -512,7 +566,6 @@ const Create: React.FC<Params> = (props) => {
             extra={genExtraUpload()}
             headStyle={{ backgroundColor: '#fafafa', border: '1px solid #d9d9d9' }}
           >
-
             <Form
               name="basic"
               labelCol={{ span: 0 }}
@@ -524,16 +577,23 @@ const Create: React.FC<Params> = (props) => {
               form={modelForm}
               autoComplete="off"
             >
-
               <Row gutter={20}>
                 <Col span={16} className="gutter-row">
+                  <div hidden={model?.completed}>
+                    <Alert
+                      message="Now you can provide us your model file or via API"
+                      type="info"
+                    />
+                    <br></br>
+                  </div>
+
                   <Form.Item
                     label="Model Upload Method"
                     name="mode"
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
                     <Radio.Group buttonStyle="solid">
-                      <Radio.Button key="file" value="file" >
+                      <Radio.Button key="file" value="file">
                         Model File Upload (.h5, .pkl..)
                       </Radio.Button>
                       <Radio.Button key="api" value="api">
@@ -547,7 +607,7 @@ const Create: React.FC<Params> = (props) => {
                         label="Implementation Framework"
                         name="backend"
                         tooltip=""
-                      // rules={[{ required: true, message: 'Input is required!' }]}
+                        // rules={[{ required: true, message: 'Input is required!' }]}
                       >
                         <Select placeholder="Implementation Framework">
                           {ontoValues?.IMPLEMENTATION_FRAMEWORK.map((option) => (
@@ -563,7 +623,11 @@ const Create: React.FC<Params> = (props) => {
                         label="Model File"
                         tooltip="Please upload the model using any of the following file formats: json, h5, csv and pkl"
                       >
-                        <input placeholder="Select .pkl file" type="file" onChange={handleFileInputModel} />
+                        <input
+                          placeholder="Select .pkl file"
+                          type="file"
+                          onChange={handleFileInputModel}
+                        />
                         {model?.source_file && <Tag color="green">Model Uploaded</Tag>}
                       </Form.Item>
 
@@ -571,11 +635,13 @@ const Create: React.FC<Params> = (props) => {
                         label="Sample Dataset File"
                         tooltip="Please upload a sample dataset file in .csv"
                       >
-                        <input placeholder="Select .csv file" type="file" onChange={handleFileInputData} />
+                        <input
+                          placeholder="Select .csv file"
+                          type="file"
+                          onChange={handleFileInputData}
+                        />
                         {model?.dataset_file && <Tag color="green">Dataset Uploaded</Tag>}
-
                       </Form.Item>
-
                     </>
                   )}
                   {model?.mode == 'api' && (
@@ -589,15 +655,15 @@ const Create: React.FC<Params> = (props) => {
                     </Form.Item>
                   )}
                 </Col>
-                <Col span={8} >
+                <Col span={8}>
                   <Card
                     size="small"
                     title={'Configuration'}
                     extra={
                       <Button
                         className="dynamic-delete-button"
-                        target='_blank'
-                        href='https://drive.google.com/file/d/1XrHy9U9UV3i8U2I5V_lM_upFANgtn7lG/view' // TODO: Change with another method
+                        target="_blank"
+                        href="https://drive.google.com/file/d/1XrHy9U9UV3i8U2I5V_lM_upFANgtn7lG/view" // TODO: Change with another method
                         // danger={true}
                         size="small"
                         // onClick={() => add()}
@@ -611,22 +677,19 @@ const Create: React.FC<Params> = (props) => {
                       label=""
                       name="attributes"
 
-
-                    // rules={[{ required: true, message: 'Input is required!' }]}
+                      // rules={[{ required: true, message: 'Input is required!' }]}
                     >
-                      <TextArea placeholder="Configuration Code"  >
-
-                      </TextArea>
-
+                      <TextArea placeholder="Configuration Code"></TextArea>
                     </Form.Item>
                   </Card>
                 </Col>
               </Row>
-
             </Form>
           </Card>
 
+          {/* USER PERSONAS */}
           <Card
+            // hidden={!model?.completed}
             title={
               <h4>
                 <UserSwitchOutlined /> User Personas
@@ -635,7 +698,23 @@ const Create: React.FC<Params> = (props) => {
             extra={genPersona()}
             headStyle={{ backgroundColor: '#fafafa', border: '1px solid #d9d9d9' }}
           >
-            <PersonaTabs usecaseId={usecaseId} setPersonas={setPersonas} personas={personas} ontoValues={ontoValues} />
+            <div>
+              <Alert
+                message={
+                  <>
+                    One last step! Here you can define your usecase personas. <i>Learn More</i>
+                  </>
+                }
+                type="info"
+              />
+              <br></br>
+            </div>
+            <PersonaTabs
+              usecaseId={usecaseId}
+              setPersonas={setPersonas}
+              personas={personas}
+              ontoValues={ontoValues}
+            />
           </Card>
 
           {/* New Persona Popup  */}
@@ -670,7 +749,7 @@ const Create: React.FC<Params> = (props) => {
               </Form.Item>
             </Form>
           </Modal>
-        </PageHeaderWrapper >
+        </PageHeaderWrapper>
       )}
     </>
   );
