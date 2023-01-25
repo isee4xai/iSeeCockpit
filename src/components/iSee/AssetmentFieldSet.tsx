@@ -12,7 +12,7 @@ const AssetmentField: React.FC<AssessmentType> = (props) => {
         return (
           <Card
             size="small"
-            title={'Assessments'}
+            title={'Perfomance Metrics'}
             extra={
               <Button
                 className="dynamic-delete-button"
@@ -38,13 +38,11 @@ const AssetmentField: React.FC<AssessmentType> = (props) => {
                       rules={[{ required: false, message: 'Input is required!' }]}
                     >
                       <Select style={{ width: 150 }} placeholder="Assesment Type">
-
                         {props.types?.map((option: any) => (
                           <Select.Option key={option.key} value={option.key}>
                             {option.label}
                           </Select.Option>
                         ))}
-
                       </Select>
                     </Form.Item>
                     <Form.Item
@@ -73,7 +71,7 @@ const AssetmentField: React.FC<AssessmentType> = (props) => {
               ))}
               {fields.length == 0 ? (
                 <Form.Item>
-                  <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Assessments" />
+                  <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Perfomance Metrics" />
                 </Form.Item>
               ) : null}
             </div>
