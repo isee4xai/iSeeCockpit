@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Form, Input, InputNumber, Modal, Button, Avatar, Typography } from 'antd';
 import { SmileOutlined, UserOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/lib/form';
+import TOOL_TIPS from '@/models/tooltips';
 
 const layout = {
     labelCol: { span: 8 },
@@ -91,6 +92,7 @@ const PersonaModal: React.FC<ModalFormProps> = ({ visible, onCancel }) => {
                 <Form.Item
                     label="Name of the Persona"
                     name="name"
+                    tooltip={TOOL_TIPS.persona_name}
                     rules={[{ required: true, message: 'Input is required!' }]}
                 >
                     <Input />

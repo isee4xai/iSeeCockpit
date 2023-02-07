@@ -1,4 +1,5 @@
 import type { Persona, PersonaDetails } from '@/models/persona';
+import TOOL_TIPS from '@/models/tooltips';
 import { api_persona_details } from '@/services/isee/usecases';
 import { SaveOutlined } from '@ant-design/icons';
 import { Button, Card, Col, Form, Input, message, Radio, Row, Select } from 'antd';
@@ -70,6 +71,7 @@ const PersonaDetailsForm: React.FC<PersonaType> = (props) => {
           <Col span={8} className="gutter-row">
             <Form.Item
               label="Persona Name"
+              tooltip={TOOL_TIPS.persona_name}
               name={'name'}
               rules={[{ required: false, message: 'Input is required!' }]}
             >
@@ -81,6 +83,7 @@ const PersonaDetailsForm: React.FC<PersonaType> = (props) => {
             <Form.Item
               label="Domain Knowledge Level"
               name="domain_knowledge_level"
+              tooltip={TOOL_TIPS.persona_domain_knowledge_level}
               rules={[{ required: false, message: 'Input is required!' }]}
             >
               <Select placeholder="Select Knowledge Level">
@@ -97,6 +100,7 @@ const PersonaDetailsForm: React.FC<PersonaType> = (props) => {
             <Form.Item
               label="AI Knowledge Level"
               name="ai_knowledge_level"
+              tooltip={TOOL_TIPS.persona_ai_knowledge_level}
               rules={[{ required: false, message: 'Input is required!' }]}
             >
               <Select placeholder="Select Knowledge Level">

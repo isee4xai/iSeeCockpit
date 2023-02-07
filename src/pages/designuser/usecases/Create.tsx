@@ -1,6 +1,6 @@
 import AssetmentField from '@/components/iSee/AssetmentFieldSet';
 import PersonaTabs from '@/components/iSee/persona/PersonaTabs';
-import DATA_FILEDS from '@/models/common';
+import TOOL_TIPS from '@/models/tooltips';
 import type { Persona } from '@/models/persona';
 import type { Usecase, UsecaseModel, UsecaseSettings } from '@/models/usecase';
 import { get_usecase_fields } from '@/services/isee/ontology';
@@ -423,7 +423,7 @@ const Create: React.FC<Params> = (props) => {
                   <Form.Item
                     label="AI Task"
                     name="ai_task"
-                    tooltip="This is a required field"
+                    tooltip={TOOL_TIPS.ai_task}
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
                     <Cascader
@@ -438,8 +438,8 @@ const Create: React.FC<Params> = (props) => {
                   <Form.Item
                     label="AI Method"
                     name="ai_method"
+                    tooltip={TOOL_TIPS.ai_method}
                     hidden={!settings?.ai_task}
-                    tooltip="This is a required field"
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
                     <Cascader
@@ -465,7 +465,7 @@ const Create: React.FC<Params> = (props) => {
                     label="Dataset Type"
                     name="dataset_type"
                     hidden={!settings?.ai_method}
-                    tooltip="This is a required field"
+                    tooltip={TOOL_TIPS.dataset_type}
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
                     <Radio.Group>
@@ -481,7 +481,7 @@ const Create: React.FC<Params> = (props) => {
                     label="Data Type"
                     name="data_type"
                     hidden={!settings?.dataset_type}
-                    tooltip="This is a required field"
+                    tooltip={TOOL_TIPS.data_type}
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
                     <Checkbox.Group>
@@ -497,8 +497,8 @@ const Create: React.FC<Params> = (props) => {
                     hidden={!settings?.data_type}
                     label="Number of Features"
                     name="num_features"
-                    tooltip=""
-                    // rules={[{ required: true, message: 'Input is required!' }]}
+                    tooltip={TOOL_TIPS.num_features}
+                  // rules={[{ required: true, message: 'Input is required!' }]}
                   >
                     <Select placeholder="Number of Features">
                       {ontoValues?.FEATURE_RANGE.map((option) => (
@@ -513,8 +513,8 @@ const Create: React.FC<Params> = (props) => {
                     hidden={!settings?.num_features}
                     label="Number of Instances"
                     name="num_instances"
-                    tooltip=""
-                    // rules={[{ required: true, message: 'Input is required!' }]}
+                    tooltip={TOOL_TIPS.num_instances}
+                  // rules={[{ required: true, message: 'Input is required!' }]}
                   >
                     <Select placeholder="Number of Instances">
                       {ontoValues?.INSTANCE_RANGE.map((option) => (
@@ -526,10 +526,10 @@ const Create: React.FC<Params> = (props) => {
                   </Form.Item>
 
                   <div hidden={!settings?.num_instances}>
-                    <Divider>Model Performance</Divider>
+                    <Divider>(Optional) Model Performance</Divider>
                     <div hidden={settings?.completed}>
                       <Alert
-                        message="What is your model performance like (e.g. Accuracy 80%)"
+                        message={TOOL_TIPS.assesment_info_box}
                         type="info"
                       />
                       <br></br>
@@ -589,6 +589,7 @@ const Create: React.FC<Params> = (props) => {
 
                   <Form.Item
                     label="Model Upload Method"
+                    tooltip={TOOL_TIPS.model_mode}
                     name="mode"
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
@@ -606,8 +607,7 @@ const Create: React.FC<Params> = (props) => {
                       <Form.Item
                         label="Implementation Framework"
                         name="backend"
-                        tooltip=""
-                        // rules={[{ required: true, message: 'Input is required!' }]}
+                        tooltip={TOOL_TIPS.model_backend}
                       >
                         <Select placeholder="Implementation Framework">
                           {ontoValues?.IMPLEMENTATION_FRAMEWORK.map((option) => (
@@ -621,7 +621,7 @@ const Create: React.FC<Params> = (props) => {
                       {/* {(!settings?.ai_method && !settings?.mo)} */}
                       <Form.Item
                         label="Model File"
-                        tooltip="Please upload the model using any of the following file formats: json, h5, csv and pkl"
+                        tooltip={TOOL_TIPS.model_file}
                       >
                         <input
                           placeholder="Select .pkl file"
@@ -633,7 +633,7 @@ const Create: React.FC<Params> = (props) => {
 
                       <Form.Item
                         label="Sample Dataset File"
-                        tooltip="Please upload a sample dataset file in .csv"
+                        tooltip={TOOL_TIPS.model_dataset}
                       >
                         <input
                           placeholder="Select .csv file"
@@ -676,8 +676,7 @@ const Create: React.FC<Params> = (props) => {
                     <Form.Item
                       label=""
                       name="attributes"
-
-                      // rules={[{ required: true, message: 'Input is required!' }]}
+                      tooltip={TOOL_TIPS.model_config}
                     >
                       <TextArea placeholder="Configuration Code"></TextArea>
                     </Form.Item>
@@ -700,11 +699,7 @@ const Create: React.FC<Params> = (props) => {
           >
             <div>
               <Alert
-                message={
-                  <>
-                    One last step! Here you can define your usecase personas. <i>Learn More</i>
-                  </>
-                }
+                message={TOOL_TIPS.persona_info}
                 type="info"
               />
               <br></br>
@@ -742,6 +737,7 @@ const Create: React.FC<Params> = (props) => {
             >
               <Form.Item
                 label="Name of the Persona"
+                tooltip={TOOL_TIPS.persona_name}
                 name="name"
                 rules={[{ required: true, message: 'Input is required!' }]}
               >

@@ -28,6 +28,7 @@ import React, { useEffect, useState } from 'react';
 import type { Usecase } from '@/models/usecase';
 import { api_create, api_get_all } from '@/services/isee/usecases';
 import { get_domains } from '@/services/isee/ontology';
+import TOOL_TIPS from '@/models/tooltips';
 
 const Welcome: React.FC = () => {
   const style = {
@@ -141,6 +142,7 @@ const Welcome: React.FC = () => {
           <Form.Item
             label="Name of the usecase"
             name="name"
+            tooltip={TOOL_TIPS.name}
             rules={[{ required: true, message: 'Input is required!' }]}
           >
             <Input placeholder="Name of the usecase" />
@@ -149,6 +151,7 @@ const Welcome: React.FC = () => {
           <Form.Item
             label="Domain"
             name="domain"
+            tooltip={TOOL_TIPS.domain}
             rules={[{ required: true, message: 'Please select a suitable domain!' }]}
           >
             <Select placeholder="Select Domain" >
@@ -164,6 +167,7 @@ const Welcome: React.FC = () => {
           <Form.Item
             label="Goal of the usecase"
             name="goal"
+            tooltip={TOOL_TIPS.goal}
             rules={[{ required: true, message: 'Input is required!' }]}
           >
             <Input placeholder="Goal of my usecase is to..." />
