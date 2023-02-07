@@ -6,8 +6,10 @@ import {
   api_persona_query_strategies,
   api_persona_update_intent,
 } from '@/services/isee/usecases';
-import { CheckOutlined, CloseOutlined, DeleteOutlined, EyeOutlined, PlusOutlined, RocketFilled } from '@ant-design/icons';
+import { CheckOutlined, CloseOutlined, DeleteOutlined, EyeOutlined, PlusOutlined, QuestionCircleOutlined, RocketFilled, StarOutlined } from '@ant-design/icons';
 import {
+  Alert,
+  Badge,
   Button,
   Card,
   Col,
@@ -26,11 +28,13 @@ import {
   Switch,
   Tabs,
   Tag,
+  Tooltip,
 } from 'antd';
 import { useState } from 'react';
 import QuestionnaireTab from '../question/QuestionnaireTab';
 import DATA_FILEDS from '@/models/common';
 import { IntentQuestion } from '@/models/questionnaire';
+import TOOL_TIPS from '@/models/tooltips';
 
 const { Panel } = Collapse;
 const { Option, OptGroup } = Select;
@@ -253,15 +257,25 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
       title="Persona Intents"
       type="inner"
       extra={
-        <Button
-          type="primary"
-          onClick={showModal}
-          htmlType="button"
-          icon={<PlusOutlined />}
-          key={'intent-card-' + personaState._id}
-        >
-          Add New Intent Question
-        </Button>
+        <>
+
+          <Button
+            type="primary"
+            onClick={showModal}
+            htmlType="button"
+            icon={<PlusOutlined />}
+            key={'intent-card-' + personaState._id}
+          >
+            Add New Intent Question
+          </Button>
+          <Tooltip title={TOOL_TIPS.persona_intent_info}>
+            &nbsp;
+            <Button
+              icon={<QuestionCircleOutlined />}
+            >
+            </Button>
+          </Tooltip>
+        </>
       }
     >
       {personaState.intents?.length == 0 ? (
@@ -278,7 +292,13 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
             extra={genIntentStatus(intent)}
           >
             <Tabs type="card" size="middle" tabPosition="top">
-              <Tabs.TabPane key={'intentkey-' + personaState._id} tab={'Intent Questions'}>
+              <Tabs.TabPane key={'intentkey-' + personaState._id} tab={
+                <>
+                  Intent Questions &nbsp;
+                  <Badge count={intent.questions?.length} />
+                </>
+              }
+              >
                 <Row gutter={20}>
                   <Col span={24} className="gutter-row">
                     {intent.questions?.map((question) => {
@@ -315,10 +335,13 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                   <Row gutter={[20, 20]}>
                     {intent.strategies?.map((strategy) => (
                       <Col span={12}>
+
                         <Card size="small" title={strategy.name.replace('http://www.w3id.org/iSeeOnto/explanationexperience/', '')}
                           extra={
                             <>
-                              <p>Set as Default:&nbsp;
+
+                              <p> {strategy.index == 1 && <Tag icon={<StarOutlined />} color="orange">Recommended</Tag>
+                              } Select Strategy:&nbsp;
                                 <Switch
                                   checked={strategy.selected}
                                   disabled={intent.strategy_selected}
@@ -331,6 +354,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                           }
                         >
                           <div>
+                            Suitability to your usecase:
                             <Progress percent={strategy.percentage} status="active" strokeColor={{ from: '#108ee9', to: '#87d068' }} style={{ paddingRight: 20 }} />
                           </div>
                           <p>Explaination Methods:&nbsp;
@@ -352,14 +376,17 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                 }
 
                 {!intent.strategies && (
-                  <Button
-                    type="primary"
-                    style={{ marginLeft: 10 }}
-                    onClick={() => getStrategies(intent)}
-                    icon={<RocketFilled />}
-                  >
-                    Retrieve Explanation Strategies
-                  </Button>
+                  <>
+                    <Alert type='info' message={TOOL_TIPS.persona_strategy_info} />
+                    <Button
+                      type="primary"
+                      style={{ marginTop: 10 }}
+                      onClick={() => getStrategies(intent)}
+                      icon={<RocketFilled />}
+                    >
+                      Retrieve Explanation Strategies
+                    </Button>
+                  </>
                 )}
 
                 {intent.strategy_selected && (
@@ -420,6 +447,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
           onFinish={onFinishNewIntent}
           autoComplete="off"
         >
+          <Alert message={TOOL_TIPS.persona_intent_create} type="info" /><br></br>
           <Form.Item
             label="Intent Question"
             name="name"

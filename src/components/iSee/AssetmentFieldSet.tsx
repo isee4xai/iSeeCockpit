@@ -1,3 +1,4 @@
+import TOOL_TIPS from '@/models/tooltips';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Form, Button, Select, Input, Card, Space, Empty, Popconfirm } from 'antd';
 
@@ -34,6 +35,8 @@ const AssetmentField: React.FC<AssessmentType> = (props) => {
                     align="baseline"
                   >
                     <Form.Item
+                      tooltip={TOOL_TIPS.assesment_type}
+                      label="Metric Type"
                       name={[index, 'assesment_type']}
                       rules={[{ required: false, message: 'Input is required!' }]}
                     >
@@ -47,6 +50,8 @@ const AssetmentField: React.FC<AssessmentType> = (props) => {
                     </Form.Item>
                     <Form.Item
                       // label="Assesment Value"
+                      tooltip={TOOL_TIPS.assesment_val}
+                      label="Metric Value"
                       name={[index, 'assesment_val']}
                       rules={[{ required: false, message: 'Input is required!' }]}
                     >
