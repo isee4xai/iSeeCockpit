@@ -103,8 +103,6 @@ export const api_update_settings = async (id: string | undefined, settings: Usec
 export const api_model_upload = async (id: string | undefined, usecase: Usecase) => {
   if (!id) return false;
 
-  console.log(usecase.model)
-
   var headers = new Headers();
   headers.append("Accept", "*/*");
   headers.append("Connection", "keep-alive");
@@ -115,6 +113,8 @@ export const api_model_upload = async (id: string | undefined, usecase: Usecase)
   formdata.append("dataset_file", usecase.model?.dataset_file, "data.csv");
   formdata.append("mode", "file");
   formdata.append("backend", usecase.model?.backend + "");
+  formdata.append("ai_task", usecase.settings?.ai_task + "");
+  formdata.append("dataset_type", usecase.settings?.dataset_type + "");
   formdata.append("attributes", JSON.stringify(JSON.parse(usecase.model?.attributes)));
   formdata.append("completed", usecase.model?.completed + "");
 
