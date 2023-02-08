@@ -42,6 +42,7 @@ import {
   notification,
   PageHeader,
   Popconfirm,
+  Popover,
   Radio,
   Result,
   Row,
@@ -49,6 +50,7 @@ import {
   Space,
   Switch,
   Tag,
+  Tooltip,
 } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import React, { useEffect, useState } from 'react';
@@ -417,7 +419,7 @@ const Create: React.FC<Params> = (props) => {
               <Row gutter={20}>
                 <Col span={16} className="gutter-row">
                   <div hidden={settings?.ai_method}>
-                    <Alert message="Let's start by describing the AI model..." type="info" />
+                    <Alert message={TOOL_TIPS.ai_settings_info} type="info" />
                     <br></br>
                   </div>
                   <Form.Item
@@ -456,16 +458,62 @@ const Create: React.FC<Params> = (props) => {
                   <div hidden={!settings?.ai_method}>
                     <Divider>Data Settings</Divider>
                     <div hidden={settings?.num_instances}>
-                      <Alert message="Now tell us a little bit about your data..." type="info" />
+                      <Alert message={TOOL_TIPS.data_info} type="info" />
                       <br></br>
                     </div>
                   </div>
 
                   <Form.Item
-                    label="Dataset Type"
+                    label={<>
+                      Dataset Type
+                      <Popover placement='right' content={
+                        <>
+                          <table style={{ width: 400 }}>
+                            <tbody>
+                              <tr>
+                                <td style={{ paddingRight: 5 }}><strong>Tabular</strong></td>
+                                <td>Tabular data includes any data presented in a table format (i.e. structured into rows and columns). This includes univariate (data with a single attribute/features) or multivariate (data with multiple attributes/features).
+                                  For example: billing information, census information or bioinformatic information.
+                                  <hr></hr>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td style={{ paddingRight: 5 }}><strong>Image</strong></td>
+                                <td>Image data includes any static or dynamic visual data.
+                                  For example: photographs, medical images or video.
+                                  <hr></hr>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td style={{ paddingRight: 5 }}><strong>Timeseries</strong></td>
+                                <td>Timeseries data includes any data with temporal features, where subsequent features/attributes are reliant on previous features/attributes.
+                                  For example: weather sensor data, wearable sensor data or power metering.
+                                  <hr></hr>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td style={{ paddingRight: 5 }}><strong>Text</strong></td>
+                                <td>Text data includes any natural language or machine textual data. This can be structured or unstructured.
+                                  For example: online reviews, code documentation or auditing reports.
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </>
+                      } title="Dataset Types" trigger="click">
+                        <Button style={{
+                          marginLeft: 5,
+                          marginRight: 5
+                        }} size="small"
+                          icon={<QuestionCircleOutlined />}
+                        >
+                          More Info
+                        </Button>
+                      </Popover>
+                    </>}
                     name="dataset_type"
                     hidden={!settings?.ai_method}
-                    tooltip={TOOL_TIPS.dataset_type}
+                    // tooltip={TOOL_TIPS.dataset_type}
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
                     <Radio.Group>
@@ -478,12 +526,64 @@ const Create: React.FC<Params> = (props) => {
                   </Form.Item>
 
                   <Form.Item
-                    label="Data Type"
+                    label={<>
+                      Data Type
+                      <Popover placement='right' content={
+                        <>
+                          <table style={{ width: 400 }}>
+                            <tbody>
+                              <tr>
+                                <td style={{ paddingRight: 5 }}><strong>Categorical</strong></td>
+                                <td>Categorical data includes data which can be divided into groups. For example: Nationality, membership or non-membership, or country tax codes.
+                                  <hr></hr>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td style={{ paddingRight: 5 }}><strong>Image</strong></td>
+                                <td>Image data includes any static or dynamic visual data. For example: photographs, medical images or video.
+                                  <hr></hr>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td style={{ paddingRight: 5 }}><strong>Numerical</strong></td>
+                                <td>Numerical data includes any data stored as continuous whole or floating-point numbers.
+                                  For example: age, blood pressure or gross income.
+                                  <hr></hr>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td style={{ paddingRight: 5 }}><strong>Text</strong></td>
+                                <td>Text data includes any natural language or machine textual data. This can be structured or unstructured.
+                                  For example: online reviews, code documentation or auditing reports.
+                                  <hr></hr>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td style={{ paddingRight: 5 }}><strong>Ordinal</strong></td>
+                                <td>Ordinal data includes any categorical data which is hierarchical or rankable in nature.
+                                  For example: academic grades, likert scale responses or income.
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </>
+                      } title="Data Types" trigger="click">
+                        <Button style={{
+                          marginLeft: 5,
+                          marginRight: 5
+                        }} size="small"
+                          icon={<QuestionCircleOutlined />}
+                        >
+                          More Info
+                        </Button>
+                      </Popover>
+                    </>}
                     name="data_type"
                     hidden={!settings?.dataset_type}
-                    tooltip={TOOL_TIPS.data_type}
+                    // tooltip={TOOL_TIPS.data_type}
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
+
                     <Checkbox.Group>
                       {ontoValues?.DATA_TYPE.map((option) => (
                         <Checkbox key={option.key} value={option.key}>
@@ -529,7 +629,7 @@ const Create: React.FC<Params> = (props) => {
                     <Divider>(Optional) Model Performance</Divider>
                     <div hidden={settings?.completed}>
                       <Alert
-                        message={TOOL_TIPS.assesment_info_box}
+                        message={TOOL_TIPS.assesment_info}
                         type="info"
                       />
                       <br></br>
@@ -581,7 +681,7 @@ const Create: React.FC<Params> = (props) => {
                 <Col span={16} className="gutter-row">
                   <div hidden={model?.completed}>
                     <Alert
-                      message="Now you can provide us your model file or via API"
+                      message={TOOL_TIPS.model_info}
                       type="info"
                     />
                     <br></br>
@@ -594,12 +694,16 @@ const Create: React.FC<Params> = (props) => {
                     rules={[{ required: false, message: 'Input is required!' }]}
                   >
                     <Radio.Group buttonStyle="solid">
-                      <Radio.Button key="file" value="file">
-                        Model File Upload (.h5, .pkl..)
-                      </Radio.Button>
-                      <Radio.Button key="api" value="api">
-                        Provide API URL
-                      </Radio.Button>
+                      <Tooltip title={TOOL_TIPS.model_mode_file}>
+                        <Radio.Button key="file" value="file" aria-title="testing" >
+                          Model File Upload (.h5, .pkl..)
+                        </Radio.Button>
+                      </Tooltip>
+                      <Tooltip title={TOOL_TIPS.model_mode_api}>
+                        <Radio.Button key="api" value="api">
+                          Provide API URL
+                        </Radio.Button>
+                      </Tooltip>
                     </Radio.Group>
                   </Form.Item>
                   {model?.mode == 'file' && (
@@ -688,7 +792,7 @@ const Create: React.FC<Params> = (props) => {
 
           {/* USER PERSONAS */}
           <Card
-            // hidden={!model?.completed}
+            hidden={!model?.completed}
             title={
               <h4>
                 <UserSwitchOutlined /> User Personas
@@ -701,8 +805,14 @@ const Create: React.FC<Params> = (props) => {
               <Alert
                 message={TOOL_TIPS.persona_info}
                 type="info"
+                style={{ marginBottom: 10 }}
+
               />
-              <br></br>
+              <Alert
+                message={TOOL_TIPS.persona_create_info}
+                type="info"
+                style={{ marginBottom: 10 }}
+              />
             </div>
             <PersonaTabs
               usecaseId={usecaseId}

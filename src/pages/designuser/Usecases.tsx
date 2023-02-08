@@ -145,7 +145,7 @@ const Welcome: React.FC = () => {
             tooltip={TOOL_TIPS.name}
             rules={[{ required: true, message: 'Input is required!' }]}
           >
-            <Input placeholder="Name of the usecase" />
+            <Input placeholder="" />
           </Form.Item>
 
           <Form.Item
@@ -154,7 +154,7 @@ const Welcome: React.FC = () => {
             tooltip={TOOL_TIPS.domain}
             rules={[{ required: true, message: 'Please select a suitable domain!' }]}
           >
-            <Select placeholder="Select Domain" >
+            <Select placeholder="" >
               {domains.map((option: API.OntoPair) => (
                 <Select.Option value={option.key} key={option.key}>
                   {option.label}
@@ -170,7 +170,7 @@ const Welcome: React.FC = () => {
             tooltip={TOOL_TIPS.goal}
             rules={[{ required: true, message: 'Input is required!' }]}
           >
-            <Input placeholder="Goal of my usecase is to..." />
+            <Input placeholder="" />
           </Form.Item>
         </Form>
       </Modal>
@@ -208,17 +208,18 @@ const Welcome: React.FC = () => {
                 }
                 actions={[
                   <Button key={'btn-settings'} type="text" href={'usecase/manage/' + usecase._id}>
-                    <SettingOutlined color="green" />
+                    <SettingOutlined color="green" /> Setup
                   </Button>,
                   <Button
                     key={'btn-analytics'}
                     type="text"
                     href={'usecase/analytics/' + usecase._id}
                   >
-                    <LineChartOutlined />
+                    <LineChartOutlined /> Analytics
                   </Button>,
                   <Button key={'btn-settings'} type="text" href={'/dialogue/' + usecase._id}>
                     <CommentOutlined color="green" />
+                    Test
                   </Button>,
                 ]}
               >
