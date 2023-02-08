@@ -268,7 +268,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
           >
             Add New Intent Question
           </Button>
-          <Tooltip title={TOOL_TIPS.persona_intent_info}>
+          <Tooltip title={TOOL_TIPS.persona_intent_btn}>
             &nbsp;
             <Button
               icon={<QuestionCircleOutlined />}
@@ -279,9 +279,12 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
       }
     >
       {personaState.intents?.length == 0 ? (
-        <Form.Item>
-          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Persona Intents Added" />
-        </Form.Item>
+        <>
+          <Alert type='info' message={TOOL_TIPS.persona_intent_info} />
+          <Form.Item>
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Persona Intents Added" />
+          </Form.Item>
+        </>
       ) : null}
 
       <Collapse key={'intent-collapse-' + personaState._id}>
@@ -402,6 +405,8 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                 )}
               </Tabs.TabPane>
               <Tabs.TabPane tab="Evaluation Questionaire" key={'tabpane-' + personaState._id}>
+                <Alert type='info' message={TOOL_TIPS.persona_eval_info} style={{ marginBottom: 10 }} />
+
                 <QuestionnaireTab
                   key={'qtab-' + personaState._id}
                   evaluation={intent.evaluation}
