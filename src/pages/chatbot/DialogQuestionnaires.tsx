@@ -273,8 +273,8 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
         <PageHeader
           ghost={false}
           key="head1"
-          style={{ borderRadius: '25px 25px 0 0' }}
-          title="iSee Dialog Manager"
+          style={{ borderRadius: '10px 10px 0 0' }}
+          title="iSee Evaluation Tool"
           extra={[
             <Button shape="round" key={'create-btn'} type="primary" onClick={() => window.location.reload()} style={{ width: '100%' }}>
               <ReloadOutlined /> Restart
@@ -282,58 +282,59 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
           ]}
         />
         <Content id="content-card">{[...dialogComp.slice().reverse()]}</Content>
-        <Footer id="footer" style={{ borderRadius: '0 0 25px 25px' }}>
-          <Space align="center" direction="vertical">
+        <Footer id="footer" style={{ borderRadius: '0 0 10px 10px' }}>
+          {/* <Space align="center" direction="vertical"> */}
+
+          <Space direction="horizontal">
             {answer}
-            <Space direction="horizontal">
-              <Input
-                size="large"
-                style={{ borderRadius: '25px' }}
-                type={responseType === ResponseType.NUMBER ? 'number' : 'text'}
-                placeholder={
-                  responseType === ResponseType.NUMBER
-                    ? 'Response :   min :' +
-                    question?.validators?.min +
-                    ' max : ' +
-                    question?.validators?.max
-                    : 'Response'
-                }
-                value={
-                  // delete the number if it's not between validators min/max
-                  responseType === ResponseType.NUMBER && question?.validators && answer
-                    ? parseInt(answer[0]?.content) >= question?.validators?.min &&
-                      parseInt(answer[0]?.content) <= question?.validators?.max
-                      ? answer[0]?.content
-                      : parseInt('')
-                    : answer[0]?.content
-                }
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
-                disabled={
-                  responseType === ResponseType.RADIO ||
-                  responseType === ResponseType.CHECK ||
-                  responseType === ResponseType.LIKERT ||
-                  responseType === ResponseType.INFO
-                }
-                id="input"
-              />
-              <Button
-                type="primary"
-                shape="round"
-                size="large"
-                onClick={sendAndReceive}
-                disabled={
-                  (text == '' && (responseType == ResponseType.OPEN || responseType == ResponseType.NUMBER)) ||
-                  (!check && responseType == ResponseType.CHECK) ||
-                  (!radio && responseType == ResponseType.RADIO) ||
-                  (!likert && responseType == ResponseType.LIKERT) ||
-                  responseType == ResponseType.INFO
-                }
-              >
-                Send
-                <SendOutlined />
-              </Button>
-            </Space>
+            <Input
+              size="large"
+              style={{ borderRadius: '10px' }}
+              type={(responseType !== ResponseType.NUMBER && responseType !== ResponseType.OPEN) ? 'hidden' : responseType === ResponseType.NUMBER ? 'number' : 'text'}
+              placeholder={
+                responseType === ResponseType.NUMBER
+                  ? 'Response :   min :' +
+                  question?.validators?.min +
+                  ' max : ' +
+                  question?.validators?.max
+                  : 'Response'
+              }
+              value={
+                // delete the number if it's not between validators min/max
+                responseType === ResponseType.NUMBER && question?.validators && answer
+                  ? parseInt(answer[0]?.content) >= question?.validators?.min &&
+                    parseInt(answer[0]?.content) <= question?.validators?.max
+                    ? answer[0]?.content
+                    : parseInt('')
+                  : answer[0]?.content
+              }
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
+              disabled={
+                responseType === ResponseType.RADIO ||
+                responseType === ResponseType.CHECK ||
+                responseType === ResponseType.LIKERT ||
+                responseType === ResponseType.INFO
+              }
+              id="input"
+            />
+            <Button
+              type={responseType == ResponseType.INFO ? 'ghost' : 'primary'}
+              shape="round"
+              size="large"
+              onClick={sendAndReceive}
+              disabled={
+                (text == '' && (responseType == ResponseType.OPEN || responseType == ResponseType.NUMBER)) ||
+                (!check && responseType == ResponseType.CHECK) ||
+                (!radio && responseType == ResponseType.RADIO) ||
+                (!likert && responseType == ResponseType.LIKERT) ||
+                responseType == ResponseType.INFO
+              }
+            >
+              Send
+              <SendOutlined />
+            </Button>
           </Space>
+          {/* </Space> */}
         </Footer >
       </Layout>
       {/* </Card> */}
