@@ -85,6 +85,7 @@ const PersonaModal: React.FC<ModalFormProps> = ({ visible, onCancel }) => {
                 // onFieldsChange={(_, allFields) => {
                 //   console.log(allFields);
                 // }}
+                preserve={false}
                 autoComplete="off"
             >
 
