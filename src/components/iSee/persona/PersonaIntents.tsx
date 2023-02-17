@@ -428,6 +428,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
         visible={isModalVisible}
         onCancel={handleCancel}
         key={'intent-modal-' + personaState._id}
+        destroyOnClose={true}
         footer={[
           <Button key="back" onClick={handleCancel}>
             Cancel
@@ -450,6 +451,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
           labelCol={{ span: 0 }}
           initialValues={{ remember: true }}
           onFinish={onFinishNewIntent}
+          preserve={false}
           autoComplete="off"
         >
           <Alert message={TOOL_TIPS.persona_intent_create} type="info" /><br></br>

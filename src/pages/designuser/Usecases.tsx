@@ -12,6 +12,7 @@ import {
   Button,
   Card,
   Col,
+  Empty,
   Form,
   Input,
   message,
@@ -246,9 +247,19 @@ const Welcome: React.FC = () => {
               <br />
             </Col>
           ))}
+
+          <Col
+            hidden={useCases.length > 0}
+            span={12}
+            offset={6}
+          >
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Usecases yet! Start creating usecases using the '+ Create New' button" />
+
+          </Col>
+
         </Row>
       </Card>
-    </PageContainer>
+    </PageContainer >
   );
 };
 

@@ -792,7 +792,8 @@ const Create: React.FC<Params> = (props) => {
 
           {/* USER PERSONAS */}
           <Card
-            hidden={!model?.completed}
+            // hidden={!model?.completed}
+            hidden={!settings?.completed}
             title={
               <h4>
                 <UserSwitchOutlined /> User Personas
@@ -801,7 +802,7 @@ const Create: React.FC<Params> = (props) => {
             extra={genPersona()}
             headStyle={{ backgroundColor: '#fafafa', border: '1px solid #d9d9d9' }}
           >
-            <div>
+            <div hidden={personas.length > 0}>
               <Alert
                 message={TOOL_TIPS.persona_info}
                 type="info"
@@ -826,6 +827,7 @@ const Create: React.FC<Params> = (props) => {
           <Modal
             title="Create new Persona"
             visible={isModalVisible}
+            destroyOnClose={true}
             onCancel={handleCancel}
             footer={[
               <Button key="back" onClick={handleCancel}>
@@ -844,6 +846,7 @@ const Create: React.FC<Params> = (props) => {
               initialValues={{ remember: true }}
               onFinish={onFinishPersona}
               autoComplete="off"
+              preserve={false}
             >
               <Form.Item
                 label="Name of the Persona"
