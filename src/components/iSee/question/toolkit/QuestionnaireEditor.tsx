@@ -10,7 +10,7 @@ import './QuestionnaireEditor.less';
 
 import { v4 as uuidv4 } from 'uuid';
 
-import type { Question, Response } from '@/models/questionnaire';
+import type { Question, Questionnaire, Response } from '@/models/questionnaire';
 
 import useDrag from '@/components/iSee/question/toolkit/useDrag';
 import { api_get_all } from '@/services/isee/questionnaires';

@@ -22,19 +22,23 @@ import {
   Modal,
   notification,
   Popconfirm,
+  Popover,
   Progress,
   Row,
   Select,
+  Space,
   Switch,
   Tabs,
   Tag,
   Tooltip,
 } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import QuestionnaireTab from '../question/QuestionnaireTab';
 import DATA_FILEDS from '@/models/common';
 import { IntentQuestion } from '@/models/questionnaire';
 import TOOL_TIPS from '@/models/tooltips';
+import { api_get_all } from '@/services/isee/explainers';
+import { red, green } from '@ant-design/colors';
 
 const { Panel } = Collapse;
 const { Option, OptGroup } = Select;
@@ -43,6 +47,9 @@ export type PersonaType = {
   persona: Persona;
   usecaseId: string;
   updatePersona: any;
+  ontoExplainers: any;
+  ontoValues?: API.OntoParams
+
 };
 
 const PersonaIntents: React.FC<PersonaType> = (props) => {
@@ -358,17 +365,73 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                         >
                           <div>
                             Suitability to your usecase:
-                            <Progress percent={strategy.percentage} status="active" strokeColor={{ from: '#108ee9', to: '#87d068' }} style={{ paddingRight: 20 }} />
+                            {/* <Progress percent={strategy.percentage} status="active" strokeColor={{ from: '#108ee9', to: '#87d068' }} style={{ paddingRight: 20 }} /> */}
+
+                            <Space wrap>
+                              <Progress
+                                style={{ paddingLeft: 10 }}
+                                percent={strategy.percentage} steps={5} strokeWidth={15}
+                                strokeColor={strategy.percentage < 50 ? "#ff4d4f" : (strategy.percentage < 80 ? "#108ee9" : "#6fc648")}
+                              />
+                              {/* <Progress style={{ paddingLeft: 20, fontSize: 30 }}
+                                percent={strategy.percentage} type="dashboard"
+                                width={80}
+                                strokeWidth={8}
+                                strokeColor={{ '100%': 89 > 80 ? '#6fc648' : "#108ee9" }}
+                              /> */}
+                            </Space>
+
                           </div>
-                          <p>Explaination Methods:&nbsp;
+                          <p style={{ paddingTop: 10, marginBottom: 10 }}>Explaination Methods:&nbsp;
                           </p>
                           <p>
                             {strategy.methods.map((m: string) => (
-                              <Tag color="blue">{m}</Tag>
+                              <>
+                                <Tag color="blue">{m}</Tag>
+                                <Popover placement='right' content={
+                                  <>
+                                    <table style={{ width: 400 }}>
+                                      <tbody>
+                                        <tr>
+                                          <td style={{ paddingRight: 5 }}><strong>Explainer Description</strong></td>
+                                          <td>{props.ontoExplainers[m]?.explainer_description}
+                                            <hr></hr>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td style={{ paddingRight: 5 }}><strong>Explanation Description</strong></td>
+                                          <td>{props.ontoExplainers[m]?.explanation_description}
+                                            <hr></hr>
+                                          </td>
+                                        </tr>
+
+                                      </tbody>
+                                    </table>
+                                  </>
+                                } title={m} trigger="click">
+                                  <Button size="small"
+                                    icon={<QuestionCircleOutlined />}
+                                  >
+                                    More Info
+                                  </Button>
+                                </Popover>
+                                <br></br>
+                              </>
+                            ))}
+                          </p>
+                          <p style={{ paddingTop: 5, marginBottom: 5 }}>Domain Knowledge Level:&nbsp;
+                            {props.ontoValues?.KNOWLEDGE_LEVEL.map((option) => (
+                              (option.key == strategy.domain_knowledge_level ? <Tag color="default">{option.label}</Tag> : '')
+                            ))}
+                          </p>
+
+                          <p style={{ paddingTop: 5, marginBottom: 10 }}>AI Knowledge Level:&nbsp;
+                            {props.ontoValues?.KNOWLEDGE_LEVEL.map((option) => (
+                              (option.key == strategy.ai_knowledge_level ? <Tag color="default">{option.label}</Tag> : '')
                             ))}
                           </p>
                           {(!intent.strategy_selected || strategy.selected) &&
-                            <Button href={"https://editor-dev.isee4xai.com/#/vid/" + strategy.tree} target="_blank" type="primary" block shape="round" icon={<EyeOutlined />} >
+                            <Button href={"https://editor-dev.isee4xai.com/#/vid/" + strategy.tree} target="_blank" type="primary" block shape="round" ghost icon={<EyeOutlined />} >
                               View Strategy
                             </Button>
                           }

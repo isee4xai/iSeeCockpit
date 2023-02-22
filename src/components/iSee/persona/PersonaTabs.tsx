@@ -11,7 +11,8 @@ export type PersonaType = {
   usecaseId: string;
   personas: Persona[];
   setPersonas: any;
-  ontoValues?: API.OntoParams
+  ontoValues?: API.OntoParams;
+  ontoExplainers: any;
 };
 
 const PersonaTabs: React.FC<PersonaType> = (props) => {
@@ -78,6 +79,9 @@ const PersonaTabs: React.FC<PersonaType> = (props) => {
               <PersonaDetailsForm persona={persona} usecaseId={usecaseId} ontoValues={props.ontoValues} />
 
               <PersonaIntents
+                ontoValues={props.ontoValues}
+                ontoExplainers={props.ontoExplainers}
+                key={'pi-' + persona._id}
                 usecaseId={usecaseId}
                 persona={persona}
                 updatePersona={updatePersona}
