@@ -54,6 +54,7 @@ import {
 } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import React, { useEffect, useState } from 'react';
+import { api_get_all } from '@/services/isee/explainers';
 const { Option } = Select;
 
 const sample_personas: Persona[] = [];
@@ -112,6 +113,24 @@ const Create: React.FC<Params> = (props) => {
       }
     })();
   }, [props.match.params.id, settingsForm]);
+
+  const [ontoExplainers, setOntoExplainers] = useState({});
+
+  useEffect(() => {
+    (async () => {
+      // Get all explainers - To Show meta information
+      const explainers = await api_get_all();
+      let filterExplainers = {}
+
+      explainers.forEach((e: { name: string; explainer_description: string; explanation_description: string; }) => {
+        filterExplainers[e.name] = { explainer_description: e.explainer_description, explanation_description: e.explanation_description }
+      });
+      setOntoExplainers(filterExplainers);
+      console.log("Explainers - Loaded")
+    })();
+
+  }, []);
+
 
   // New Persona Popup Functions
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -695,7 +714,7 @@ const Create: React.FC<Params> = (props) => {
                   >
                     <Radio.Group buttonStyle="solid">
                       <Tooltip title={TOOL_TIPS.model_mode_file}>
-                        <Radio.Button key="file" value="file" aria-title="testing" >
+                        <Radio.Button key="file" value="file" >
                           Model File Upload (.h5, .pkl..)
                         </Radio.Button>
                       </Tooltip>
@@ -816,10 +835,12 @@ const Create: React.FC<Params> = (props) => {
               />
             </div>
             <PersonaTabs
+              key={'pt-' + usecaseId}
               usecaseId={usecaseId}
               setPersonas={setPersonas}
               personas={personas}
               ontoValues={ontoValues}
+              ontoExplainers={ontoExplainers}
             />
           </Card>
 
