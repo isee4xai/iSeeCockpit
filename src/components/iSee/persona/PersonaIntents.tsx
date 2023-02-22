@@ -115,7 +115,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
 
     if ((questions || []).length === 0) {
       api_persona_delete_intent(usecaseId, personaState._id, intent.id);
-      message.error('Deleted Persona Intent - ' + intent.name);
+      message.error('Deleted Persona Intent - ' + intent.label);
       setPersonaState((old) => ({
         ...old,
         intents: personaState.intents?.filter((i) => i.id !== intent.id),
@@ -125,7 +125,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
         ...intent,
         questions,
       });
-      message.success('Updated Persona Intent - ' + intent.name);
+      message.success('Intent Question Removed Successfully');
       setPersonaState((old) => ({
         ...old,
         intents: personaState.intents?.map((i) => {
@@ -219,7 +219,9 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
     let unique = true;
     personaState.intents?.forEach((intent) => {
       if (intent.name == intent_cat.name) {
-        if (intent.questions?.includes(intent_question)) {
+        // Validate if the question is already existing in the intent
+        let validateExisting = intent.questions?.filter(e => e?.text === intent_question.text) || []
+        if (validateExisting?.length > 0) {
           unique = false;
         } else {
           intent.questions?.push(intent_question);
@@ -250,11 +252,12 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
           await api_persona_update_intent(usecaseId, personaState._id, intent.id, intent);
         }
       }
+      message.success('Succesfully Added Intent Question');
+    } else {
+      message.warning('Intent Question Already Exists');
     }
-    // setPersonas([...personas, blank_obj]);
-    // console.log('Success:', persona);
+
     handleOk();
-    message.success('Succesfully Added Intent Question');
   };
 
   // - End
