@@ -1,4 +1,5 @@
 # iSee Cockpit
+<a href="https://zenodo.org/badge/latestdoi/428710284"><img src="https://zenodo.org/badge/428710284.svg" alt="DOI"></a>
 
 ## Environment Prepare
 
