@@ -1,6 +1,8 @@
 # iSee Cockpit
 <a href="https://doi.org/10.5281/zenodo.7696114"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.7696114.svg" alt="DOI"></a>
 
+The iSee Cockpit serves as a user-friendly, web-based dashboard that allows both design users and end users to seamlessly interact with the iSee Platform. This intuitive tool is currently in development as an integral component of the larger iSee project.
+
 ## Environment Prepare
 
 Create a fork from the iSee Repo
