@@ -113,11 +113,8 @@ export const api_model_upload = async (id: string | undefined, usecase: Usecase)
   formdata.append("dataset_file", usecase.model?.dataset_file, "data.csv");
   formdata.append("mode", "file");
   formdata.append("backend", usecase.model?.backend + "");
-  formdata.append("ai_task", usecase.settings?.ai_task + "");
-  formdata.append("dataset_type", usecase.settings?.dataset_type + "");
-  formdata.append("attributes", JSON.stringify(JSON.parse(usecase.model?.attributes)));
+  formdata.append("attributes", JSON.stringify(usecase.model?.attributes));
   formdata.append("completed", usecase.model?.completed + "");
-
 
   const data = await fetch(`${BASE_URL}/${KEY}/${id}/model`, {
     method: 'PATCH',
@@ -125,7 +122,6 @@ export const api_model_upload = async (id: string | undefined, usecase: Usecase)
     body: formdata,
     redirect: 'follow'
   });
-
 
   return data;
 };

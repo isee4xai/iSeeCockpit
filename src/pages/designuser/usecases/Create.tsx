@@ -20,6 +20,7 @@ import {
   DeleteOutlined,
   DownloadOutlined,
   ExperimentOutlined,
+  MinusCircleOutlined,
   PlusOutlined,
   QuestionCircleOutlined,
   SaveOutlined,
@@ -34,6 +35,7 @@ import {
   Cascader,
   Checkbox,
   Col,
+  Collapse,
   Divider,
   Form,
   Input,
@@ -55,6 +57,11 @@ import {
 import TextArea from 'antd/lib/input/TextArea';
 import React, { useEffect, useState } from 'react';
 import { api_get_all } from '@/services/isee/explainers';
+
+import Papa from "papaparse";
+import Text from 'antd/lib/typography/Text';
+import CollapsePanel from 'antd/lib/collapse/CollapsePanel';
+
 const { Option } = Select;
 
 const sample_personas: Persona[] = [];
@@ -290,8 +297,59 @@ const Create: React.FC<Params> = (props) => {
   };
 
   const handleFileInputData = (e: any) => {
+
+    if (e.target.files[0].type != "text/csv" && e.target.files[0].type != "application/zip") {
+      message.error("Invalid Dataset file! Only CSV and Zip Files are accepted");
+      return false;
+    }
+
     setModelData(e.target.files[0]);
     setIsModelChanged(true);
+
+    Papa.parse(e.target.files[0], {
+      header: true,
+      preview: 1,
+      skipEmptyLines: true,
+      complete: function (results) {
+        // console.log(results.meta.fields);
+
+        let uploaded_attributes: { name: string; datatype: string; min: string; max: string; min_raw: string; max_raw: string; target: boolean; values: [any] }[] = [];
+
+        // Validate Attributes Based on Dataset Type
+        // 1. Image Data
+        if (settings?.dataset_type == "http://www.w3id.org/iSeeOnto/explainer#image") {
+
+          // 1.1 Image Data CSV 
+          if (e.target.files[0].type == "text/csv") {
+            const image = { name: "image_csv", datatype: "image", min: '', min_raw: '0', max: '', max_raw: '255', target: false, values: [], shape: "", shape_raw: "" }
+            uploaded_attributes.push(image)
+          } else {
+            const image = { name: "image_zip", datatype: "image", min: '', min_raw: '0', max: '', max_raw: '255', target: false, values: [], shape: "", shape_raw: "", mean_raw: "", std_raw: "" }
+            uploaded_attributes.push(image)
+          }
+
+          const label = { name: "label", datatype: "categorical", min: '', max: '', max_raw: '', target: true, values: [] }
+          uploaded_attributes.push(label)
+
+        } else {
+          // Todo: Other Validations
+          results.meta.fields?.forEach(function (key) {
+            const v = { name: key, datatype: "numerical", min: '', max: '', min_raw: '', max_raw: '', target: false, values: [] }
+            uploaded_attributes.push(v)
+          })
+
+        }
+
+
+        let modelres = modelForm.getFieldsValue()
+        modelres.attributes = uploaded_attributes;
+        modelForm.setFieldsValue(modelres)
+
+        console.log(modelForm.getFieldValue('attributes')[0])
+
+      },
+    });
+
   };
 
   return (
@@ -694,10 +752,11 @@ const Create: React.FC<Params> = (props) => {
                 setModel(updateModel);
               }}
               form={modelForm}
+              layout="vertical"
               autoComplete="off"
             >
               <Row gutter={20}>
-                <Col span={16} className="gutter-row">
+                <Col span={24} className="gutter-row">
                   <div hidden={model?.completed}>
                     <Alert
                       message={TOOL_TIPS.model_info}
@@ -765,6 +824,215 @@ const Create: React.FC<Params> = (props) => {
                         />
                         {model?.dataset_file && <Tag color="green">Dataset Uploaded</Tag>}
                       </Form.Item>
+
+                      <Collapse defaultActiveKey={[isModelChanged ? '1' : '0']}>
+                        <CollapsePanel header="Configure Data Features" key="1">
+                          <Card size='small' title="" >
+                            <Form.List name="attributes">
+                              {(fields, { add, remove }) => (
+                                <>
+                                  {fields.map(({ key, name, ...restField }) => (
+                                    <>
+                                      <Divider orientation="left" plain orientationMargin={0}>
+                                        <Tag color="blue" style={{ fontWeight: 'bold' }}>{modelForm.getFieldValue('attributes')[key].name}</Tag>
+                                      </Divider>
+                                      <Space key={key} style={{ display: 'flex', marginBottom: -20 }} align="baseline">
+                                        <Form.Item
+                                          {...restField}
+                                          name={[name, 'name']}
+                                          label="&nbsp;"
+                                          hidden
+                                          rules={[{ required: false, message: 'Missing name' }]}
+                                        >
+                                          <Input style={{ color: 'black', fontWeight: 500, backgroundColor: 'white', borderColor: 'white' }} disabled placeholder="Feature Name" />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                          {...restField}
+                                          name={[name, 'datatype']}
+                                          label="Type"
+                                          rules={[{ required: true, message: 'Missing feature datatype' }]}
+                                        >
+                                          <Select
+                                            placeholder="Select feature datatype"
+                                          >
+                                            <Option value="numerical">Numerical</Option>
+                                            <Option value="categorical">Categorical</Option>
+                                            <Option value="image">Image</Option>
+                                          </Select>
+
+                                        </Form.Item>
+
+                                        {modelForm.getFieldValue('attributes')[key].datatype == "numerical" && (
+                                          <>
+                                            <Form.Item
+                                              {...restField}
+                                              name={[name, 'target']}
+                                              valuePropName="checked"
+                                              label="Target"
+                                            >
+                                              <Checkbox style={{ marginLeft: 10 }}></Checkbox>
+                                            </Form.Item>
+
+                                            <Form.Item
+                                              label="Min"
+
+                                              {...restField}
+                                              name={[name, 'min']}
+                                              rules={[{ required: true, message: 'Missing min' }]}
+                                            >
+                                              <Input placeholder="0" />
+                                            </Form.Item>
+
+                                            <Form.Item
+                                              {...restField}
+                                              name={[name, 'max']}
+                                              label="Max"
+                                              rules={[{ required: true, message: 'Missing max' }]}
+                                            >
+                                              <Input placeholder="1" />
+                                            </Form.Item>
+
+                                            <Form.Item
+                                              {...restField}
+                                              name={[name, 'min_raw']}
+                                              label="Min Raw"
+                                              rules={[{ required: true, message: 'Missing min' }]}
+                                            >
+                                              <Input placeholder="40" />
+                                            </Form.Item>
+
+                                            <Form.Item
+                                              {...restField}
+                                              name={[name, 'max_raw']}
+                                              label="Max Raw"
+                                              rules={[{ required: true, message: 'Missing max' }]}
+                                            >
+                                              <Input placeholder="2000" />
+                                            </Form.Item>
+                                          </>
+                                        )
+                                        }
+
+                                        {modelForm.getFieldValue('attributes')[key].datatype == "categorical" && (
+                                          <>
+                                            <Form.Item
+                                              {...restField}
+                                              name={[name, 'target']}
+                                              valuePropName="checked"
+                                              label="Target"
+                                            >
+                                              <Checkbox style={{ marginLeft: 10 }}></Checkbox>
+                                            </Form.Item>
+
+                                            <Text style={{ fontWeight: 'bold' }}>Value Mapping</Text>
+                                            <Form.List name={[name, 'values']} >
+                                              {(fields, { add, remove }) => (
+                                                <>
+                                                  {fields.map(({ key, name, ...restField }) => (
+                                                    <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                                                      <Form.Item
+                                                        {...restField}
+                                                        name={[name, 'value']}
+                                                        label="Value"
+                                                      >
+                                                        <Input placeholder="0" />
+                                                      </Form.Item>
+                                                      <Form.Item
+                                                        {...restField}
+                                                        name={[name, 'raw']}
+                                                        label="Value Raw"
+                                                      >
+                                                        <Input placeholder="Negative" />
+                                                      </Form.Item>
+                                                      <MinusCircleOutlined onClick={() => remove(name)} />
+                                                    </Space>
+                                                  ))}
+                                                  <Form.Item>
+                                                    <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                                                      Add Value
+                                                    </Button>
+                                                  </Form.Item>
+                                                </>
+                                              )}
+                                            </Form.List>
+                                          </>
+                                        )
+                                        }
+
+                                        {modelForm.getFieldValue('attributes')[key].datatype == "image" && (
+                                          <>
+                                            <Form.Item
+                                              label="Min"
+
+                                              {...restField}
+                                              name={[name, 'min']}
+                                              rules={[{ required: true, message: 'Missing min' }]}
+                                            >
+                                              <Input placeholder="0" />
+                                            </Form.Item>
+
+                                            <Form.Item
+                                              {...restField}
+                                              name={[name, 'max']}
+                                              label="Max"
+                                              rules={[{ required: true, message: 'Missing max' }]}
+                                            >
+                                              <Input placeholder="255" />
+                                            </Form.Item>
+
+                                            <Form.Item
+                                              {...restField}
+                                              name={[name, 'shape']}
+                                              label="Shape"
+                                              rules={[{ required: true, message: 'Missing shape' }]}
+                                            >
+                                              <Input placeholder="28,28,1" />
+                                            </Form.Item>
+
+                                            <Form.Item
+                                              {...restField}
+                                              name={[name, 'shape_raw']}
+                                              label="Shape Raw"
+                                              rules={[{ required: true, message: 'Missing shape raw' }]}
+                                            >
+                                              <Input placeholder="28,28" />
+                                            </Form.Item>
+
+                                            {modelForm.getFieldValue('attributes')[key].name == "image_zip" && (
+                                              <>
+
+                                                <Form.Item
+                                                  {...restField}
+                                                  name={[name, 'mean_raw']}
+                                                  label="Mean"
+                                                  rules={[{ required: true, message: 'Missing Mean raw' }]}
+                                                >
+                                                  <Input placeholder="45.01" />
+                                                </Form.Item>
+                                                <Form.Item
+                                                  {...restField}
+                                                  name={[name, 'std_raw']}
+                                                  label="STD"
+                                                  rules={[{ required: true, message: 'Missing std_raw raw' }]}
+                                                >
+                                                  <Input placeholder="45.01" />
+                                                </Form.Item>
+                                              </>
+                                            )}
+                                          </>
+
+                                        )
+                                        }
+                                      </Space>
+                                    </>
+                                  ))}
+                                </>
+                              )}
+                            </Form.List>
+                          </Card>
+                        </CollapsePanel>
+                      </Collapse>
                     </>
                   )}
                   {model?.mode == 'api' && (
@@ -778,33 +1046,7 @@ const Create: React.FC<Params> = (props) => {
                     </Form.Item>
                   )}
                 </Col>
-                <Col span={8}>
-                  <Card
-                    size="small"
-                    title={'Configuration'}
-                    extra={
-                      <Button
-                        className="dynamic-delete-button"
-                        target="_blank"
-                        href="https://drive.google.com/file/d/1XrHy9U9UV3i8U2I5V_lM_upFANgtn7lG/view" // TODO: Change with another method
-                        // danger={true}
-                        size="small"
-                        // onClick={() => add()}
-                        icon={<QuestionCircleOutlined />}
-                      >
-                        More Info
-                      </Button>
-                    }
-                  >
-                    <Form.Item
-                      label=""
-                      name="attributes"
-                      tooltip={TOOL_TIPS.model_config}
-                    >
-                      <TextArea placeholder="Configuration Code"></TextArea>
-                    </Form.Item>
-                  </Card>
-                </Col>
+
               </Row>
             </Form>
           </Card>

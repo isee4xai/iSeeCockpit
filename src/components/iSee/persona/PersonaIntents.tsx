@@ -74,7 +74,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
           updatePersona(personaState);
 
           await api_persona_delete_intent(usecaseId, personaState._id, intent.id);
-          message.error('Deleted Persona Intent - ' + intent.name);
+          message.error('Deleted Persona Intent - ' + intent.label);
         }}
         okText="Yes"
         cancelText="No"
