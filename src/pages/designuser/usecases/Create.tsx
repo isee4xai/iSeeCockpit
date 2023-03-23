@@ -9,6 +9,8 @@ import {
   api_delete,
   api_get,
   api_get_casestructure,
+  api_get_model_instance_count,
+  api_get_model_random_instance,
   api_model_upload,
   api_publish,
   api_update_settings,
@@ -16,6 +18,7 @@ import {
 import {
   CheckOutlined,
   CloseOutlined,
+  CodeOutlined,
   CopyOutlined,
   DeleteOutlined,
   DownloadOutlined,
@@ -396,57 +399,60 @@ const Create: React.FC<Params> = (props) => {
                   style={{ margin: '0 1rem' }}
                   onClick={async () => {
                     const json = await api_get_casestructure(usecase._id || '');
-                    const json_formatted = JSON.stringify(json, null, 2);
+                    if (json) {
+                      const json_formatted = JSON.stringify(json, null, 2);
 
-                    notification.open({
-                      message: json.length + ' Cases - ' + 'iSee Case Structure Export',
-                      description: (
-                        <div>
-                          <pre style={{ marginBottom: 0 }}>
-                            <code>{json_formatted}</code>
-                          </pre>
-                          <div
-                            style={{
-                              display: 'flex',
-                              float: 'right',
-                            }}
-                          >
-                            <Button
-                              onClick={() => {
-                                navigator.clipboard.writeText(json_formatted);
-                                message.success('Copied to Clipboard');
+                      notification.open({
+                        message: json.length + ' Cases - ' + 'iSee Case Structure Export',
+                        description: (
+                          <div>
+                            <pre style={{ marginBottom: 0 }}>
+                              <code>{json_formatted}</code>
+                            </pre>
+                            <div
+                              style={{
+                                display: 'flex',
+                                float: 'right',
                               }}
-                              icon={<CopyOutlined />}
                             >
-                              Copy
-                            </Button>
-                            &nbsp;
-                            <Button
-                              type="primary"
-                              onClick={() => {
-                                var a = document.createElement('a');
-                                a.href = URL.createObjectURL(
-                                  new Blob([json_formatted], { type: 'application/json' }),
-                                );
-                                a.download = 'isee-export-' + usecaseId + '.json';
-                                a.click();
-                              }}
-                              icon={<DownloadOutlined />}
-                            >
-                              Download
-                            </Button>
+                              <Button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(json_formatted);
+                                  message.success('Copied to Clipboard');
+                                }}
+                                icon={<CopyOutlined />}
+                              >
+                                Copy
+                              </Button>
+                              &nbsp;
+                              <Button
+                                type="primary"
+                                onClick={() => {
+                                  var a = document.createElement('a');
+                                  a.href = URL.createObjectURL(
+                                    new Blob([json_formatted], { type: 'application/json' }),
+                                  );
+                                  a.download = 'isee-export-' + usecaseId + '.json';
+                                  a.click();
+                                }}
+                                icon={<DownloadOutlined />}
+                              >
+                                Download
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                      ),
-                      duration: 0,
-                      onClick: () => {
-                        console.log('Export Clicked!');
-                      },
-                      style: {
-                        width: '80%',
-                      },
-                      placement: 'top',
-                    });
+                        ),
+                        duration: 0,
+                        onClick: () => {
+                          console.log('Export Clicked!');
+                        },
+                        style: {
+                          width: '80%',
+                        },
+                        placement: 'top',
+                      });
+                    }
+
                   }}
                   htmlType="button"
                   icon={<SaveOutlined />}
@@ -822,7 +828,62 @@ const Create: React.FC<Params> = (props) => {
                           type="file"
                           onChange={handleFileInputData}
                         />
-                        {model?.dataset_file && <Tag color="green">Dataset Uploaded</Tag>}
+                        {model?.dataset_file &&
+                          <>
+                            <Tag color="green">Dataset Uploaded</Tag>
+                            <Button icon={<ExperimentOutlined />} type="primary" ghost onClick={async () => {
+                              const json = await api_get_model_instance_count(usecase._id || '');
+                              const json_formatted = JSON.stringify(json, null, 2);
+                              // message.info(json_formatted)
+                              notification.info({
+                                message: 'Instance Count Validation',
+                                description: (
+                                  <div>
+                                    <pre style={{ marginBottom: 0 }}>
+                                      <code>{json_formatted}</code>
+                                    </pre>
+                                  </div>
+                                ),
+                                duration: 0,
+
+                                style: {
+                                  width: '80%',
+                                },
+                                placement: 'top',
+                              });
+                            }}>
+                              Validate Instance Count
+                            </Button>
+                            &nbsp;
+                            <Button type="primary" icon={<CodeOutlined />} ghost onClick={async () => {
+                              const json = await api_get_model_random_instance(usecase._id || '');
+                              const json_formatted = JSON.stringify(json, null, 2);
+                              notification.info({
+                                message: 'Random Instance',
+                                description: (
+                                  <div>
+                                    {json.type == "image" &&
+                                      <img src={"data:image/png;base64," + json.instance}></img>
+                                    }
+                                    <pre style={{ marginBottom: 0, marginTop: 10 }}>
+                                      <code>{json_formatted}</code>
+                                    </pre>
+                                  </div>
+                                ),
+                                duration: 0,
+
+                                style: {
+                                  width: '80%',
+                                },
+                                placement: 'top',
+                              });
+                            }}>
+                              Validate Random Instance
+                            </Button>
+
+                          </>
+
+                        }
                       </Form.Item>
 
                       <Collapse defaultActiveKey={[isModelChanged ? '1' : '0']}>
