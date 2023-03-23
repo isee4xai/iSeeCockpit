@@ -103,6 +103,25 @@ export async function api_get_model_random_instance(id: string) {
   }
 }
 
+
+export async function api_get_model_prediction(id: string, instance: any) {
+  try {
+    const data = await fetch(`${BASE_URL}/${KEY}/${id}/model/predict`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': getToken(),
+      },
+      body: JSON.stringify({ instance: instance }),
+    });
+    const result = await data.json();
+    if (result.message) return false;
+    return result || false;
+  } catch (error) {
+    return false;
+  }
+}
+
 export const api_get_all = async () => {
   try {
     const data = await fetch(`${BASE_URL}/${KEY}/`, {
@@ -149,8 +168,8 @@ export const api_model_upload = async (id: string | undefined, usecase: Usecase)
   headers.append("x-access-token", getToken());
 
   var formdata = new FormData();
-  formdata.append("source_file", usecase.model?.source_file, "aimodel.pkl");
-  formdata.append("dataset_file", usecase.model?.dataset_file, "data.csv");
+  formdata.append("source_file", usecase.model?.source_file, usecase.model?.source_file.name);
+  formdata.append("dataset_file", usecase.model?.dataset_file, usecase.model?.dataset_file.name);
   formdata.append("mode", "file");
   formdata.append("backend", usecase.model?.backend + "");
   formdata.append("attributes", JSON.stringify(usecase.model?.attributes));
