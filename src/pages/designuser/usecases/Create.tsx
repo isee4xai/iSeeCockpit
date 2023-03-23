@@ -10,6 +10,7 @@ import {
   api_get,
   api_get_casestructure,
   api_get_model_instance_count,
+  api_get_model_prediction,
   api_get_model_random_instance,
   api_model_upload,
   api_publish,
@@ -856,18 +857,42 @@ const Create: React.FC<Params> = (props) => {
                             </Button>
                             &nbsp;
                             <Button type="primary" icon={<CodeOutlined />} ghost onClick={async () => {
-                              const json = await api_get_model_random_instance(usecase._id || '');
-                              const json_formatted = JSON.stringify(json, null, 2);
+
+                              // Get Model Prediction
+                              message.open({
+                                type: 'loading',
+                                content: 'Getting Random Instance...',
+                                duration: 0,
+                              });
+                              const instance = await api_get_model_random_instance(usecase._id || '');
+                              const json_formatted = JSON.stringify(instance, null, 0);
+                              message.destroy();
+
+                              // Get Model Prediction
+                              message.open({
+                                type: 'loading',
+                                content: 'Getting Model Prediction...',
+                                duration: 0,
+                              });
+
+                              const prediction = await api_get_model_prediction(usecase._id || '', instance);
+                              message.destroy();
+                              const json_formatted_prediction = JSON.stringify(prediction, null, 2);
+
+                              message.destroy()
                               notification.info({
-                                message: 'Random Instance',
+                                message: 'Model Prediction',
                                 description: (
                                   <div>
-                                    {json.type == "image" &&
-                                      <img src={"data:image/png;base64," + json.instance}></img>
+                                    {instance.type == "image" &&
+                                      <img width="250" src={"data:image/png;base64," + instance.instance}></img>
                                     }
                                     <pre style={{ marginBottom: 0, marginTop: 10 }}>
                                       <code>{json_formatted}</code>
+                                      Prediction: <code>{json_formatted_prediction}</code>
+
                                     </pre>
+
                                   </div>
                                 ),
                                 duration: 0,
@@ -878,7 +903,7 @@ const Create: React.FC<Params> = (props) => {
                                 placement: 'top',
                               });
                             }}>
-                              Validate Random Instance
+                              Validate Model Prediction
                             </Button>
 
                           </>
