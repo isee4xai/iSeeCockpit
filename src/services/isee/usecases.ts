@@ -1,7 +1,7 @@
 // @ts-ignore
 import type { Persona, PersonaDetails, PersonaIntent } from '@/models/persona';
 import type { Usecase } from '@/models/usecase';
-import { message } from 'antd';
+import { message, notification } from 'antd';
 
 import { BASE_URL } from './api.config';
 import { getToken } from './user';
@@ -49,6 +49,46 @@ export async function api_get(id: string) {
 export async function api_get_casestructure(id: string) {
   try {
     const data = await fetch(`${BASE_URL}/${KEY}/${id}/casestructure`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': getToken(),
+      },
+    });
+    const result = await data.json();
+    if (result.message) {
+      // message.error(result.message);
+      notification.error({ message: result.message })
+      return false;
+    }
+    return result || false;
+  } catch (error) {
+    return false;
+  }
+}
+
+
+export async function api_get_model_instance_count(id: string) {
+  try {
+    const data = await fetch(`${BASE_URL}/${KEY}/${id}/dataset/count`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': getToken(),
+      },
+    });
+    const result = await data.json();
+    if (result.message) return false;
+    return result || false;
+  } catch (error) {
+    return false;
+  }
+}
+
+
+export async function api_get_model_random_instance(id: string) {
+  try {
+    const data = await fetch(`${BASE_URL}/${KEY}/${id}/dataset/randomInstance`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
