@@ -112,7 +112,7 @@ export async function api_get_model_prediction(id: string, instance: any) {
         'Content-Type': 'application/json',
         'x-access-token': getToken(),
       },
-      body: JSON.stringify({ instance: instance }),
+      body: JSON.stringify({ instance: instance.instance, type: instance.type }),
     });
     const result = await data.json();
     if (result.message) return false;
