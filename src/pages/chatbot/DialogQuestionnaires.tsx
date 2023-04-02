@@ -39,6 +39,7 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
 
   const [client, setClient] = useState('');
   const [user, setUser] = useState({});
+  const [promise, setPromise] = useState(false);
 
   const usecaseId = props.match.params.id;
 
@@ -60,9 +61,10 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
 
       client.onmessage = (evt: any) => {
         // on receiving a message
-        promiseQuestion().then(() => {
-          setQuestion(JSON.parse(evt.data));
-        });
+        setPromise(false);
+        // promiseQuestion().then(() => {
+        setQuestion(JSON.parse(evt.data));
+        // });
       }
 
       client.onclose = () => {
@@ -150,6 +152,7 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
     }
     addAnswer();
     clearAnswer();
+    setPromise(true);
   }
 
   function clearAnswer() {
@@ -204,23 +207,6 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
     }
   }
 
-  function promiseQuestion() {
-    setDialogComp((oldDialogComp) => [
-      ...oldDialogComp,
-      <EllipsisOutlined id="attenteQuestion" key="test" />,
-    ]);
-    return new Promise<void>((resolve) => {
-      setTimeout(function () {
-        setDialogComp((old) => {
-          const oldArray = old.slice();
-          oldArray.pop();
-          return oldArray;
-        });
-        resolve();
-      }, 200);
-    });
-  }
-
   function sendAndReceive() {
     if (textInputNotNUll() || checkInputNotNull() || radioInputNotNull() || likertInputNotNull()) {
       sendAnswer();
@@ -257,6 +243,22 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
     addQuestion(question);
     addResponses(question);
   }, [question]);
+
+  useEffect(() => {
+    if (promise) {
+      setDialogComp((oldDialogComp) => [
+        ...oldDialogComp,
+        <EllipsisOutlined id="attenteQuestion" key="test" />,
+      ]);
+    }
+    else {
+      setDialogComp((old) => {
+        const oldArray = old.slice();
+        console.log(oldArray.pop());
+        return oldArray;
+      });
+    }
+  }, [promise]);
 
 
   return (
