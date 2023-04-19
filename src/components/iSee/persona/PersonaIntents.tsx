@@ -477,7 +477,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                   key={'qtab-' + personaState._id}
                   evaluation={intent.evaluation}
                   intent_cat={intent.name}
-                  persona={persona}
+                  persona={personaState}
                   usecaseId={usecaseId}
                   updateIntentEvaluation={updateIntentEvaluation}
                 // questionnaire={personaState.evaluation_questionnaire || {}}
