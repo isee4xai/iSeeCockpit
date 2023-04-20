@@ -6,7 +6,7 @@ import {
   api_persona_query_strategies,
   api_persona_update_intent,
 } from '@/services/isee/usecases';
-import { CheckOutlined, CloseOutlined, DeleteOutlined, EyeOutlined, PlusOutlined, QuestionCircleOutlined, RocketFilled, StarOutlined } from '@ant-design/icons';
+import { CheckOutlined, CloseOutlined, DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined, QuestionCircleOutlined, RocketFilled, StarOutlined } from '@ant-design/icons';
 import {
   Alert,
   Badge,
@@ -434,9 +434,21 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                             ))}
                           </p>
                           {(!intent.strategy_selected || strategy.selected) &&
-                            <Button href={"https://editor-dev.isee4xai.com/#/vid/" + strategy.tree} target="_blank" type="primary" block shape="round" ghost icon={<EyeOutlined />} >
-                              View Strategy
-                            </Button>
+                            <Row>
+                              <Col className="gutter-row" span={16}>
+                                <Button href={"https://editor-dev.isee4xai.com/#/vid/" + strategy.tree} target="_blank" type="primary" block shape="round" ghost icon={<EyeOutlined />} >
+                                  View Strategy
+                                </Button>
+                              </Col>
+                              <Col className="gutter-row" span={2}>
+                              </Col>
+
+                              <Col className="gutter-row" span={6}>
+                                <Button href={"https://editor-dev.isee4xai.com/#/id/" + strategy.tree} target="_blank" type="dashed" block shape="round" icon={<EditOutlined />} >
+                                  Edit Strategy
+                                </Button>
+                              </Col>
+                            </Row>
                           }
                         </Card>
                       </Col>
