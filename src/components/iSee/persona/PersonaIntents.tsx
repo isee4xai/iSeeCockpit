@@ -440,10 +440,10 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                                   View Strategy
                                 </Button>
                               </Col>
-                              <Col className="gutter-row" span={2}>
-                              </Col>
+                              {/* <Col className="gutter-row" span={2}>
+                              </Col> */}
 
-                              <Col className="gutter-row" span={6}>
+                              <Col className="gutter-row" span={8}>
                                 <Button href={"https://editor-dev.isee4xai.com/#/id/" + strategy.tree} target="_blank" type="dashed" block shape="round" icon={<EditOutlined />} >
                                   Edit Strategy
                                 </Button>
