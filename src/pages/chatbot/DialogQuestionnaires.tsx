@@ -13,6 +13,7 @@ import './DialogQuestionnaires.less';
 import parse from 'html-react-parser';
 
 import AnswerCheckbox from '@/components/iSee/chatbot/AnswerCheckbox';
+import AnswerFile from '@/components/iSee/chatbot/AnswerFile';
 import AnswerRadio from '@/components/iSee/chatbot/AnswerRadio';
 import { Question, Response, ResponseType } from '@/models/questionnaire';
 import { currentUser } from '@/services/isee/user';
@@ -34,6 +35,7 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
   const [radio, setRadio] = useState<Response>();
   const [check, setCheck] = useState<Response[]>([]);
   const [likert, setLikert] = useState<Response>();
+  const [file, setFile] = useState<Response>();
   const [answer, setAnswer] = useState([<React.Fragment key={'no answer'} />]);
   const [question, setQuestion] = useState<Question>();
 
@@ -94,6 +96,17 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
     setRadio(event.target.value);
   }
 
+  function handleFileChange(e: any) {
+    let reader = new FileReader();
+    reader.readAsDataURL(e.target.files[0]);
+    reader.onload = function () {
+      setFile(createFileAnswer(reader.result));
+    };
+    reader.onerror = function (error) {
+      console.log('Error: ', error);
+    };
+  }
+
   function handleLikertChange(event: any) {
     setLikert(event.target.value);
   }
@@ -129,6 +142,14 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
             />,
           ]);
           break;
+        case ResponseType.FILE:
+          setAnswer([
+            <AnswerFile
+              key={'answer'}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFileChange(e)}
+            />,
+          ]);
+          break;
         default:
           setAnswer([<React.Fragment key={'no data'} />]);
           break;
@@ -138,8 +159,11 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
   );
 
   function sendAnswer() {
-    if (responseType == ResponseType.OPEN || responseType == ResponseType.NUMBER) {
-      client.send(JSON.stringify(createAnswer()));
+    if (responseType == ResponseType.OPEN) {
+      client.send(JSON.stringify(createOpenAnswer()));
+    }
+    else if (responseType == ResponseType.NUMBER) {
+      client.send(JSON.stringify(createNumberAnswer()));
     }
     else if (responseType == ResponseType.LIKERT) {
       client.send(JSON.stringify(likert));
@@ -149,6 +173,9 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
     }
     else if (responseType == ResponseType.RADIO) {
       client.send(JSON.stringify(radio));
+    }
+    else if (responseType == ResponseType.FILE) {
+      client.send(JSON.stringify(file));
     }
     addAnswer();
     clearAnswer();
@@ -168,6 +195,9 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
     else if (responseType == ResponseType.RADIO) {
       setRadio(undefined);
     }
+    else if (responseType == ResponseType.FILE) {
+      setFile(undefined);
+    }
   }
 
   function addAnswer() {
@@ -177,6 +207,14 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
           ...oldDialogComp,
           <div className="answer-check" key={'answer' + oldDialogComp.length}>
             <div dangerouslySetInnerHTML={{ __html: radio?.content ?? '' }} />
+          </div>,
+        ]);
+        break;
+      case ResponseType.FILE:
+        setDialogComp((oldDialogComp) => [
+          ...oldDialogComp,
+          <div className="answer-check" key={'answer' + oldDialogComp.length}>
+            <div dangerouslySetInnerHTML={{ __html: file?.content ?? '' }} />
           </div>,
         ]);
         break;
@@ -208,13 +246,17 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
   }
 
   function sendAndReceive() {
-    if (textInputNotNUll() || checkInputNotNull() || radioInputNotNull() || likertInputNotNull()) {
+    if (textInputNotNUll() || checkInputNotNull() || radioInputNotNull() || likertInputNotNull() || fileInputNotNUll()) {
       sendAnswer();
     }
   }
 
   function textInputNotNUll() {
     return text != '' && (responseType == ResponseType.OPEN || responseType == ResponseType.NUMBER);
+  }
+
+  function fileInputNotNUll() {
+    return file && responseType == ResponseType.FILE;
   }
 
   function checkInputNotNull() {
@@ -229,12 +271,28 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
     return likert && responseType == ResponseType.LIKERT;
   }
 
-  function createAnswer() {
+  function createOpenAnswer() {
     var temp = {
       id: "temp",
       content: text
     };
-    return [temp];
+    return temp;
+  }
+
+  function createNumberAnswer() {
+    var temp = {
+      id: "temp",
+      content: text
+    };
+    return temp;
+  }
+
+  function createFileAnswer(_base64: string) {
+    var temp = {
+      id: "temp",
+      content: "<img width=\"400\" src=\"" + _base64 + "\"/>"
+    };
+    return temp;
   }
 
   useEffect(() => {

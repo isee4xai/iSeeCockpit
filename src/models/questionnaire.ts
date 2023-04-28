@@ -40,7 +40,8 @@ export enum ResponseType {
   LIKERT = "Likert",
   NUMBER = "Number",
   INFO = "Info",
-  OPEN = "Free-Text"
+  OPEN = "Free-Text",
+  FILE = "File"
 }
 
 export interface Response {
