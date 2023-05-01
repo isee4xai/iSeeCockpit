@@ -378,7 +378,7 @@ const Create: React.FC<Params> = (props) => {
             title={usecase.name}
             subTitle={
               usecase.published ? (
-                <Tag color="green">Published</Tag>
+                <><Text code>v{usecase.version}</Text> <Tag color="green">Published</Tag></>
               ) : (
                 <Tag color="red">Unpublished</Tag>
               )
