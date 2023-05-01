@@ -9,6 +9,7 @@ export interface Usecase {
   name: string;
   goal?: string;
   domain?: string;
+  version?: number;
   status?: string;
   settings?: UsecaseSettings;
   model?: UsecaseModel;

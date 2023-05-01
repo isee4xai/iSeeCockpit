@@ -30,6 +30,7 @@ import type { Usecase } from '@/models/usecase';
 import { api_create, api_get_all } from '@/services/isee/usecases';
 import { get_domains } from '@/services/isee/ontology';
 import TOOL_TIPS from '@/models/tooltips';
+import Text from 'antd/lib/typography/Text';
 
 const Welcome: React.FC = () => {
   const style = {
@@ -205,7 +206,7 @@ const Welcome: React.FC = () => {
                 title={usecase.name}
                 extra={
                   (!usecase.published && <Tag color="red">Unpublished</Tag>) ||
-                  (usecase.published && <Tag color="green">Published</Tag>)
+                  (usecase.published && <><Text code>v{usecase.version}</Text> <Tag color="green">Published</Tag></>)
                 }
                 actions={[
                   <Button key={'btn-settings'} type="text" href={'usecase/manage/' + usecase._id}>
