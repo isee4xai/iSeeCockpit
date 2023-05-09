@@ -116,16 +116,11 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
       complete: function (results) {
         console.log("Finished:", results.data);
         setFile(createFileCSVAnswer(results.data));
+      },
+      error: function (err) {
+        console.log("Error reading file:", err);
       }
     });
-    // let reader = new FileReader();
-    // reader.readAsText(e.target.files[0]);
-    // reader.onload = function () {
-    //   setFile(createFileCSVAnswer(reader.result));
-    // };
-    // reader.onerror = function (error) {
-    //   console.log('Error: ', error);
-    // };
   }
 
   function handleLikertChange(event: any) {
