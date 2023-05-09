@@ -41,7 +41,8 @@ export enum ResponseType {
   NUMBER = "Number",
   INFO = "Info",
   OPEN = "Free-Text",
-  FILE = "File"
+  FILE_IMAGE = "File-IMAGE",
+  FILE_CSV = "File-CSV"
 }
 
 export interface Response {

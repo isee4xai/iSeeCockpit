@@ -1,17 +1,17 @@
 import './Chatbot.less';
 
 
-const AnswerFile = ({ onChange }) => {
+const AnswerFileCSV = ({ onChange }) => {
   return (
     <div>
       <input
         placeholder="Select file"
         type="file"
-        accept="image/png, image/jpeg"
+        accept=".csv"
         onChange={onChange}
       />
     </div>
   );
 };
 
-export default AnswerFile;
+export default AnswerFileCSV;
