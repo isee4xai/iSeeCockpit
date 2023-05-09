@@ -13,10 +13,13 @@ import './DialogQuestionnaires.less';
 import parse from 'html-react-parser';
 
 import AnswerCheckbox from '@/components/iSee/chatbot/AnswerCheckbox';
-import AnswerFile from '@/components/iSee/chatbot/AnswerFile';
+import AnswerFileImage from '@/components/iSee/chatbot/AnswerFileImage';
+import AnswerFileCSV from '@/components/iSee/chatbot/AnswerFileCSV';
 import AnswerRadio from '@/components/iSee/chatbot/AnswerRadio';
 import { Question, Response, ResponseType } from '@/models/questionnaire';
 import { currentUser } from '@/services/isee/user';
+import { response } from "express";
+import Papa from "papaparse";
 
 export type Params = {
   match: {
@@ -96,15 +99,33 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
     setRadio(event.target.value);
   }
 
-  function handleFileChange(e: any) {
+  function handleFileImageChange(e: any) {
     let reader = new FileReader();
     reader.readAsDataURL(e.target.files[0]);
     reader.onload = function () {
-      setFile(createFileAnswer(reader.result));
+      setFile(createFileImageAnswer(reader.result));
     };
     reader.onerror = function (error) {
       console.log('Error: ', error);
     };
+  }
+
+  function handleFileCSVChange(e: any) {
+    console.log(e.target.files[0]);
+    Papa.parse(e.target.files[0], {
+      complete: function (results) {
+        console.log("Finished:", results.data);
+        setFile(createFileCSVAnswer(results.data));
+      }
+    });
+    // let reader = new FileReader();
+    // reader.readAsText(e.target.files[0]);
+    // reader.onload = function () {
+    //   setFile(createFileCSVAnswer(reader.result));
+    // };
+    // reader.onerror = function (error) {
+    //   console.log('Error: ', error);
+    // };
   }
 
   function handleLikertChange(event: any) {
@@ -142,11 +163,19 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
             />,
           ]);
           break;
-        case ResponseType.FILE:
+        case ResponseType.FILE_IMAGE:
           setAnswer([
-            <AnswerFile
+            <AnswerFileImage
               key={'answer'}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFileChange(e)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFileImageChange(e)}
+            />,
+          ]);
+          break;
+        case ResponseType.FILE_CSV:
+          setAnswer([
+            <AnswerFileCSV
+              key={'answer'}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFileCSVChange(e)}
             />,
           ]);
           break;
@@ -174,7 +203,10 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
     else if (responseType == ResponseType.RADIO) {
       client.send(JSON.stringify(radio));
     }
-    else if (responseType == ResponseType.FILE) {
+    else if (responseType == ResponseType.FILE_IMAGE) {
+      client.send(JSON.stringify(file));
+    }
+    else if (responseType == ResponseType.FILE_CSV) {
       client.send(JSON.stringify(file));
     }
     addAnswer();
@@ -195,7 +227,10 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
     else if (responseType == ResponseType.RADIO) {
       setRadio(undefined);
     }
-    else if (responseType == ResponseType.FILE) {
+    else if (responseType == ResponseType.FILE_IMAGE) {
+      setFile(undefined);
+    }
+    else if (responseType == ResponseType.FILE_CSV) {
       setFile(undefined);
     }
   }
@@ -210,11 +245,19 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
           </div>,
         ]);
         break;
-      case ResponseType.FILE:
+      case ResponseType.FILE_IMAGE:
         setDialogComp((oldDialogComp) => [
           ...oldDialogComp,
-          <div className="answer-check" key={'answer' + oldDialogComp.length}>
-            <div dangerouslySetInnerHTML={{ __html: file?.content ?? '' }} />
+          <div className="answer-image" key={'answer' + oldDialogComp.length}>
+            <div dangerouslySetInnerHTML={{ __html: generateImageFromBase64(file?.content ?? '') }} />
+          </div>,
+        ]);
+        break;
+      case ResponseType.FILE_CSV:
+        setDialogComp((oldDialogComp) => [
+          ...oldDialogComp,
+          <div className="answer-csv" key={'answer' + oldDialogComp.length}>
+            <div dangerouslySetInnerHTML={{ __html: generateTableFromJSON(file?.content ?? '') }} />
           </div>,
         ]);
         break;
@@ -245,6 +288,37 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
     }
   }
 
+  function generateImageFromBase64(data: any) {
+    let content = "<div><img width=\"400\" src=\"";
+    content += data;
+    content += "\"/></div>";
+    return content;
+  }
+
+  function generateTableFromJSON(data: any) {
+    let table = '<div class=\"target-prediction\"><table border="1" class="dataframe">';
+    table += '<thead>';
+    table += '<tr>';
+    for (const key in data) {
+      table += `<th>${key}</th>`;
+    }
+    table += '</tr>';
+    table += '</thead>';
+
+    // create data rows
+    table += '<tbody>';
+    table += '<tr>';
+    for (const key in data) {
+      table += `<th>${data[key]}</th>`;
+    }
+    table += '</tr>';
+    table += '</tbody>';
+
+    table += '</table></div>';
+    return table;
+
+  }
+
   function sendAndReceive() {
     if (textInputNotNUll() || checkInputNotNull() || radioInputNotNull() || likertInputNotNull() || fileInputNotNUll()) {
       sendAnswer();
@@ -256,7 +330,7 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
   }
 
   function fileInputNotNUll() {
-    return file && responseType == ResponseType.FILE;
+    return file && (responseType == ResponseType.FILE_IMAGE || responseType == ResponseType.FILE_CSV);
   }
 
   function checkInputNotNull() {
@@ -287,10 +361,24 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
     return temp;
   }
 
-  function createFileAnswer(_base64: string) {
+  function createFileImageAnswer(_base64: string) {
     var temp = {
       id: "temp",
-      content: "<img width=\"400\" src=\"" + _base64 + "\"/>"
+      content: _base64
+    };
+    return temp;
+  }
+
+  function createFileCSVAnswer(data: any) {
+    const ks = data[0];
+    const vs = data[1].map((val: any) => isNaN(val) ? val.replaceAll("\"", "").trim() : Number(val));;
+    const dict = {};
+    for (let i = 0; i < ks.length; i++) {
+      dict[ks[i]] = vs[i];
+    }
+    var temp = {
+      id: "temp",
+      content: dict
     };
     return temp;
   }
@@ -312,7 +400,7 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
     else {
       setDialogComp((old) => {
         const oldArray = old.slice();
-        console.log(oldArray.pop());
+        oldArray.pop();
         return oldArray;
       });
     }
