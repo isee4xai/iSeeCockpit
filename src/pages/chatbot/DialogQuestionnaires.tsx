@@ -445,13 +445,12 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
               value={
                 // delete the number if it's not between validators min/max
                 // TODO fix validation
-                // responseType === ResponseType.NUMBER && question?.validators && answer
-                //   ? parseInt(answer?.content) >= question?.validators?.min &&
-                //     parseInt(answer?.content) <= question?.validators?.max
-                //     ? parseInt(answer?.content)
-                //     : parseInt('')
-                //   : answer?.content
-                answer?.content
+                responseType === ResponseType.NUMBER && question?.validators && text
+                  ? parseInt(text) >= question?.validators?.min &&
+                    parseInt(text) <= question?.validators?.max
+                    ? text
+                    : parseInt('')
+                  : text
               }
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
               disabled={
