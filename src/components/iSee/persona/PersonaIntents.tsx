@@ -6,7 +6,7 @@ import {
   api_persona_query_strategies,
   api_persona_update_intent,
 } from '@/services/isee/usecases';
-import { CheckOutlined, CloseOutlined, DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined, QuestionCircleOutlined, RocketFilled, StarOutlined } from '@ant-design/icons';
+import { CheckOutlined, CloseOutlined, DeleteOutlined, EditOutlined, EyeOutlined, HistoryOutlined, PlusOutlined, QuestionCircleOutlined, RocketFilled, StarOutlined } from '@ant-design/icons';
 import {
   Alert,
   Badge,
@@ -28,6 +28,7 @@ import {
   Select,
   Space,
   Switch,
+  Table,
   Tabs,
   Tag,
   Tooltip,
@@ -37,8 +38,6 @@ import QuestionnaireTab from '../question/QuestionnaireTab';
 import DATA_FILEDS from '@/models/common';
 import { IntentQuestion } from '@/models/questionnaire';
 import TOOL_TIPS from '@/models/tooltips';
-import { api_get_all } from '@/services/isee/explainers';
-import { red, green } from '@ant-design/colors';
 
 const { Panel } = Collapse;
 const { Option, OptGroup } = Select;
@@ -156,14 +155,15 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
   };
 
   const getStrategies = async (intent: PersonaIntent) => {
-
     message.config({
       top: 400,
     });
+
     const hide = message.loading(
       'Retrieving explanation strategies from iSee CBR...',
       0,
     );
+
     // Dismiss manually and asynchronously
     const strategies = await api_persona_query_strategies(usecaseId, personaState._id, intent.id);
     intent.strategies = strategies
@@ -178,7 +178,6 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
       });
     }
 
-
     setPersonaState((old) => ({
       ...old,
       intents: personaState.intents?.map((i) => {
@@ -187,7 +186,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
     }));
   };
 
-  const setSelectedStrategy = async (event: any, intent: PersonaIntent, strategy: any) => {
+  const setSelectedStrategy = async (event: any, strategy: any) => {
 
     message.config({
       top: 400,
@@ -196,17 +195,37 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
       'Setting as default strategy...',
       0,
     );
-    await api_persona_query_set_default(usecaseId, personaState._id, intent.id, strategy.id);
 
-    hide()
-    strategy.selected = event
-    intent.strategy_selected = strategy.tree
-    setPersonaState((old) => ({
-      ...old,
-      intents: personaState.intents?.map((i) => {
-        return i;
-      }),
-    }));
+    let selectedIntent: PersonaIntent = {
+      id: "",
+      completed: false,
+      name: "",
+      evaluation: {}
+    };
+
+    personaState?.intents?.forEach(intent_ => {
+      intent_.strategies?.forEach(strat => {
+        if (strat.id == strategy.id) {
+          selectedIntent = intent_;
+        }
+      })
+    });
+
+    if (selectedIntent.id == "") {
+      hide()
+      message.error("Couldnt find a matching intent!")
+    } else {
+      await api_persona_query_set_default(usecaseId, personaState._id, selectedIntent.id, strategy.id);
+      hide()
+      strategy.selected = event
+      selectedIntent.strategy_selected = strategy.tree
+      setPersonaState((old) => ({
+        ...old,
+        intents: personaState.intents?.map((i) => {
+          return i;
+        }),
+      }));
+    }
   };
 
   const onFinishNewIntent = async (values: any) => {
@@ -259,6 +278,115 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
 
     handleOk();
   };
+
+
+  const retrievalTableColumns = [
+    {
+      title: 'Set Strategy',
+      key: 'select',
+      render: (_: any, strategy: any) =>
+      (<Switch
+        checked={strategy.selected}
+        onClick={(event) => setSelectedStrategy(event, strategy)}
+        checkedChildren={<CheckOutlined />}
+        unCheckedChildren={<CloseOutlined />}
+      />
+      )
+    },
+    {
+      title: 'Similarity Score',
+      dataIndex: 'percentage',
+      key: 'percentage',
+      render: (val: number, obj: any, index: number) =>
+        <>
+          <Progress
+            percent={val} steps={5} strokeWidth={15}
+            strokeColor={val < 50 ? "#ff4d4f" : (val < 80 ? "#108ee9" : "#6fc648")}
+          />
+          <p>
+            {obj.index == 1 && <Tag icon={<StarOutlined />} color="orange">Recommended</Tag>}
+          </p>
+        </>
+    },
+    {
+      title: 'Explainers',
+      dataIndex: 'methods',
+      key: 'methods',
+      render: (methods: any) =>
+        <>{methods.map((m: string) => (
+          <>
+            <Tag color="blue">{m}</Tag>
+            <Popover placement='right' content={
+              <>
+                <table style={{ width: 400 }}>
+                  <tbody>
+                    <tr>
+                      <td style={{ paddingRight: 5 }}><strong>Explainer Description</strong></td>
+                      <td>{props.ontoExplainers[m]?.explainer_description}
+                        <hr></hr>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ paddingRight: 5 }}><strong>Explanation Description</strong></td>
+                      <td>{props.ontoExplainers[m]?.explanation_description}
+                        <hr></hr>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </>
+            } title={m} trigger="click">
+              <Button size="small"
+                icon={<QuestionCircleOutlined />}
+              >
+                More Info
+              </Button>
+            </Popover>
+            <br></br>
+          </>
+        ))}</>
+    },
+    {
+      title: 'AI Knowledge',
+      dataIndex: 'ai_knowledge_level',
+      key: 'ai_knowledge_level',
+      render: (val: string) =>
+        <>
+          {
+            props.ontoValues?.KNOWLEDGE_LEVEL.map((option) => (
+              (option.key == val ? <Tag color="default">{option.label}</Tag> : '')
+            ))
+          }</>
+    },
+    {
+      title: 'Domain Knowledge',
+      dataIndex: 'domain_knowledge_level',
+      key: 'domain_knowledge_level',
+      render: (val: string) => <>
+        {
+          props.ontoValues?.KNOWLEDGE_LEVEL.map((option) => (
+            (option.key == val ? <Tag color="default">{option.label}</Tag> : '')
+          ))
+        }
+      </>
+    },
+    {
+      title: 'BT Strategy',
+      key: 'bt',
+      render: (_: any, strategy: any) => (
+        <> <p>
+          <Button block href={"https://editor-dev.isee4xai.com/#/vid/" + strategy.tree} target="_blank" type="primary" shape="round" ghost icon={<EyeOutlined />} >
+            View
+          </Button>
+        </p>
+          <p style={{ marginTop: -10 }}>
+            <Button block href={"https://editor-dev.isee4xai.com/#/id/" + strategy.tree} target="_blank" type="dashed" shape="round" icon={<EditOutlined />} >
+              Edit
+            </Button>
+          </p></>
+      ),
+    },
+  ];
 
   // - End
 
@@ -345,115 +473,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
               </Tabs.TabPane>
               <Tabs.TabPane tab="Explanation Strategy" key="3">
                 {intent.strategies &&
-                  <Row gutter={[20, 20]}>
-                    {intent.strategies?.map((strategy) => (
-                      <Col span={12}>
-
-                        <Card size="small" title={strategy.name.replace('http://www.w3id.org/iSeeOnto/explanationexperience/', '')}
-                          extra={
-                            <>
-
-                              <p> {strategy.index == 1 && <Tag icon={<StarOutlined />} color="orange">Recommended</Tag>
-                              } Select Strategy:&nbsp;
-                                <Switch
-                                  checked={strategy.selected}
-                                  disabled={intent.strategy_selected}
-                                  onClick={(event) => setSelectedStrategy(event, intent, strategy)}
-                                  checkedChildren={<CheckOutlined />}
-                                  unCheckedChildren={<CloseOutlined />}
-                                />
-                              </p>
-                            </>
-                          }
-                        >
-                          <div>
-                            Suitability to your usecase:
-                            {/* <Progress percent={strategy.percentage} status="active" strokeColor={{ from: '#108ee9', to: '#87d068' }} style={{ paddingRight: 20 }} /> */}
-
-                            <Space wrap>
-                              <Progress
-                                style={{ paddingLeft: 10 }}
-                                percent={strategy.percentage} steps={5} strokeWidth={15}
-                                strokeColor={strategy.percentage < 50 ? "#ff4d4f" : (strategy.percentage < 80 ? "#108ee9" : "#6fc648")}
-                              />
-                              {/* <Progress style={{ paddingLeft: 20, fontSize: 30 }}
-                                percent={strategy.percentage} type="dashboard"
-                                width={80}
-                                strokeWidth={8}
-                                strokeColor={{ '100%': 89 > 80 ? '#6fc648' : "#108ee9" }}
-                              /> */}
-                            </Space>
-
-                          </div>
-                          <p style={{ paddingTop: 10, marginBottom: 10 }}>Explaination Methods:&nbsp;
-                          </p>
-                          <p>
-                            {strategy.methods.map((m: string) => (
-                              <>
-                                <Tag color="blue">{m}</Tag>
-                                <Popover placement='right' content={
-                                  <>
-                                    <table style={{ width: 400 }}>
-                                      <tbody>
-                                        <tr>
-                                          <td style={{ paddingRight: 5 }}><strong>Explainer Description</strong></td>
-                                          <td>{props.ontoExplainers[m]?.explainer_description}
-                                            <hr></hr>
-                                          </td>
-                                        </tr>
-                                        <tr>
-                                          <td style={{ paddingRight: 5 }}><strong>Explanation Description</strong></td>
-                                          <td>{props.ontoExplainers[m]?.explanation_description}
-                                            <hr></hr>
-                                          </td>
-                                        </tr>
-
-                                      </tbody>
-                                    </table>
-                                  </>
-                                } title={m} trigger="click">
-                                  <Button size="small"
-                                    icon={<QuestionCircleOutlined />}
-                                  >
-                                    More Info
-                                  </Button>
-                                </Popover>
-                                <br></br>
-                              </>
-                            ))}
-                          </p>
-                          <p style={{ paddingTop: 5, marginBottom: 5 }}>Domain Knowledge Level:&nbsp;
-                            {props.ontoValues?.KNOWLEDGE_LEVEL.map((option) => (
-                              (option.key == strategy.domain_knowledge_level ? <Tag color="default">{option.label}</Tag> : '')
-                            ))}
-                          </p>
-
-                          <p style={{ paddingTop: 5, marginBottom: 10 }}>AI Knowledge Level:&nbsp;
-                            {props.ontoValues?.KNOWLEDGE_LEVEL.map((option) => (
-                              (option.key == strategy.ai_knowledge_level ? <Tag color="default">{option.label}</Tag> : '')
-                            ))}
-                          </p>
-                          {(!intent.strategy_selected || strategy.selected) &&
-                            <Row>
-                              <Col className="gutter-row" span={16}>
-                                <Button href={"https://editor-dev.isee4xai.com/#/vid/" + strategy.tree} target="_blank" type="primary" block shape="round" ghost icon={<EyeOutlined />} >
-                                  View Strategy
-                                </Button>
-                              </Col>
-                              {/* <Col className="gutter-row" span={2}>
-                              </Col> */}
-
-                              <Col className="gutter-row" span={8}>
-                                <Button href={"https://editor-dev.isee4xai.com/#/id/" + strategy.tree} target="_blank" type="dashed" block shape="round" icon={<EditOutlined />} >
-                                  Edit Strategy
-                                </Button>
-                              </Col>
-                            </Row>
-                          }
-                        </Card>
-                      </Col>
-                    ))}
-                  </Row>
+                  <Table bordered dataSource={intent.strategies} columns={retrievalTableColumns} pagination={{ pageSize: 3, position: ["bottomLeft"] }} />
                 }
 
                 {!intent.strategies && (
@@ -470,16 +490,27 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                   </>
                 )}
 
-                {intent.strategy_selected && (
-                  <Button
-                    type="primary"
-                    style={{ marginLeft: 10 }}
-                    danger
-                    onClick={() => getStrategies(intent)}
-                    icon={<RocketFilled />}
-                  >
-                    Retrieve Strategies Again
-                  </Button>
+                {intent.strategies && (
+                  <>
+                    {/* <Button
+                      type="primary"
+                      style={{ marginLeft: 0 }}
+                      // danger
+                      onClick={() => getStrategiesReuse(intent)}
+                      icon={<HistoryOutlined />}
+                    >
+                      Generate Customized Strategy Strategy
+                    </Button> */}
+                    <Button
+                      type="primary"
+                      style={{ marginLeft: 10 }}
+                      ghost
+                      onClick={() => getStrategies(intent)}
+                      icon={<RocketFilled />}
+                    >
+                      Retrieve Strategies Again
+                    </Button>
+                  </>
                 )}
               </Tabs.TabPane>
               <Tabs.TabPane tab="Evaluation Questionaire" key={'tabpane-' + personaState._id}>
