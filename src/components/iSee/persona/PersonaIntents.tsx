@@ -4,9 +4,10 @@ import {
   api_persona_new_intent,
   api_persona_query_set_default,
   api_persona_query_strategies,
+  api_persona_query_strategies_reuse,
   api_persona_update_intent,
 } from '@/services/isee/usecases';
-import { CheckOutlined, CloseOutlined, DeleteOutlined, EditOutlined, EyeOutlined, HistoryOutlined, PlusOutlined, QuestionCircleOutlined, RocketFilled, StarOutlined } from '@ant-design/icons';
+import { BulbOutlined, CheckOutlined, CloseOutlined, DeleteOutlined, EditOutlined, ExperimentOutlined, EyeOutlined, HistoryOutlined, PlusOutlined, QuestionCircleOutlined, ReloadOutlined, RocketFilled, SearchOutlined, StarOutlined } from '@ant-design/icons';
 import {
   Alert,
   Badge,
@@ -154,7 +155,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
 
   };
 
-  const getStrategies = async (intent: PersonaIntent) => {
+  const getStrategies = async (intent: PersonaIntent, loadMore: boolean) => {
     message.config({
       top: 400,
     });
@@ -165,7 +166,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
     );
 
     // Dismiss manually and asynchronously
-    const strategies = await api_persona_query_strategies(usecaseId, personaState._id, intent.id);
+    const strategies = await api_persona_query_strategies(usecaseId, personaState._id, intent.id, loadMore);
     intent.strategies = strategies
     intent.strategy_selected = false
     hide();
@@ -173,6 +174,40 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
     if (strategies.length > 0) {
       notification.success({
         message: 'Retrieved Strategies for "' + intent.label + '" Intent',
+        placement: 'top',
+        duration: 3,
+      });
+    }
+
+    setPersonaState((old) => ({
+      ...old,
+      intents: personaState.intents?.map((i) => {
+        return i;
+      }),
+    }));
+  };
+
+  const getStrategiesReuse = async (intent: PersonaIntent) => {
+    message.config({
+      top: 400,
+    });
+
+    const hide = message.loading(
+      'Generating a personalised strategy from iSee CBR... Please Wait...',
+      0,
+    );
+
+    // Dismiss manually and asynchronously
+    const strategies = await api_persona_query_strategies_reuse(usecaseId, personaState._id, intent.id);
+
+    console.log(strategies)
+    intent.strategies = strategies
+    intent.strategy_selected = false
+    hide();
+
+    if (strategies.length > 0) {
+      notification.success({
+        message: 'Generated Personalised Strategy for "' + intent.label + '" Intent',
         placement: 'top',
         duration: 3,
       });
@@ -217,6 +252,11 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
     } else {
       await api_persona_query_set_default(usecaseId, personaState._id, selectedIntent.id, strategy.id);
       hide()
+      selectedIntent.strategies?.forEach(strat => {
+        if (strat.id != strategy.id) {
+          strat.selected = false
+        }
+      })
       strategy.selected = event
       selectedIntent.strategy_selected = strategy.tree
       setPersonaState((old) => ({
@@ -282,7 +322,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
 
   const retrievalTableColumns = [
     {
-      title: 'Set Strategy',
+      title: 'Select',
       key: 'select',
       render: (_: any, strategy: any) =>
       (<Switch
@@ -299,13 +339,24 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
       key: 'percentage',
       render: (val: number, obj: any, index: number) =>
         <>
-          <Progress
-            percent={val} steps={5} strokeWidth={15}
-            strokeColor={val < 50 ? "#ff4d4f" : (val < 80 ? "#108ee9" : "#6fc648")}
-          />
-          <p>
-            {obj.index == 1 && <Tag icon={<StarOutlined />} color="orange">Recommended</Tag>}
+          {obj.percentage != "reuse" &&
+            <Progress
+              percent={val} steps={5} strokeWidth={15}
+              strokeColor={val < 50 ? "#ff4d4f" : (val < 80 ? "#108ee9" : "#6fc648")}
+            />
+          }
+          {obj.percentage == "reuse" &&
+            <p>
+              <Tag style={{ fontSize: 13, padding: 5 }} icon={<BulbOutlined />} color="green">Generated Strategy</Tag>
+            </p>
+          }
+
+          {obj.index == 1 && <p>
+            <Tag style={{ fontSize: 13, padding: 5 }} icon={<StarOutlined />} color="orange">
+              Recommended
+            </Tag>
           </p>
+          }
         </>
     },
     {
@@ -314,7 +365,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
       key: 'methods',
       render: (methods: any) =>
         <>{methods.map((m: string) => (
-          <>
+          <p>
             <Tag color="blue">{m}</Tag>
             <Popover placement='right' content={
               <>
@@ -343,7 +394,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
               </Button>
             </Popover>
             <br></br>
-          </>
+          </p>
         ))}</>
     },
     {
@@ -472,8 +523,21 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                 </Row>
               </Tabs.TabPane>
               <Tabs.TabPane tab="Explanation Strategy" key="3">
+
                 {intent.strategies &&
-                  <Table bordered dataSource={intent.strategies} columns={retrievalTableColumns} pagination={{ pageSize: 3, position: ["bottomLeft"] }} />
+                  <>
+                    <Button
+                      type="primary"
+                      style={{ marginBottom: 10 }}
+                      danger
+                      ghost
+                      onClick={() => getStrategies(intent, false)}
+                      icon={<ReloadOutlined />}
+                    >
+                      Retrieve Strategies Again
+                    </Button>
+                    <Table size="middle" bordered dataSource={intent.strategies} columns={retrievalTableColumns} pagination={false} scroll={{ x: 1000 }} />
+                  </>
                 }
 
                 {!intent.strategies && (
@@ -482,7 +546,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                     <Button
                       type="primary"
                       style={{ marginTop: 10 }}
-                      onClick={() => getStrategies(intent)}
+                      onClick={() => getStrategies(intent, false)}
                       icon={<RocketFilled />}
                     >
                       Retrieve Explanation Strategies
@@ -492,24 +556,28 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
 
                 {intent.strategies && (
                   <>
-                    {/* <Button
-                      type="primary"
-                      style={{ marginLeft: 0 }}
-                      // danger
-                      onClick={() => getStrategiesReuse(intent)}
-                      icon={<HistoryOutlined />}
+
+                    <Button
+                      type="dashed"
+                      style={{ marginTop: 10 }}
+                      // ghost
+                      onClick={() => getStrategies(intent, true)}
+                      icon={<SearchOutlined />}
                     >
-                      Generate Customized Strategy Strategy
-                    </Button> */}
+                      Load More
+                    </Button>
+
                     <Button
                       type="primary"
                       style={{ marginLeft: 10 }}
-                      ghost
-                      onClick={() => getStrategies(intent)}
-                      icon={<RocketFilled />}
+                      // danger
+                      // ghost
+                      onClick={() => getStrategiesReuse(intent)}
+                      icon={<BulbOutlined />}
                     >
-                      Retrieve Strategies Again
+                      Generate Personalised Strategy
                     </Button>
+
                   </>
                 )}
               </Tabs.TabPane>

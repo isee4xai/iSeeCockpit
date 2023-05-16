@@ -359,11 +359,39 @@ export async function api_persona_query_strategies(
   usecaseId: string | undefined,
   personaId: string | undefined,
   intentId: string | undefined,
+  loadMore: boolean | undefined,
 ) {
   if (!usecaseId || !personaId) return usecaseId;
 
   try {
     const data = await fetch(`${BASE_URL}/cbr/${usecaseId}/persona/${personaId}/intent/${intentId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': getToken(),
+      },
+      body: JSON.stringify({ loadMore: loadMore })
+    });
+    const result = await data.json();
+    if (result.message) {
+      message.error("Strategy Retrieval Failed! Make sure you have completed the AI Model Settings.")
+      return []
+    };
+    return result;
+  } catch (error) {
+    return [];
+  }
+}
+
+export async function api_persona_query_strategies_reuse(
+  usecaseId: string | undefined,
+  personaId: string | undefined,
+  intentId: string | undefined,
+) {
+  if (!usecaseId || !personaId) return usecaseId;
+
+  try {
+    const data = await fetch(`${BASE_URL}/cbr/${usecaseId}/persona/${personaId}/intent/${intentId}/reuse`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

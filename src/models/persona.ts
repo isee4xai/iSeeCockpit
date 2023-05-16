@@ -29,6 +29,7 @@ export interface PersonaIntent {
   questions?: IntentQuestion[];
   explanation?: string;
   strategy_selected?: boolean;
+  strategy_topk?: number;
   strategies?: any[];
   evaluation: Questionnaire; //todo?
 }
