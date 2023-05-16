@@ -387,13 +387,20 @@ const Create: React.FC<Params> = (props) => {
               <div key="head3">
                 Publish &nbsp;&nbsp;
                 <Switch
-                  onChange={async (checked) => {
-                    await api_publish(usecase._id || '', checked);
-                    setUsecase({ ...usecase, published: checked });
+                  onChange={async (checked, event) => {
+                    const json = await api_get_casestructure(usecase._id || '');
+                    if (json) {
+                      await api_publish(usecase._id || '', checked);
+                      setUsecase({ ...usecase, published: checked });
+                    } else {
+                      event.preventDefault();
+                      event.stopPropagation();
+                    }
                   }}
                   checkedChildren={<CheckOutlined />}
                   unCheckedChildren={<CloseOutlined />}
                   defaultChecked={usecase.published}
+                  checked={usecase.published}
                 />
                 <Button
                   type="primary"

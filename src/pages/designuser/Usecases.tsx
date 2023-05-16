@@ -236,11 +236,14 @@ const Welcome: React.FC = () => {
                   <Button
                     key={'btn-analytics'}
                     type="text"
+                    disabled={!usecase.published}
                     href={'usecase/analytics/' + usecase._id}
                   >
                     <LineChartOutlined /> Analytics
                   </Button>,
-                  <Button key={'btn-settings'} type="text" href={'/dialogue/' + usecase._id}>
+                  <Button key={'btn-settings'} type="text" href={'/dialogue/' + usecase._id}
+                    disabled={!usecase.published}
+                  >
                     <CommentOutlined color="green" />
                     Test
                   </Button>,
