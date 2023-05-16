@@ -11,6 +11,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import {
   Button,
   Card,
+  Cascader,
   Col,
   Empty,
   Form,
@@ -41,7 +42,7 @@ const Welcome: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const [useCases, setUseCases] = useState([]);
-  const [domains, setDomains] = useState<API.OntoPair[]>([]);
+  const [domains, setDomains] = useState<API.OntoOption[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -76,6 +77,11 @@ const Welcome: React.FC = () => {
     const data = await api_get_all();
     setUseCases(data);
   }
+
+  const filterCascader = (inputValue: string, path: API.OntoOption[]) =>
+    path.some(
+      (option) => (option.label as string).toLowerCase().indexOf(inputValue.toLowerCase()) > -1,
+    );
 
   async function create(usecase: Usecase) {
     console.log('Create Usecase:', usecase);
@@ -156,6 +162,21 @@ const Welcome: React.FC = () => {
             tooltip={TOOL_TIPS.domain}
             rules={[{ required: true, message: 'Please select a suitable domain!' }]}
           >
+            <Cascader
+              fieldNames={{ label: 'label', value: 'key', children: 'children' }}
+              options={domains?.children}
+              showSearch={{ filterCascader }}
+              placeholder="Search Domain..."
+              changeOnSelect
+            />
+          </Form.Item>
+
+          {/* <Form.Item
+            label="Domain"
+            name="domain"
+            tooltip={TOOL_TIPS.domain}
+            rules={[{ required: true, message: 'Please select a suitable domain!' }]}
+          >
             <Select placeholder="" >
               {domains.map((option: API.OntoPair) => (
                 <Select.Option value={option.key} key={option.key}>
@@ -164,7 +185,7 @@ const Welcome: React.FC = () => {
               ))}
 
             </Select>
-          </Form.Item>
+          </Form.Item> */}
 
           <Form.Item
             label="Goal of the usecase"
