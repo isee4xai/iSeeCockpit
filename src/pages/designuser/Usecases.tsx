@@ -236,7 +236,7 @@ const Welcome: React.FC = () => {
                   <Button
                     key={'btn-analytics'}
                     type="text"
-                    disabled={!usecase.published}
+                    disabled={true}
                     href={'usecase/analytics/' + usecase._id}
                   >
                     <LineChartOutlined /> Analytics
