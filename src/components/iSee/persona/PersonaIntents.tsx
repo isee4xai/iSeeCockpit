@@ -398,30 +398,6 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
         ))}</>
     },
     {
-      title: 'AI Knowledge',
-      dataIndex: 'ai_knowledge_level',
-      key: 'ai_knowledge_level',
-      render: (val: string) =>
-        <>
-          {
-            props.ontoValues?.KNOWLEDGE_LEVEL.map((option) => (
-              (option.key == val ? <Tag color="default">{option.label}</Tag> : '')
-            ))
-          }</>
-    },
-    {
-      title: 'Domain Knowledge',
-      dataIndex: 'domain_knowledge_level',
-      key: 'domain_knowledge_level',
-      render: (val: string) => <>
-        {
-          props.ontoValues?.KNOWLEDGE_LEVEL.map((option) => (
-            (option.key == val ? <Tag color="default">{option.label}</Tag> : '')
-          ))
-        }
-      </>
-    },
-    {
       title: 'BT Strategy',
       key: 'bt',
       render: (_: any, strategy: any) => (
