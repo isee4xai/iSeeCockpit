@@ -1,7 +1,7 @@
 import { DefaultFooter } from '@ant-design/pro-layout';
 
 const Footer: React.FC = () => {
-  const defaultMessage = 'iSee: Building the AI you trust - v1.019 May 16';
+  const defaultMessage = 'iSee: Building the AI you trust - v1.020 May 20';
   const currentYear = new Date().getFullYear();
   return (
     <DefaultFooter

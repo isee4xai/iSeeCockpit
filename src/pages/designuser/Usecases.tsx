@@ -23,6 +23,7 @@ import {
   Select,
   Statistic,
   Tag,
+  Typography,
 } from 'antd';
 import Meta from 'antd/lib/card/Meta';
 import React, { useEffect, useState } from 'react';
@@ -31,7 +32,7 @@ import type { Usecase } from '@/models/usecase';
 import { api_create, api_get_all } from '@/services/isee/usecases';
 import { get_domains } from '@/services/isee/ontology';
 import TOOL_TIPS from '@/models/tooltips';
-import Text from 'antd/lib/typography/Text';
+const { Text } = Typography;
 
 const Welcome: React.FC = () => {
   const style = {
