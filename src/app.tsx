@@ -29,7 +29,12 @@ export async function getInitialState(): Promise<{
       const msg = await queryCurrentUser();
       return msg.data;
     } catch (error) {
-      history.push(loginPath);
+      if (location.pathname.startsWith("/invite")) {
+        let invite_code = location.pathname.split("/")[2]
+        history.push(loginPath + "?invite=" + invite_code)
+      } else {
+        history.push(loginPath);
+      }
     }
     return undefined;
   };
@@ -68,28 +73,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     },
     menuHeaderRender: undefined,
     unAccessible: <NotAuthorisedPage />,
-    // 增加一个 loading 的状态
-    // childrenRender: (children, props) => {
-    //   // if (initialState?.loading) return <PageLoading />;
-    //   return (
-    //     <>
-    //       {children}
-    //       {!props.location?.pathname?.includes('/login') && (
-    //         <SettingDrawer
-    //           disableUrlParams
-    //           enableDarkTheme
-    //           settings={initialState?.settings}
-    //           onSettingChange={(settings) => {
-    //             setInitialState((preInitialState) => ({
-    //               ...preInitialState,
-    //               settings,
-    //             }));
-    //           }}
-    //         />
-    //       )}
-    //     </>
-    //   );
-    // },
     ...initialState?.settings,
   };
 };

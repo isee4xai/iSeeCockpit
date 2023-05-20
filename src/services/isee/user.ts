@@ -32,6 +32,65 @@ export async function login(body: API.LoginParams, options?: { [key: string]: an
     }
 };
 
+export async function validate_invite(key: string) {
+    try {
+        const data = await fetch(`${BASE_URL}/${KEY}/validate_invite/${key}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        // Only for successful logins
+        if (data.status == 200) {
+            let result = await data.json();
+            result.status = "ok"
+
+            return result || "";
+        } else {
+            return {
+                status: 'error',
+                status_message: "Invalid or Expired Invite Code!"
+            };
+        }
+    } catch (error) {
+        return {
+            status: 'error',
+            status_message: error
+        };
+    }
+};
+
+export async function registerWithInvite(body: API.LoginParams, options?: { [key: string]: any }) {
+    try {
+        const data = await fetch(`${BASE_URL}/${KEY}/registerWithInvite`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body),
+        });
+        // Only for successful logins
+        if (data.status == 200) {
+            let result = await data.json();
+            result.status = "ok"
+            return result || "";
+        } else {
+            let result_err = await data.text();
+            let msg = JSON.parse(result_err)
+            return {
+                status: 'error',
+                status_message: msg.message
+            };
+        }
+    } catch (error) {
+        return {
+            status: 'error',
+            status_message: error
+        };
+    }
+};
+
+
 export async function currentUser(options?: { [key: string]: any }) {
     var user: API.CurrentUser = JSON.parse(localStorage.getItem('isee_user') || '');
 

@@ -494,3 +494,41 @@ export async function api_usecase_stat(usecaseId: string | undefined, dates: str
     return {};
   }
 }
+
+// -----------------------------------------
+//              HANDLE ENDUSERS
+// ------------------------------------------
+export async function api_create_enduser_invite(usecaseId: string | undefined, values: any) {
+  try {
+    const data = await fetch(`${BASE_URL}/${KEY}/${usecaseId}/endusers/invite`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': getToken(),
+      },
+      body: JSON.stringify(values),
+    });
+
+    const result = await data.json();
+    return result || [];
+  } catch (error) {
+    return [];
+  }
+}
+
+export async function api_get_invites(id: string) {
+  try {
+    const data = await fetch(`${BASE_URL}/${KEY}/${id}/endusers/invites`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': getToken(),
+      },
+    });
+    const result = await data.json();
+    if (result.message) return false;
+    return result || false;
+  } catch (error) {
+    return false;
+  }
+}
