@@ -57,13 +57,14 @@ import {
   Switch,
   Tag,
   Tooltip,
+  Typography,
 } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import React, { useEffect, useState } from 'react';
 import { api_get_all } from '@/services/isee/explainers';
 
 import Papa from "papaparse";
-import Text from 'antd/lib/typography/Text';
+const { Text } = Typography;
 import CollapsePanel from 'antd/lib/collapse/CollapsePanel';
 
 const { Option } = Select;

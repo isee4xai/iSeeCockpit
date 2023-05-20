@@ -10,7 +10,7 @@
       { component: './404' },
     ],
   },
-  { path: '/welcome', name: 'Welcome', icon: 'smile', component: './Welcome', hideInMenu: true },
+  // { path: '/welcome', name: 'Welcome', icon: 'smile', component: './Welcome', hideInMenu: true },
   {
     path: '/usecases',
     access: 'designUser',
@@ -25,6 +25,24 @@
     name: 'Manage Usecase',
     // icon: 'setting',
     component: './designuser/usecases/Create',
+    exact: false,
+  },
+  {
+    path: '/usecase/users/:id',
+    hideInMenu: true,
+    access: 'designUser',
+    name: 'Manage Endusers ',
+    // icon: 'setting',
+    component: './designuser/usecases/Endusers',
+    exact: false,
+  },
+  {
+    path: '/invite/:id',
+    hideInMenu: true,
+    // access: 'designUser',
+    name: 'Invitation ',
+    // icon: 'setting',
+    component: './enduser/invite',
     exact: false,
   },
   {
@@ -65,10 +83,25 @@
     exact: false,
   },
   {
+    path: '/enduser/usecases',
+    access: 'endUser',
+    name: 'Usecases',
+    icon: 'home',
+    component: './enduser/Usecases',
+  },
+  {
+    path: '/enduser/dialogue/:id',
+    hideInMenu: true,
+    access: 'endUser',
+    name: 'Dialogue',
+    component: './chatbot/DialogQuestionnaires',
+    exact: false,
+  },
+  {
     path: '/explainers',
     name: 'Explainer Library',
     icon: 'BulbOutlined',
-    // access: 'designUser',
+    access: 'designUser',
     component: './explainers/Explainers',
   },
   {
@@ -88,6 +121,11 @@
   //     { component: './404' },
   //   ],
   // },
-  { path: '/', redirect: '/usecases' },
+  // { path: '/', redirect: '/usecases' },
+  {
+    path: '/',
+    hideInMenu: true,
+    component: './HomeRedirect',
+  },
   { component: './404' },
 ];
