@@ -1,0 +1,80 @@
+.page-question-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    margin: auto;
+  
+    & .question-container {
+      margin: 0 15%;
+      background-color: white;
+      border: 1px solid #e5e5e5;
+  
+      & .question-holder {
+        position: absolute;
+        top: -1px;
+        right: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        box-sizing: content-box;
+        height: 100%;
+        padding: 0 0.5rem;
+        color: grey;
+        font-size: 1.5rem;
+        background: white;
+        border: 1px solid #e5e5e5;
+        border-radius: 0.5rem 0 0 0.5rem;
+        opacity: 0;
+        transition: 0.3s;
+      }
+  
+      & .space-4 {
+        padding: 4rem;
+      }
+      &.react-draggable-dragging,
+      &:hover {
+        & .question-holder {
+          opacity: 1;
+        }
+      }
+    }
+  }
+  
+  .generate-json {
+    position: fixed;
+    right: 2rem;
+    bottom: 2rem;
+  }
+  
+  pre code {
+    display: block;
+    max-height: 50vh;
+    margin-bottom: 1.6em;
+    padding: 0.5rem;
+    overflow: auto;
+    color: #666;
+    font-family: monospace;
+    word-wrap: break-word;
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .alert-export {
+    margin-bottom: 1rem;
+  }
+  
+  .add-question-button {
+    display: block;
+    width: 55%;
+    margin: 1rem auto;
+  }
+  
+  .import-question-button {
+    display: block;
+    width: 55%;
+    margin: 0 auto 4rem;
+  }
+  
