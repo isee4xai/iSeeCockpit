@@ -533,3 +533,19 @@ export async function api_get_invites(id: string) {
     return false;
   }
 }
+
+export async function api_invite_publish(id: string, inviteId: string, status: boolean) {
+  try {
+    const data = await fetch(`${BASE_URL}/${KEY}/${id}/endusers/invite/${inviteId}/publish`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': getToken(),
+      },
+      body: JSON.stringify({ status }),
+    });
+    return data || false;
+  } catch (error) {
+    return false;
+  }
+}

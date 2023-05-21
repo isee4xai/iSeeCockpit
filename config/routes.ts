@@ -50,14 +50,14 @@
     name: 'Usecase Analytics',
     access: 'designUser',
     icon: 'LineChartOutlined',
-    component: './CreateAnalytics',
+    component: './designuser/usecases/CreateAnalytics',
   },
   {
     path: '/usecase/analytics/:id',
     hideInMenu: true,
     access: 'designUser',
     name: 'Usecase Analytics',
-    component: './Analytics',
+    component: './designuser/usecases/Analytics',
     exact: false,
   },
   {
