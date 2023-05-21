@@ -240,7 +240,7 @@ const Welcome: React.FC = () => {
                   <Button
                     key={'btn-analytics'}
                     type="text"
-                    disabled={true}
+                    disabled={!(usecase.interactions && usecase.interactions.length > 0)}
                     href={'usecase/analytics/' + usecase._id}
                   >
                     <LineChartOutlined /> Analytics
@@ -278,7 +278,7 @@ const Welcome: React.FC = () => {
                   </Col>
                   <Col span={6}>
                     <Statistic
-                      title="End Users"
+                      title="Users"
                       value={usecase.endusers?.length}
                       prefix={<UsergroupAddOutlined />}
                     />
@@ -303,9 +303,7 @@ const Welcome: React.FC = () => {
             offset={6}
           >
             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Usecases yet! Start creating usecases using the '+ Create New' button" />
-
           </Col>
-
         </Row>
       </Card>
     </PageContainer >

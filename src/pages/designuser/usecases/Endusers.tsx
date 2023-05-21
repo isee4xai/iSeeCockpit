@@ -3,6 +3,7 @@ import {
     api_create_enduser_invite,
     api_get,
     api_get_invites,
+    api_invite_publish,
 } from '@/services/isee/usecases';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import {
@@ -19,7 +20,8 @@ import {
     Switch,
     Row,
     Col,
-    Badge
+    Badge,
+    notification
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import Text from 'antd/lib/typography/Text';
@@ -63,6 +65,11 @@ const EndUsers: React.FC<Params> = (props) => {
         const res_usecase_invites = await api_get_invites(usecaseId);
         setInvites(res_usecase_invites);
         form.resetFields();
+        notification.success({
+            message: 'Invite Link Created!',
+            description:
+                'Now, you have the opportunity to share with your end users and evaluate the effectiveness of your use case.',
+        })
     }
     const onFinishFailed = (errorInfo: any) => {
         console.log('Failed:', errorInfo);
@@ -166,9 +173,16 @@ const EndUsers: React.FC<Params> = (props) => {
                                                 <i style={{ paddingRight: 10 }}>{moment(invite.createdAt).locale('en_us').fromNow()}</i>
                                                 <Switch
                                                     style={{ marginRight: 20 }}
-                                                    checked={invite.published}
+                                                    onChange={async (checked, event) => {
+                                                        await api_invite_publish(usecase._id || '', invite._id, checked);
+                                                        invite.published = checked
+                                                        const res_usecase_invites = await api_get_invites(usecaseId);
+                                                        setInvites(res_usecase_invites)
+                                                    }}
                                                     checkedChildren={<CheckOutlined />}
                                                     unCheckedChildren={<CloseOutlined />}
+                                                    defaultChecked={invite.published}
+                                                    checked={invite.published}
                                                 />
                                                 <Button
                                                     onClick={() => {
