@@ -42,7 +42,7 @@
     // access: 'designUser',
     name: 'Invitation ',
     // icon: 'setting',
-    component: './enduser/invite',
+    component: './enduser/Invite',
     exact: false,
   },
   {
