@@ -1,7 +1,6 @@
 // @ts-ignore
 import type { Persona, PersonaDetails, PersonaIntent } from '@/models/persona';
-import type { Usecase } from '@/models/usecase';
-import { message, notification } from 'antd';
+import { message } from 'antd';
 
 import { BASE_URL } from './api.config';
 import { getToken } from './user';

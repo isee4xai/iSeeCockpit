@@ -17,6 +17,9 @@ export interface Usecase {
     runs: number;
     feedback: number;
   };
+  invites?: [string];
+  endusers?: [string];
+  interactions?: [string];
   personas?: Persona[];
 }
 
