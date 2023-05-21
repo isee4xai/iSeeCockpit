@@ -9,9 +9,10 @@ import { useEffect, useState } from 'react';
 
 import locale from 'antd/es/date-picker/locale/en_GB';
 import 'moment/locale/en-gb';
-import { api_get_interactions } from '@/services/isee/dialog';
+import { api_get_interaction_json, api_get_interactions } from '@/services/isee/dialog';
 import moment from 'moment';
 import Meta from 'antd/lib/card/Meta';
+import './Analytics.less';
 
 const overall_feedback = {
   percent: 0.63,
@@ -75,6 +76,61 @@ const Analytics: React.FC<Params> = (props) => {
     })();
   }, [props.match.params.id, statDate]);
 
+  async function openExport(interaction: any) {
+    const json = await api_get_interaction_json(usecase._id || '', interaction._id || '');
+
+    const json_formatted = JSON.stringify(json.interaction, null, 2);
+
+    notification.open({
+      message: 'Interaction Export',
+      description: (
+        <div>
+          <pre style={{ marginBottom: 0 }}>
+            <code>{json_formatted}</code>
+          </pre>
+          <div
+            style={{
+              display: 'flex',
+              float: 'right',
+            }}
+          >
+            <Button
+              onClick={() => {
+                navigator.clipboard.writeText(json_formatted);
+                message.success('Copied to Clipboard');
+              }}
+              icon={<CopyOutlined />}
+            >
+              Copy
+            </Button>
+            &nbsp;
+            <Button
+              type="primary"
+              onClick={() => {
+                var a = document.createElement('a');
+                a.href = URL.createObjectURL(
+                  new Blob([json_formatted], { type: 'application/json' }),
+                );
+                a.download = 'isee-export-interaction-' + interaction._id + '.json';
+                a.click();
+              }}
+              icon={<DownloadOutlined />}
+            >
+              Download
+            </Button>
+          </div>
+        </div>
+      ),
+      duration: 0,
+      onClick: () => {
+        console.log('Export Clicked!');
+      },
+      style: {
+        width: '80%',
+      },
+      placement: 'top',
+    });
+  }
   const columns = [
     {
       title: 'User',
@@ -119,58 +175,8 @@ const Analytics: React.FC<Params> = (props) => {
             type="primary"
             style={{ margin: '0 1rem' }}
             onClick={async () => {
-              if (obj.interaction) {
-                const json_formatted = JSON.stringify(obj.interaction, null, 2);
-
-                notification.open({
-                  message: ' Interaction Export -  ',
-                  description: (
-                    <div>
-                      <pre style={{ marginBottom: 0 }}>
-                        <code>{json_formatted}</code>
-                      </pre>
-                      <div
-                        style={{
-                          display: 'flex',
-                          float: 'right',
-                        }}
-                      >
-                        <Button
-                          onClick={() => {
-                            navigator.clipboard.writeText(json_formatted);
-                            message.success('Copied to Clipboard');
-                          }}
-                          icon={<CopyOutlined />}
-                        >
-                          Copy
-                        </Button>
-                        &nbsp;
-                        <Button
-                          type="primary"
-                          onClick={() => {
-                            var a = document.createElement('a');
-                            a.href = URL.createObjectURL(
-                              new Blob([json_formatted], { type: 'application/json' }),
-                            );
-                            a.download = 'isee-export-interaction-' + obj._id + '.json';
-                            a.click();
-                          }}
-                          icon={<DownloadOutlined />}
-                        >
-                          Download
-                        </Button>
-                      </div>
-                    </div>
-                  ),
-                  duration: 0,
-                  onClick: () => {
-                    console.log('Export Clicked!');
-                  },
-                  style: {
-                    width: '80%',
-                  },
-                  placement: 'top',
-                });
+              if (obj) {
+                openExport(obj)
               }
 
             }}
