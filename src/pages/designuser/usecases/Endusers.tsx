@@ -16,11 +16,14 @@ import {
     Result,
     Table,
     Tag,
-    Switch
+    Switch,
+    Row,
+    Col,
+    Badge
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import Text from 'antd/lib/typography/Text';
-import { CheckOutlined, CloseOutlined, PlusOutlined } from '@ant-design/icons';
+import { BackwardOutlined, CheckOutlined, CloseOutlined, CopyOutlined, LeftOutlined, LinkOutlined, PlusOutlined, StepBackwardFilled } from '@ant-design/icons';
 import moment from 'moment';
 
 export type Params = {
@@ -72,18 +75,11 @@ const EndUsers: React.FC<Params> = (props) => {
             key: 'name',
         },
         {
-            title: 'Share URL',
-            dataIndex: 'key',
-            key: 'key',
-            render: (record: string) => {
-                return (
-                    <div>
-                        <code>{window.location.host + "/invite/"
-                            + record}</code>
-                    </div>
-                );
-            },
+            title: 'Email',
+            dataIndex: 'email',
+            key: 'email',
         },
+
         {
             title: 'Created At',
             dataIndex: 'createdAt',
@@ -91,23 +87,12 @@ const EndUsers: React.FC<Params> = (props) => {
             render: (record: string) => {
                 return (
                     <div>
-                        <p>{moment(record).locale('en_us').fromNow()}</p>
+                        <p>{moment(record).locale('en_us').format('LLL')}</p>
                     </div>
                 );
             },
         },
-        {
-            title: 'Published',
-            dataIndex: 'published',
-            key: 'published',
-            render: (_: any, row: any) =>
-            (<Switch
-                checked={row.published}
-                checkedChildren={<CheckOutlined />}
-                unCheckedChildren={<CloseOutlined />}
-            />
-            )
-        },
+
     ];
 
     return (
@@ -129,7 +114,13 @@ const EndUsers: React.FC<Params> = (props) => {
                     <PageHeader
                         key="head2"
                         ghost={false}
-                        title={usecase.name}
+                        title={
+                            <>
+                                <Button type='link' href={'/usecases'}>
+                                    <LeftOutlined />Back
+                                </Button>{usecase.name}
+                            </>
+                        }
                         subTitle={
                             usecase.published ? (
                                 <><Text code>v{usecase.version}</Text> <Tag color="green">Published</Tag></>
@@ -151,7 +142,6 @@ const EndUsers: React.FC<Params> = (props) => {
                             <Form.Item
                                 label="Invitation Name"
                                 name="name"
-
                                 rules={[{ required: true, message: 'Please input an Invite Name!' }]}
                             >
                                 <Input placeholder='May Group Study' />
@@ -166,9 +156,47 @@ const EndUsers: React.FC<Params> = (props) => {
                     </Card>
                     <Card>
 
-                        <Table dataSource={invites} columns={columns} />
 
+                        {invites.map((invite: any, index: number) => (
+                            <>
+                                <Row style={{ paddingBottom: 10 }}>
+                                    <Col span={24}>
+                                        <Card type="inner"
+                                            title={<><LinkOutlined></LinkOutlined> {invite.name} <Badge size="default" count={invite.endusers.length}></Badge></>} extra={<>
+                                                <i style={{ paddingRight: 10 }}>{moment(invite.createdAt).locale('en_us').fromNow()}</i>
+                                                <Switch
+                                                    style={{ marginRight: 20 }}
+                                                    checked={invite.published}
+                                                    checkedChildren={<CheckOutlined />}
+                                                    unCheckedChildren={<CloseOutlined />}
+                                                />
+                                                <Button
+                                                    onClick={() => {
+                                                        navigator.clipboard.writeText(window.location.host + "/invite/" + invite.key);
+                                                        message.success('Copied to Clipboard');
+                                                    }}
+                                                    icon={<CopyOutlined />}
+                                                >
+                                                    Copy Invite Link
+                                                </Button>
+
+                                            </>
+                                            }>
+                                            {invite.endusers.length > 0 &&
+                                                <Table dataSource={invite.endusers} columns={columns} />
+                                            }
+                                            {invite.endusers.length == 0 &&
+                                                <i>No Users Yet</i>
+                                            }
+                                        </Card>
+                                    </Col>
+                                </Row>
+
+                            </>
+                        ))}
                     </Card>
+
+
                 </PageHeaderWrapper>
             )}
         </>

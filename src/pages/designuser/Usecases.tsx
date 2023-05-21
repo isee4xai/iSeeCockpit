@@ -5,7 +5,10 @@ import {
   PlusOutlined,
   RocketOutlined,
   SettingOutlined,
-  CommentOutlined
+  CommentOutlined,
+  LinkOutlined,
+  UserOutlined,
+  UsergroupAddOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import {
@@ -216,11 +219,11 @@ const Welcome: React.FC = () => {
           {useCases.map((usecase: Usecase, index: number) => (
             <Col
               key={index}
-              span={8}
-              xs={{ order: 1 }}
-              sm={{ order: 2 }}
-              md={{ order: 3 }}
-              lg={{ order: 4 }}
+              span={12}
+            // xs={{ order: 1 }}
+            // sm={{ order: 2 }}
+            // md={{ order: 3 }}
+            // lg={{ order: 4 }}
             >
               <Card
                 style={style}
@@ -248,23 +251,43 @@ const Welcome: React.FC = () => {
                     <CommentOutlined color="green" />
                     Test
                   </Button>,
+                  <Button key={'btn-settings'} type="text" href={'/usecase/users/' + usecase._id}
+                    disabled={!usecase.published}
+                  >
+                    <UserOutlined color="green" />
+                    Users
+                  </Button>,
                 ]}
               >
                 <Meta description={usecase.goal} />
                 <br />
-                <Row gutter={16}>
-                  <Col span={12}>
+                <Row gutter={1}>
+                  <Col span={6}>
                     <Statistic
                       title="Feedback"
                       value={usecase.stats?.feedback}
                       prefix={<LikeOutlined />}
                     />
                   </Col>
-                  <Col span={12}>
+                  <Col span={6}>
                     <Statistic
                       title="Runs"
-                      value={usecase.stats?.runs}
+                      value={usecase.interactions?.length}
                       prefix={<RocketOutlined />}
+                    />
+                  </Col>
+                  <Col span={6}>
+                    <Statistic
+                      title="End Users"
+                      value={usecase.endusers?.length}
+                      prefix={<UsergroupAddOutlined />}
+                    />
+                  </Col>
+                  <Col span={6}>
+                    <Statistic
+                      title="Links"
+                      value={usecase.invites?.length}
+                      prefix={<LinkOutlined />}
                     />
                   </Col>
                 </Row>
