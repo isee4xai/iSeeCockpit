@@ -7,6 +7,7 @@ import { BASE_URL } from './api.config';
 import { getToken } from './user';
 
 const KEY = 'usecases';
+const KEY_SHARED = 'usecases_shared';
 
 // -----------------------------------------
 //              HANDLE USECASE
@@ -48,7 +49,7 @@ export async function api_get(id: string) {
 
 export async function api_get_casestructure(id: string) {
   try {
-    const data = await fetch(`${BASE_URL}/${KEY}/${id}/casestructure`, {
+    const data = await fetch(`${BASE_URL}/${KEY_SHARED}/${id}/casestructure`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -70,7 +71,7 @@ export async function api_get_casestructure(id: string) {
 
 export async function api_get_model_instance_count(id: string) {
   try {
-    const data = await fetch(`${BASE_URL}/${KEY}/${id}/dataset/count`, {
+    const data = await fetch(`${BASE_URL}/${KEY_SHARED}/${id}/dataset/count`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -88,7 +89,7 @@ export async function api_get_model_instance_count(id: string) {
 
 export async function api_get_model_random_instance(id: string) {
   try {
-    const data = await fetch(`${BASE_URL}/${KEY}/${id}/dataset/randomInstance`, {
+    const data = await fetch(`${BASE_URL}/${KEY_SHARED}/${id}/dataset/randomInstance`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -106,7 +107,7 @@ export async function api_get_model_random_instance(id: string) {
 
 export async function api_get_model_prediction(id: string, instance: any) {
   try {
-    const data = await fetch(`${BASE_URL}/${KEY}/${id}/model/predict`, {
+    const data = await fetch(`${BASE_URL}/${KEY_SHARED}/${id}/model/predict`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
