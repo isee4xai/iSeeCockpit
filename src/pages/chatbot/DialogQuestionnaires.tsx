@@ -364,6 +364,10 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
     return temp;
   }
 
+  function words(text: string) {
+    return text ? text.split(" ").length : 0;
+  }
+
   function createFileCSVAnswer(data: any) {
     const ks = data[0];
     const vs = data[1].map((val: any) => isNaN(val) ? val.replaceAll("\"", "").trim() : Number(val));;
@@ -467,7 +471,8 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
               size="large"
               onClick={sendAndReceive}
               disabled={
-                (text == '' && (responseType == ResponseType.OPEN || responseType == ResponseType.NUMBER)) ||
+                (text == '' && responseType == ResponseType.NUMBER) ||
+                (words(text) < 100 && responseType == ResponseType.OPEN) ||
                 (!check && responseType == ResponseType.CHECK) ||
                 (!radio && responseType == ResponseType.RADIO) ||
                 (!likert && responseType == ResponseType.LIKERT) ||
