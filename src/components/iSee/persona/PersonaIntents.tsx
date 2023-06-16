@@ -383,6 +383,17 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                         <hr></hr>
                       </td>
                     </tr>
+
+                    <tr>
+                      <td style={{ paddingRight: 5 }}><strong>Explanation Output</strong></td>
+                      <td>
+                        <a href={"https://raw.githubusercontent.com/isee4xai/iSeeExplainerLibrary/dev/Explainer%20Images/" + m.split("/")[1] + "_" + m.split("/")[2] + ".png"} target='_blank'>
+                          <img style={{ width: 450 }} src={"https://raw.githubusercontent.com/isee4xai/iSeeExplainerLibrary/dev/Explainer%20Images/" + m.split("/")[1] + "_" + m.split("/")[2] + ".png"}></img>
+                        </a>
+                        <hr></hr>
+                      </td>
+                    </tr>
+
                   </tbody>
                 </table>
               </>
@@ -402,12 +413,12 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
       key: 'bt',
       render: (_: any, strategy: any) => (
         <> <p>
-          <Button block href={"https://editor-dev.isee4xai.com/#/vid/" + strategy.tree} target="_blank" type="primary" shape="round" ghost icon={<EyeOutlined />} >
+          <Button block href={"https://editor-dev.isee4xai.com/#/vid/" + strategy.tree + "?usecaseId=" + usecaseId} target="_blank" type="primary" shape="round" ghost icon={<EyeOutlined />} >
             View
           </Button>
         </p>
           <p style={{ marginTop: -10 }}>
-            <Button block href={"https://editor-dev.isee4xai.com/#/id/" + strategy.tree} target="_blank" type="dashed" shape="round" icon={<EditOutlined />} >
+            <Button block href={"https://editor-dev.isee4xai.com/#/id/" + strategy.tree + "?usecaseId=" + usecaseId} target="_blank" type="dashed" shape="round" icon={<EditOutlined />} >
               Edit
             </Button>
           </p></>
