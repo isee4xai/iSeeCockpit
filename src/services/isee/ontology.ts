@@ -86,3 +86,24 @@ export async function get_explainer_fields() {
   }
 }
 
+export async function get_explainer_fields_flat() {
+  try {
+    const data = await fetch(`${ONTOAPI_URL}/${KEY}/cockpit/ExplainerFieldsFlat`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    });
+    const result = await data.json();
+    if (result.message) {
+      message.error("Error Reading Ontology - E003");
+      return false;
+    }
+
+    return result || false;
+  } catch (error) {
+    message.error("Error Reading Ontology - API Error");
+    return false;
+  }
+}
+

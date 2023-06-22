@@ -21,7 +21,7 @@ import React, { useEffect, useState } from 'react';
 
 import type { Explainer } from '@/models/explainer';
 import { api_create, api_get_all, api_get_explainers_lib, api_get_explainers_lib_single } from '@/services/isee/explainers';
-import { get_explainer_fields } from '@/services/isee/ontology';
+import { get_explainer_fields, get_explainer_fields_flat } from '@/services/isee/ontology';
 
 
 const Explainers: React.FC = () => {
@@ -31,6 +31,7 @@ const Explainers: React.FC = () => {
   const [explainers, setExplainers] = useState<Explainer[]>([]);
 
   const [ontoValues, setOntoValues] = useState<API.OntoExplainerParams>();
+  const [ontoValuesFlat, setOntoValuesFlat] = useState([]);
   const [explainersLib, setExplainersLib] = useState([])
 
   const [form] = Form.useForm();
@@ -57,7 +58,7 @@ const Explainers: React.FC = () => {
       title: 'Explainability Technique',
       dataIndex: 'technique',
       key: 'technique',
-      render: text => <>{text.split("#")[text.split("#").length - 1]}</>
+      render: text => <>{ontoValuesFlat["ExplainabilityTechnique"][text]}</>
       //   render: text =>
       //     <Cascader fieldNames={{ label: 'label', value: 'key', children: 'children' }}
       //       options={ontoValues?.ExplainabilityTechnique.children}
@@ -70,21 +71,13 @@ const Explainers: React.FC = () => {
       title: 'Dataset Type',
       dataIndex: 'dataset_type',
       key: 'dataset_type',
-      render: text =>
-        <Select placeholder="Dataset Type" value={text} bordered={false} >
-          {ontoValues?.DatasetType.map((option) => (
-            <Select.Option key={"op-" + option.key} value={option.key} >
-              {option.label}
-            </Select.Option>
-          ))}
-        </Select>
-
+      render: text => <>{ontoValuesFlat["DatasetType"][text]}</>
     },
     {
       title: 'Explanation Type',
       dataIndex: 'explanation_type',
       key: 'explanation_type',
-      render: text => <>{text.split("#")[text.split("#").length - 1].split("_").join(" ")}</>
+      render: text => <>{ontoValuesFlat["Explanation"][text]}</>
     },
     {
       title: 'Explanation Description',
@@ -98,25 +91,25 @@ const Explainers: React.FC = () => {
       title: 'Explainer Concurrentness',
       dataIndex: 'concurrentness',
       key: 'concurrentness',
-      render: text => <>{text.split("#")[text.split("#").length - 1]}</>
+      render: text => <>{ontoValuesFlat["Concurrentness"][text]}</>
     },
     {
       title: 'Explainer Portability',
       dataIndex: 'portability',
       key: 'portability',
-      render: text => <>{text.split("#")[text.split("#").length - 1]}</>
+      render: text => <>{ontoValuesFlat["Portability"][text]}</>
     },
     {
       title: 'Explanation Scope',
       dataIndex: 'scope',
       key: 'scope',
-      render: text => <>{text.split("#")[text.split("#").length - 1]}</>
+      render: text => <>{ontoValuesFlat["Scope"][text]}</>
     },
     {
       title: 'Explanation Target',
       dataIndex: 'target',
       key: 'target',
-      render: text => <>{text.split("#")[text.split("#").length - 1]}</>
+      render: text => <>{ontoValuesFlat["Target"][text]}</>
     },
     {
       title: 'Presentation Format',
@@ -127,7 +120,7 @@ const Explainers: React.FC = () => {
           {presentations?.map(temp => {
             return (<>
               <li key={temp} >
-                - {temp.split("/")[temp.split("/").length - 1]}
+                - {ontoValuesFlat["InformationContentEntity"][temp]}
               </li>
             </>
             );
@@ -139,7 +132,7 @@ const Explainers: React.FC = () => {
       title: 'Computational Complexity',
       dataIndex: 'computational_complexity',
       key: 'computational_complexity',
-      render: text => <>{text.split("#")[text.split("#").length - 1].split("_").join(" ")}</>
+      render: text => <>{ontoValuesFlat["ComputationalComplexity"][text]}</>
     },
     {
       title: 'Applicable AI Methods',
@@ -151,7 +144,7 @@ const Explainers: React.FC = () => {
           {ai_methods?.map(temp => {
             return (<>
               <li key={temp} >
-                - {temp.search("#") != -1 ? temp.split("#")[temp.split("#").length - 1] : temp.split("/")[temp.split("/").length - 1]}
+                - {ontoValuesFlat["AIMethod"][temp]}
               </li>
             </>
             );
@@ -168,7 +161,7 @@ const Explainers: React.FC = () => {
           {ai_tasks?.map(temp => {
             return (<>
               <li key={temp} >
-                - {temp.search("#") != -1 ? temp.split("#")[temp.split("#").length - 1] : temp.split("/")[temp.split("/").length - 1]}
+                - {ontoValuesFlat["AITask"][temp]}
               </li>
             </>
             );
@@ -185,7 +178,7 @@ const Explainers: React.FC = () => {
           {implementation?.map(temp => {
             return (<>
               <li key={temp} >
-                - {temp.search("#") != -1 ? temp.split("#")[temp.split("#").length - 1] : temp.split("/")[temp.split("/").length - 1]}
+                - {ontoValuesFlat["Implementation_Framework"][temp]}
               </li>
             </>
             );
@@ -215,7 +208,9 @@ const Explainers: React.FC = () => {
       );
 
       const fields = await get_explainer_fields()
+      const fields_flat = await get_explainer_fields_flat()
       setOntoValues(fields)
+      setOntoValuesFlat(fields_flat)
       console.log(fields)
 
       const data = await api_get_all();
