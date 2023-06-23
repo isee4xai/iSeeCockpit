@@ -119,6 +119,15 @@
     icon: 'home',
     component: './admin/Companies',
   },
+  {
+    path: '/admin/company/:id',
+    access: 'adminUser',
+    name: 'Company',
+    icon: 'home',
+    hideInMenu: true,
+    exact: false,
+    component: './admin/CompanyManage',
+  },
   // {
   //   path: '/design',
   //   icon: 'crown',

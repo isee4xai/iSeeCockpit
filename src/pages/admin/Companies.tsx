@@ -161,7 +161,7 @@ const Welcome: React.FC = () => {
                   (company.active && <> <Tag color="green">Active</Tag></>)
                 }
                 actions={[
-                  <Button key={'btn-settings'} type="text" href={'admin/company/' + company._id}>
+                  <Button key={'btn-settings'} type="text" href={'/admin/company/' + company._id}>
                     <SettingOutlined color="green" /> Manage
                   </Button>,
                 ]}
