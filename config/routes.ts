@@ -111,6 +111,23 @@
     access: 'designUser',
     component: './404',
   },
+
+  {
+    path: '/admin/companies',
+    access: 'adminUser',
+    name: 'Companies',
+    icon: 'home',
+    component: './admin/Companies',
+  },
+  {
+    path: '/admin/company/:id',
+    access: 'adminUser',
+    name: 'Company',
+    icon: 'home',
+    hideInMenu: true,
+    exact: false,
+    component: './admin/CompanyManage',
+  },
   // {
   //   path: '/design',
   //   icon: 'crown',

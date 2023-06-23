@@ -12,7 +12,11 @@ const Invite: React.FC = (props) => {
             }
             else if (current_user.data.access == "end_user") {
                 history.push('/enduser/usecases')
-            } else {
+            }
+            else if (current_user.data.access == "admin_user") {
+                history.push('/admin/companies')
+            }
+            else {
                 history.push('/user/login')
             }
         })();
