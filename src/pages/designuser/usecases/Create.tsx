@@ -98,6 +98,7 @@ const Create: React.FC<Params> = (props) => {
   const [isModelChanged, setIsModelChanged] = useState(false);
   const [modelData, setModelData] = useState(false);
   const [modelSource, setModelSource] = useState(false);
+  const [modelUploaded, setModelUploaded] = useState<boolean>(false);
 
   const [settingsForm] = Form.useForm();
   const [modelForm] = Form.useForm();
@@ -145,6 +146,14 @@ const Create: React.FC<Params> = (props) => {
 
   }, []);
 
+
+  const handleModelUpload = () => {
+    setModelUploaded(true);
+  }
+
+  const handleDatasetUpload = () => {
+
+  }
 
   // New Persona Popup Functions
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -829,7 +838,12 @@ const Create: React.FC<Params> = (props) => {
                             accept=".h5,.pkl"
                             onChange={handleFileInputModel}
                           />
-                          <Button type="primary"><ThunderboltOutlined /> Upload Model File</Button>
+                          <Button
+                            onClick={handleModelUpload}
+                            type="primary"
+                          >
+                            <ThunderboltOutlined /> Upload Model File
+                          </Button>
                         </Space>
                         {model?.source_file && <Tag color="green">Model Uploaded</Tag>}
                       </Form.Item>
@@ -844,9 +858,15 @@ const Create: React.FC<Params> = (props) => {
                             type="file"
                             accept=".csv,.zip"
                             onChange={handleFileInputData}
-                            disabled={!modelSource}
+                            disabled={!modelUploaded}
                           />
-                          <Button type="primary" disabled={!modelSource}><FileTextOutlined />Upload Dataset File</Button>
+                          <Button
+                            type="primary"
+                            disabled={!modelUploaded}
+                            onClick={handleDatasetUpload}
+                          >
+                            <FileTextOutlined />Upload Dataset File
+                          </Button>
                         </Space>
                         {model?.dataset_file &&
                           <>
