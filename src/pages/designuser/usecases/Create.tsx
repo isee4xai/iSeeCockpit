@@ -24,11 +24,13 @@ import {
   DeleteOutlined,
   DownloadOutlined,
   ExperimentOutlined,
+  FileTextOutlined,
   MinusCircleOutlined,
   PlusOutlined,
   QuestionCircleOutlined,
   SaveOutlined,
   SettingOutlined,
+  ThunderboltOutlined,
   UserSwitchOutlined,
 } from '@ant-design/icons';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
@@ -820,11 +822,15 @@ const Create: React.FC<Params> = (props) => {
                         label="Model File"
                         tooltip={TOOL_TIPS.model_file}
                       >
-                        <input
-                          placeholder="Select .pkl file"
-                          type="file"
-                          onChange={handleFileInputModel}
-                        />
+                        <Space direction="horizontal">
+                          <input
+                            placeholder="Select .h5 or .pkl file"
+                            type="file"
+                            accept=".h5,.pkl"
+                            onChange={handleFileInputModel}
+                          />
+                          <Button type="primary"><ThunderboltOutlined /> Upload Model File</Button>
+                        </Space>
                         {model?.source_file && <Tag color="green">Model Uploaded</Tag>}
                       </Form.Item>
 
@@ -832,11 +838,16 @@ const Create: React.FC<Params> = (props) => {
                         label="Sample Dataset File"
                         tooltip={TOOL_TIPS.model_dataset}
                       >
-                        <input
-                          placeholder="Select .csv file"
-                          type="file"
-                          onChange={handleFileInputData}
-                        />
+                        <Space direction="horizontal">
+                          <input
+                            placeholder="Select .csv or .zip file"
+                            type="file"
+                            accept=".csv,.zip"
+                            onChange={handleFileInputData}
+                            disabled={!modelSource}
+                          />
+                          <Button type="primary" disabled={!modelSource}><FileTextOutlined />Upload Dataset File</Button>
+                        </Space>
                         {model?.dataset_file &&
                           <>
                             <Tag color="green">Dataset Uploaded</Tag>
