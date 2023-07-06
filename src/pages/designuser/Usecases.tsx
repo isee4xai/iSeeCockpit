@@ -110,7 +110,7 @@ const Welcome: React.FC = () => {
         completed: false,
       },
       model: {
-        mode: '',
+        mode: 'file',
         alias: '',
         backend: '',
         source_file: '',
