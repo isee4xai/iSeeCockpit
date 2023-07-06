@@ -6,6 +6,7 @@ import type { Usecase, UsecaseModel, UsecaseSettings } from '@/models/usecase';
 import { get_usecase_fields } from '@/services/isee/ontology';
 import {
   api_create_persona,
+  api_dataset_upload,
   api_delete,
   api_get,
   api_get_casestructure,
@@ -24,6 +25,7 @@ import {
   DeleteOutlined,
   DownloadOutlined,
   ExperimentOutlined,
+  ExportOutlined,
   FileTextOutlined,
   MinusCircleOutlined,
   PlusOutlined,
@@ -31,6 +33,7 @@ import {
   SaveOutlined,
   SettingOutlined,
   ThunderboltOutlined,
+  UploadOutlined,
   UserSwitchOutlined,
 } from '@ant-design/icons';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
@@ -62,7 +65,7 @@ import {
   Typography,
 } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { api_get_all } from '@/services/isee/explainers';
 
 import Papa from "papaparse";
@@ -98,6 +101,8 @@ const Create: React.FC<Params> = (props) => {
   const [isModelChanged, setIsModelChanged] = useState(false);
   const [modelData, setModelData] = useState(false);
   const [modelSource, setModelSource] = useState(false);
+  const importAttributes = useRef(null);
+
   const [modelUploaded, setModelUploaded] = useState<boolean>(false);
 
   const [settingsForm] = Form.useForm();
@@ -145,15 +150,6 @@ const Create: React.FC<Params> = (props) => {
     })();
 
   }, []);
-
-
-  const handleModelUpload = () => {
-    setModelUploaded(true);
-  }
-
-  const handleDatasetUpload = () => {
-
-  }
 
   // New Persona Popup Functions
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -220,37 +216,88 @@ const Create: React.FC<Params> = (props) => {
   async function saveModel() {
     const updateModel: UsecaseModel = modelForm.getFieldsValue();
 
-    updateModel.source_file = modelSource;
-    updateModel.dataset_file = modelData;
-    updateModel.completed = model?.completed;
-    const loading = message.loading('Uploading model and data file. Please wait...', 0);
-    const apicall = await api_model_upload(usecase._id, {
-      ...usecase,
-      model: { ...updateModel },
-    });
-
-    loading();
-
-    if (
-      updateModel.mode != '' &&
-      updateModel.backend != ''
-      // TODO: MORE VALIDAATIONS LATER
-    ) {
-      updateModel.completed = true;
+    console.log(modelSource);
+    if (!updateModel.backend || !modelSource) {
+      message.error("Model file and Framework Required!");
+      return;
     } else {
-      updateModel.completed = false;
+      updateModel.source_file = modelSource;
+      updateModel.completed = model?.completed;
+      const loading = message.loading('Uploading model file. Please wait...', 0);
+      const apicall = await api_model_upload(usecase._id, {
+        ...usecase,
+        model: { ...updateModel },
+      });
+
+      loading();
+
+
+      if (
+        updateModel.mode != '' &&
+        updateModel.backend != ''
+        // TODO: MORE VALIDAATIONS LATER
+      ) {
+        updateModel.completed = true;
+      } else {
+        updateModel.completed = false;
+      }
+
+      setModel(updateModel);
+
+      // console.log('Success Update updateModel:', test);
+      // message.success('Succesfully saved AI Model');
+      notification.success({
+        message: 'Succesfully saved AI Model and Dataset',
+        placement: 'top',
+        duration: 3,
+      });
+
     }
+  }
 
-    setModel(updateModel);
+  async function saveDataset() {
+    const updateModel: UsecaseModel = modelForm.getFieldsValue();
 
-    // console.log('Success Update updateModel:', test);
-    // message.success('Succesfully saved AI Model');
-    notification.success({
-      message: 'Succesfully saved AI Model and Dataset',
-      placement: 'top',
-      duration: 3,
-    });
-    setIsModelChanged(false);
+    console.log(updateModel);
+    // return false;
+    if (!updateModel.backend || !modelData) {
+      message.error("Model file and Framework Required Before!");
+      return;
+    } else {
+      updateModel.dataset_file = modelData;
+      const loading = message.loading('Uploading data file. Please wait...', 0);
+      const apicall = await api_dataset_upload(usecase._id, {
+        ...usecase,
+        model: { ...updateModel },
+      });
+
+      loading();
+
+      if (apicall.message) {
+        console.log(apicall)
+        notification.error({
+          message: apicall.message,
+          placement: 'top',
+          duration: 3,
+        });
+      } else {
+        if (
+          updateModel.mode != '' &&
+          updateModel.backend != ''
+        ) {
+          updateModel.completed = true;
+        } else {
+          updateModel.completed = false;
+        }
+        setModel(updateModel);
+        notification.success({
+          message: 'Succesfully saved AI Model and Dataset',
+          placement: 'top',
+          duration: 3,
+        });
+
+      }
+    }
   }
 
   const filterCascader = (inputValue: string, path: API.OntoOption[]) =>
@@ -766,7 +813,7 @@ const Create: React.FC<Params> = (props) => {
                 <ExperimentOutlined /> AI Model Upload
               </h4>
             }
-            extra={genExtraUpload()}
+            // extra={genExtraUpload()}
             headStyle={{ backgroundColor: '#fafafa', border: '1px solid #d9d9d9' }}
           >
             <Form
@@ -812,7 +859,7 @@ const Create: React.FC<Params> = (props) => {
                   </Form.Item>
                   {model?.mode == 'file' && (
                     <>
-                      <Form.Item
+                      {/* <Form.Item
                         label="Implementation Framework"
                         name="backend"
                         tooltip={TOOL_TIPS.model_backend}
@@ -824,29 +871,47 @@ const Create: React.FC<Params> = (props) => {
                             </Select.Option>
                           ))}
                         </Select>
-                      </Form.Item>
+                      </Form.Item> */}
 
                       {/* {(!settings?.ai_method && !settings?.mo)} */}
-                      <Form.Item
-                        label="Model File"
-                        tooltip={TOOL_TIPS.model_file}
-                      >
-                        <Space direction="horizontal">
+                      <Space direction="horizontal">
+
+                        <Form.Item
+                          label="Model File"
+                          tooltip={TOOL_TIPS.model_file}
+                        >
                           <input
                             placeholder="Select .h5 or .pkl file"
                             type="file"
                             accept=".h5,.pkl"
                             onChange={handleFileInputModel}
                           />
-                          <Button
-                            onClick={handleModelUpload}
-                            type="primary"
-                          >
-                            <ThunderboltOutlined /> Upload Model File
-                          </Button>
-                        </Space>
-                        {model?.source_file && <Tag color="green">Model Uploaded</Tag>}
-                      </Form.Item>
+                          {model?.source_file && <Tag color="green" style={{ marginTop: 10 }}>Model Uploaded</Tag>}
+                        </Form.Item>
+                        <Form.Item
+                          label="Implementation Framework"
+                          name="backend"
+                          tooltip={TOOL_TIPS.model_backend}
+                        >
+                          <Select placeholder="Implementation Framework">
+                            {ontoValues?.IMPLEMENTATION_FRAMEWORK.map((option) => (
+                              <Select.Option key={option.key} value={option.key}>
+                                {option.label}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+                        <Button
+                          onClick={saveModel}
+                          type="primary"
+                          style={{ marginTop: 5 }}
+                        >
+                          <ThunderboltOutlined /> Upload Model File
+                        </Button>
+
+                      </Space>
+
+                      <Divider></Divider>
 
                       <Form.Item
                         label="Sample Dataset File"
@@ -858,100 +923,142 @@ const Create: React.FC<Params> = (props) => {
                             type="file"
                             accept=".csv,.zip"
                             onChange={handleFileInputData}
-                            disabled={!modelUploaded}
+                          // disabled={!model?.source_file}
                           />
+
+                        </Space>
+                      </Form.Item>
+
+                      <Collapse defaultActiveKey={[model?.dataset_file ? '0' : '1']}>
+                        <CollapsePanel header="Configure Data Features" key="1">
                           <Button
                             type="primary"
-                            disabled={!modelUploaded}
-                            onClick={handleDatasetUpload}
+                            ghost
+                            style={{ marginBottom: 10 }}
+                            onClick={async () => {
+                              console.log(model.attributes)
+                              const exp = JSON.stringify(model.attributes, null, 2);
+                              if (exp) {
+                                notification.open({
+                                  message: 'iSee Dataset Attributes Export',
+                                  description: (
+                                    <div>
+                                      <pre style={{ marginBottom: 0 }}>
+                                        <code>{exp}</code>
+                                      </pre>
+                                      <div
+                                        style={{
+                                          display: 'flex',
+                                          float: 'right',
+                                        }}
+                                      >
+                                        <Button
+                                          onClick={() => {
+                                            navigator.clipboard.writeText(exp);
+                                            message.success('Copied to Clipboard');
+                                          }}
+                                          icon={<CopyOutlined />}
+                                        >
+                                          Copy
+                                        </Button>
+                                        &nbsp;
+                                        <Button
+                                          type="primary"
+                                          onClick={() => {
+                                            var a = document.createElement('a');
+                                            a.href = URL.createObjectURL(
+                                              new Blob([exp], { type: 'application/json' }),
+                                            );
+                                            a.download = 'isee-export-' + usecaseId + '-attributes.json';
+                                            a.click();
+                                          }}
+                                          icon={<DownloadOutlined />}
+                                        >
+                                          Download
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ),
+                                  duration: 0,
+                                  onClick: () => {
+                                    console.log('Export Clicked!');
+                                  },
+                                  style: {
+                                    width: '80%',
+                                  },
+                                  placement: 'top',
+                                });
+                              }
+                            }}
+                            htmlType="button"
+                            icon={<ExportOutlined />}
                           >
-                            <FileTextOutlined />Upload Dataset File
+                            Export Attributes
                           </Button>
-                        </Space>
-                        {model?.dataset_file &&
-                          <>
-                            <Tag color="green">Dataset Uploaded</Tag>
-                            <Button icon={<ExperimentOutlined />} type="primary" ghost onClick={async () => {
-                              const json = await api_get_model_instance_count(usecase._id || '');
-                              const json_formatted = JSON.stringify(json, null, 2);
-                              // message.info(json_formatted)
-                              notification.info({
-                                message: 'Instance Count Validation',
+
+                          <Button
+                            type="primary"
+                            ghost
+                            style={{ margin: '0 1rem' }}
+                            onClick={async () => {
+                              notification.open({
+                                key: "importattrib",
+                                message: 'iSee Dataset Attributes Import',
                                 description: (
                                   <div>
                                     <pre style={{ marginBottom: 0 }}>
-                                      <code>{json_formatted}</code>
+                                      <textarea
+                                        rows={15}
+                                        ref={importAttributes}
+                                      >
+                                      </textarea>
                                     </pre>
+                                    <div
+                                      style={{
+                                        display: 'flex',
+                                        float: 'right',
+                                      }}
+                                    >
+                                      <Button
+                                        type="primary"
+                                        style={{ marginTop: 10 }}
+                                        onClick={() => {
+                                          try {
+                                            const parsed = JSON.parse(importAttributes.current.value);
+                                            const updateModel: UsecaseModel = modelForm.getFieldsValue();
+                                            updateModel.attributes = parsed;
+                                            modelForm.setFieldsValue(updateModel)
+                                            message.success("Loaded Attributes");
+                                            notification.destroy("importattrib")
+                                          } catch (error) {
+                                            message.error("Invalid JSON Format")
+                                          }
+                                        }}
+                                        icon={<DownloadOutlined />}
+                                      >
+                                        Import Attributes
+                                      </Button>
+                                    </div>
                                   </div>
                                 ),
                                 duration: 0,
-
+                                onClick: () => {
+                                  console.log('Export Clicked!');
+                                },
                                 style: {
                                   width: '80%',
                                 },
                                 placement: 'top',
                               });
-                            }}>
-                              Validate Instance Count
-                            </Button>
-                            &nbsp;
-                            <Button type="primary" icon={<CodeOutlined />} ghost onClick={async () => {
+                            }
 
-                              // Get Model Prediction
-                              message.open({
-                                type: 'loading',
-                                content: 'Getting Random Instance...',
-                                duration: 0,
-                              });
-                              const instance = await api_get_model_random_instance(usecase._id || '');
-                              const json_formatted = JSON.stringify(instance, null, 0);
-                              message.destroy();
+                            }
+                            htmlType="button"
+                            icon={<UploadOutlined />}
+                          >
+                            Import Attributes
+                          </Button>
 
-                              // Get Model Prediction
-                              message.open({
-                                type: 'loading',
-                                content: 'Getting Model Prediction...',
-                                duration: 0,
-                              });
-
-                              const prediction = await api_get_model_prediction(usecase._id || '', instance);
-                              message.destroy();
-                              const json_formatted_prediction = JSON.stringify(prediction, null, 2);
-
-                              message.destroy()
-                              notification.info({
-                                message: 'Model Prediction',
-                                description: (
-                                  <div>
-                                    {instance.type == "image" &&
-                                      <img width="250" src={"data:image/png;base64," + instance.instance}></img>
-                                    }
-                                    <pre style={{ marginBottom: 0, marginTop: 10 }}>
-                                      <code>{json_formatted}</code>
-                                      Prediction: <code>{json_formatted_prediction}</code>
-
-                                    </pre>
-
-                                  </div>
-                                ),
-                                duration: 0,
-
-                                style: {
-                                  width: '80%',
-                                },
-                                placement: 'top',
-                              });
-                            }}>
-                              Validate Model Prediction
-                            </Button>
-
-                          </>
-
-                        }
-                      </Form.Item>
-
-                      <Collapse defaultActiveKey={[isModelChanged ? '1' : '0']}>
-                        <CollapsePanel header="Configure Data Features" key="1">
                           <Card size='small' title="" >
                             <Form.List name="attributes">
                               {(fields, { add, remove }) => (
@@ -1158,7 +1265,99 @@ const Create: React.FC<Params> = (props) => {
                           </Card>
                         </CollapsePanel>
                       </Collapse>
+
+                      <Button
+                        type="primary"
+                        style={{ marginTop: 10 }}
+                        // disabled={!model?.source_file}
+                        onClick={saveDataset}
+                      >
+                        <FileTextOutlined />Upload Dataset File
+                      </Button>
+
+                      <br></br>
+
+                      <Space direction="vertical">
+                        {model?.dataset_file && <Tag color="green" style={{ marginTop: 10 }}>Dataset Uploaded</Tag>}
+
+                        <Space direction="horizontal">
+                          <Button icon={<ExperimentOutlined />} type="primary" ghost onClick={async () => {
+                            const json = await api_get_model_instance_count(usecase._id || '');
+                            const json_formatted = JSON.stringify(json, null, 2);
+                            // message.info(json_formatted)
+                            notification.info({
+                              message: 'Instance Count Validation',
+                              description: (
+                                <div>
+                                  <pre style={{ marginBottom: 0 }}>
+                                    <code>{json_formatted}</code>
+                                  </pre>
+                                </div>
+                              ),
+                              duration: 0,
+
+                              style: {
+                                width: '80%',
+                              },
+                              placement: 'top',
+                            });
+                          }}>
+                            Validate Instance Count
+                          </Button>
+                          &nbsp;
+                          <Button type="primary" icon={<CodeOutlined />} ghost onClick={async () => {
+
+                            // Get Model Prediction
+                            message.open({
+                              type: 'loading',
+                              content: 'Getting Random Instance...',
+                              duration: 0,
+                            });
+                            const instance = await api_get_model_random_instance(usecase._id || '');
+                            const json_formatted = JSON.stringify(instance, null, 0);
+                            message.destroy();
+
+                            // Get Model Prediction
+                            message.open({
+                              type: 'loading',
+                              content: 'Getting Model Prediction...',
+                              duration: 0,
+                            });
+
+                            const prediction = await api_get_model_prediction(usecase._id || '', instance);
+                            message.destroy();
+                            const json_formatted_prediction = JSON.stringify(prediction, null, 2);
+
+                            message.destroy()
+                            notification.info({
+                              message: 'Model Prediction',
+                              description: (
+                                <div>
+                                  {instance.type == "image" &&
+                                    <img width="250" src={"data:image/png;base64," + instance.instance}></img>
+                                  }
+                                  <pre style={{ marginBottom: 0, marginTop: 10 }}>
+                                    <code>{json_formatted}</code>
+                                    Prediction: <code>{json_formatted_prediction}</code>
+                                  </pre>
+
+                                </div>
+                              ),
+                              duration: 0,
+
+                              style: {
+                                width: '80%',
+                              },
+                              placement: 'top',
+                            });
+                          }}>
+                            Validate Model Prediction
+                          </Button>
+
+                        </Space>
+                      </Space>
                     </>
+
                   )}
                   {model?.mode == 'api' && (
                     <Form.Item
