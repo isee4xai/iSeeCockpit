@@ -12,6 +12,7 @@ import {
   api_get_casestructure,
   api_get_model_instance_count,
   api_get_model_prediction,
+  api_get_model_explanation,
   api_get_model_random_instance,
   api_model_upload,
   api_publish,
@@ -19,6 +20,7 @@ import {
 } from '@/services/isee/usecases';
 import {
   CheckOutlined,
+  CheckSquareOutlined,
   CloseOutlined,
   CodeOutlined,
   CopyOutlined,
@@ -59,6 +61,7 @@ import {
   Row,
   Select,
   Space,
+  Spin,
   Switch,
   Tag,
   Tooltip,
@@ -103,6 +106,7 @@ const Create: React.FC<Params> = (props) => {
   const [modelSource, setModelSource] = useState(false);
   const importAttributes = useRef(null);
 
+
   const [modelUploaded, setModelUploaded] = useState<boolean>(false);
 
   const [settingsForm] = Form.useForm();
@@ -110,6 +114,7 @@ const Create: React.FC<Params> = (props) => {
 
   const [ontoValues, setOntoValues] = useState<API.OntoParams>();
   const [usecase, setUsecase] = useState<Usecase>({ _id: '0', name: '', published: false });
+
 
   useEffect(() => {
     (async () => {
@@ -135,24 +140,116 @@ const Create: React.FC<Params> = (props) => {
   }, [props.match.params.id, settingsForm]);
 
   const [ontoExplainers, setOntoExplainers] = useState({});
+  const [explainers, setExplainers] = useState([]);
+  const [explanationMethod, setExplanationMethod] = useState('');
+  const [explanation, setExplanation] = useState<string>('');
+  const [instance, setInstance] = useState();
+  const [prediction, setPrediction] = useState('');
+  const [valLoading, setValLoading] = useState({
+    instance: false,
+    prediction: false,
+    explanation: false
+  });
 
   useEffect(() => {
     (async () => {
       // Get all explainers - To Show meta information
-      const explainers = await api_get_all();
-      let filterExplainers = {}
-
-      explainers.forEach((e: { name: string; explainer_description: string; explanation_description: string; }) => {
+      const EXPLAINERS = await api_get_all();
+      const filterExplainers = {}
+      EXPLAINERS.forEach((e: { name: string; explainer_description: string; explanation_description: string; }) => {
         filterExplainers[e.name] = { explainer_description: e.explainer_description, explanation_description: e.explanation_description }
       });
       setOntoExplainers(filterExplainers);
+      setExplainers(EXPLAINERS);
       console.log("Explainers - Loaded")
     })();
 
   }, []);
 
+  const getExplanation = async () => {
+    let formattedExplanation;
+    if (explanationMethod !== "") {
+      const EXPLANATION_RESPONSE = await api_get_model_explanation(usecase._id || '', instance, explanationMethod);
+
+      let exp = '';
+
+      if (EXPLANATION_RESPONSE) {
+        exp = EXPLANATION_RESPONSE.explanation;
+
+        if (EXPLANATION_RESPONSE.type == 'image') {
+          const IMG_EXPLANATION = '<img src="data:image/png;base64,' + exp + '"/>';
+          formattedExplanation = <div dangerouslySetInnerHTML={{ __html: IMG_EXPLANATION }} />
+        } else if (EXPLANATION_RESPONSE.type == 'html') {
+          formattedExplanation = <div dangerouslySetInnerHTML={{ __html: exp }} />
+        } else if (!EXPLANATION_RESPONSE.explanation) {
+          formattedExplanation = EXPLANATION_RESPONSE;
+        }
+
+      } else {
+        exp = "An error occurred fetching the explanation."
+
+        formattedExplanation = exp;
+      }
+
+      return formattedExplanation;
+    }
+  }
+
+  useEffect(() => {
+    const fetchExplanation = async () => {
+      setValLoading(prevLoading => ({ ...prevLoading, explanation: true }))
+      const EXPLANATION = await getExplanation();
+      setExplanation(EXPLANATION);
+      setValLoading(prevLoading => ({ ...prevLoading, explanation: false }))
+    }
+    fetchExplanation();
+
+  }, [explanationMethod, instance])
+
+  const handleExplainerChange = (value: string) => setExplanationMethod(value);
+
+  const getExplainerOptions = () => {
+    const RELEVANT_EXPLAINERS = explainers.filter((exp) => exp.dataset_type === settings?.dataset_type);
+
+    const EXPLAINER_OPTIONS = RELEVANT_EXPLAINERS?.map((option) => (
+      <Select.Option key={option.key} value={option.name}>
+        {option.name}
+      </Select.Option>
+    ));
+
+    return EXPLAINER_OPTIONS;
+  }
+
+
+
+  const validateWithExplainers = async () => {
+
+
+    setValLoading({ instance: true, prediction: true, explanation: false });
+    const INSTANCE = await api_get_model_random_instance(usecase._id || '');
+
+    const json_formatted = JSON.stringify(INSTANCE, null, 0);
+    setInstance({ ...INSTANCE, formatted: json_formatted });
+    setValLoading(prevLoading => ({ ...prevLoading, instance: false }))
+
+
+    const PREDICTION = await api_get_model_prediction(usecase._id || '', INSTANCE);
+
+    const json_formatted_prediction = JSON.stringify(PREDICTION, null, 2);
+    setPrediction(json_formatted_prediction)
+    setValLoading(prevLoading => ({ ...prevLoading, prediction: false }))
+
+
+  }
+
   // New Persona Popup Functions
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [explainerModalVisible, setExplainerModalVisible] = useState(false);
+
+  const showExplainerModal = () => {
+    setExplainerModalVisible(true)
+    validateWithExplainers()
+  };
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -165,6 +262,10 @@ const Create: React.FC<Params> = (props) => {
   const handleCancel = () => {
     setIsModalVisible(false);
   };
+
+
+  const handleExplainerOk = () => setExplainerModalVisible(false);
+  const handleExplainerCancel = () => setExplainerModalVisible(false);
 
   async function onFinishPersona(values: any) {
     const new_persona: Persona = {
@@ -376,7 +477,7 @@ const Create: React.FC<Params> = (props) => {
       complete: function (results) {
         // console.log(results.meta.fields);
 
-        let uploaded_attributes: { name: string; datatype: string; min: string; max: string; min_raw: string; max_raw: string; target: boolean; values: [any] }[] = [];
+        const UPLOADED_ATTRIBUTES: { name: string; datatype: string; min: string; max: string; min_raw: string; max_raw: string; target: boolean; values: [any] }[] = [];
 
         // Validate Attributes Based on Dataset Type
         // 1. Image Data
@@ -385,27 +486,27 @@ const Create: React.FC<Params> = (props) => {
           // 1.1 Image Data CSV 
           if (e.target.files[0].type == "text/csv") {
             const image = { name: "image_csv", datatype: "image", min: '', min_raw: '0', max: '', max_raw: '255', target: false, values: [], shape: "", shape_raw: "" }
-            uploaded_attributes.push(image)
+            UPLOADED_ATTRIBUTES.push(image)
           } else {
             const image = { name: "image_zip", datatype: "image", min: '', min_raw: '0', max: '', max_raw: '255', target: false, values: [], shape: "", shape_raw: "", mean_raw: "", std_raw: "" }
-            uploaded_attributes.push(image)
+            UPLOADED_ATTRIBUTES.push(image)
           }
 
           const label = { name: "label", datatype: "categorical", min: '', max: '', max_raw: '', target: true, values: [] }
-          uploaded_attributes.push(label)
+          UPLOADED_ATTRIBUTES.push(label)
 
         } else {
           // Todo: Other Validations
           results.meta.fields?.forEach(function (key) {
             const v = { name: key, datatype: "numerical", min: '', max: '', min_raw: '', max_raw: '', target: false, values: [] }
-            uploaded_attributes.push(v)
+            UPLOADED_ATTRIBUTES.push(v)
           })
 
         }
 
 
         let modelres = modelForm.getFieldsValue()
-        modelres.attributes = uploaded_attributes;
+        modelres.attributes = UPLOADED_ATTRIBUTES;
         modelForm.setFieldsValue(modelres)
 
         console.log(modelForm.getFieldValue('attributes')[0])
@@ -414,6 +515,24 @@ const Create: React.FC<Params> = (props) => {
     });
 
   };
+
+  const getExplanationComponent = () => {
+    if (!explanationMethod) {
+      return <code>Please choose an explainer!</code>;
+    }
+
+    if (!valLoading.explanation) {
+      return <code>{explanation}</code>;
+    }
+  }
+
+  const getInstance = () => {
+    if (instance?.type === "image") {
+      return <img width="250" src={"data:image/png;base64," + instance?.instance} />
+    } else {
+      return instance?.formatted
+    }
+  }
 
   return (
     <>
@@ -1279,7 +1398,6 @@ const Create: React.FC<Params> = (props) => {
 
                       <Space direction="vertical">
                         {model?.dataset_file && <Tag color="green" style={{ marginTop: 10 }}>Dataset Uploaded</Tag>}
-
                         <Space direction="horizontal">
                           <Button icon={<ExperimentOutlined />} type="primary" ghost onClick={async () => {
                             const json = await api_get_model_instance_count(usecase._id || '');
@@ -1304,7 +1422,7 @@ const Create: React.FC<Params> = (props) => {
                           }}>
                             Validate Instance Count
                           </Button>
-                          &nbsp;
+
                           <Button type="primary" icon={<CodeOutlined />} ghost onClick={async () => {
 
                             // Get Model Prediction
@@ -1354,7 +1472,9 @@ const Create: React.FC<Params> = (props) => {
                             Validate Model Prediction
                           </Button>
 
-                        </Space>
+
+                          <Button type="primary" icon={<CheckSquareOutlined />} onClick={showExplainerModal} ghost>Validate with Explainers</Button>
+                        </Space >
                       </Space>
                     </>
 
@@ -1445,7 +1565,44 @@ const Create: React.FC<Params> = (props) => {
               </Form.Item>
             </Form>
           </Modal>
-        </PageHeaderWrapper>
+          <Modal
+            title="Validate Model and Dataset with Explainers"
+            visible={explainerModalVisible}
+            destroyOnClose={true}
+            width="90%"
+            onCancel={handleExplainerCancel}
+            footer={[
+              <Button key="back" onClick={handleExplainerCancel}>
+                Cancel
+              </Button>
+            ]}
+          ><div>
+
+              <pre style={{ marginBottom: 0, marginTop: 10 }}>
+                <Spin tip="Fetching a random instance..." size="large" spinning={valLoading.instance} delay={1000}>Instance: <code>{getInstance()}</code></Spin>
+                <Spin tip="Making a prediction..." size="large" spinning={valLoading.prediction} delay={1000}>Prediction: <code>{prediction}</code></Spin>
+              </pre>
+
+              <div style={{ marginBottom: 15 }}>
+                <Select placeholder="Choose an explainer" onChange={handleExplainerChange}>
+                  {getExplainerOptions()}
+                </Select>
+              </div>
+
+              <pre>
+                <Spin tip="Getting an explanation..." size="large" spinning={valLoading.explanation}>
+                  <div style={{ minHeight: '200px' }}>
+                    Explanation: {getExplanationComponent()}
+                  </div>
+                </Spin>
+              </pre>
+
+
+
+
+
+            </div></Modal>
+        </PageHeaderWrapper >
       )}
     </>
   );
