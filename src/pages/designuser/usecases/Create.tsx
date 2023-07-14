@@ -1129,8 +1129,9 @@ const Create: React.FC<Params> = (props) => {
                                       <textarea
                                         rows={15}
                                         ref={importAttributes}
-                                      >
-                                      </textarea>
+                                        style={{ resize: "vertical", maxHeight: "60%", minHeight: "40%", width: "100%" }}
+                                      />
+
                                     </pre>
                                     <div
                                       style={{
@@ -1165,7 +1166,7 @@ const Create: React.FC<Params> = (props) => {
                                   console.log('Export Clicked!');
                                 },
                                 style: {
-                                  width: '80%',
+                                  minWidth: '600px',
                                 },
                                 placement: 'top',
                               });
