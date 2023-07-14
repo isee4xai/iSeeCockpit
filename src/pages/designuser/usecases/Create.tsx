@@ -1106,7 +1106,7 @@ const Create: React.FC<Params> = (props) => {
                                   message: 'iSee Dataset Attributes Export',
                                   description: (
                                     <div>
-                                      <pre style={{ marginBottom: 0 }}>
+                                      <pre style={{ marginBottom: 0, maxHeight: "60%", minHeight: "40%", width: "100%" }}>
                                         <code>{exp}</code>
                                       </pre>
                                       <div
@@ -1147,7 +1147,8 @@ const Create: React.FC<Params> = (props) => {
                                     console.log('Export Clicked!');
                                   },
                                   style: {
-                                    width: '80%',
+                                    minWidth: '600px',
+                                    width: "80%"
                                   },
                                   placement: 'top',
                                 });
@@ -1173,8 +1174,9 @@ const Create: React.FC<Params> = (props) => {
                                       <textarea
                                         rows={15}
                                         ref={importAttributes}
-                                      >
-                                      </textarea>
+                                        style={{ resize: "vertical", maxHeight: "60%", minHeight: "40%", width: "100%" }}
+                                      />
+
                                     </pre>
                                     <div
                                       style={{
@@ -1209,7 +1211,7 @@ const Create: React.FC<Params> = (props) => {
                                   console.log('Export Clicked!');
                                 },
                                 style: {
-                                  width: '80%',
+                                  minWidth: '600px',
                                 },
                                 placement: 'top',
                               });
