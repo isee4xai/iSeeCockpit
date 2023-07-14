@@ -1036,6 +1036,50 @@ const Create: React.FC<Params> = (props) => {
                         label="Sample Dataset File"
                         tooltip={TOOL_TIPS.model_dataset}
                       >
+
+                        <Popover placement='right' content={
+                          <>
+                            <table style={{ maxWidth: 400 }}>
+                              <tbody>
+                                <tr>
+                                  <td>
+                                    <p>We assume that the uploaded dataset <strong>should </strong>be normalized in most cases. To obtain more user-friendly explanations, we need to know how to denormalize the data. That's why we require the configuration step.</p>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <p>For each feature, the user must select the <strong>feature type</strong> from the drop-down (numerical, categorical...).</p>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <p>For the <strong>target feature</strong>, the user must check the target checkbox. In most cases, there is only one target feature but there could be multiple ones&nbsp;</p>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <p><strong>If a feature is numerical</strong>, the user must&nbsp;indicate the range of that feature (Min, Max) in the uploaded dataset and the real ranges (Min_raw, Max_raw), assuming the data was normalized. If (for some reason) the dataset is not normalized, then Min=Min_raw and Max=Max_raw</p>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <p><strong>If a feature is categorical</strong>, the user must map each category to a numeric value according to their encoding. Notice that even for datasets that are not normalized, we assume that categorical features are already numerically encoded. In other words, all values in the uploaded dataset must be numbers<strong>.</strong></p>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </>
+                        } title="Dataset Upload Guide" trigger="click">
+                          <Text style={{ color: '#797979' }}>Make sure the data is normalized</Text>
+                          <Button size="small"
+                            icon={<QuestionCircleOutlined />}
+                            style={{ margin: 5 }}
+                          >
+                            Dataset Guide
+                          </Button>
+                        </Popover>
+                        <Divider style={{ margin: 5, border: 'none' }}></Divider>
+
                         <Space direction="horizontal">
                           <input
                             placeholder="Select .csv or .zip file"
