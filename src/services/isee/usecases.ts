@@ -123,6 +123,24 @@ export async function api_get_model_prediction(id: string, instance: any) {
   }
 }
 
+export async function api_get_model_explanation(id: string, instance: any, explanationMethod: string) {
+  try {
+    const data = await fetch(`${BASE_URL}/${KEY_SHARED}/${id}/model/explain`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': getToken(),
+      },
+      body: JSON.stringify({ instance: instance.instance, type: instance.type, method: explanationMethod }),
+    });
+    const result = await data.json();
+    if (result.message) return false;
+    return result || false;
+  } catch (error) {
+    return false;
+  }
+}
+
 export const api_get_all = async () => {
   try {
     const data = await fetch(`${BASE_URL}/${KEY}/`, {
@@ -133,6 +151,7 @@ export const api_get_all = async () => {
       },
     });
     const result = await data.json();
+
     if (result.message) {
       message.error(result.message)
       return []
