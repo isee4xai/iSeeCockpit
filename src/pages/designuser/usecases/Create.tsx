@@ -87,6 +87,14 @@ export type Params = {
   };
 };
 
+const ZIP_TYPES = [
+  "application/octet-stream",
+  "multipart/x-zip",
+  "application/zip",
+  "application/zip-compressed",
+  "application/x-zip-compressed",
+]
+
 const Create: React.FC<Params> = (props) => {
   const [personas, setPersonas] = useState(sample_personas);
   const [pageStatus, setPageStatus] = useState('');
@@ -221,7 +229,15 @@ const Create: React.FC<Params> = (props) => {
   }
 
 
+  const formatDatasetType = (label: string) => {
+    switch (label) {
+      case "BW Image":
+        return "Black and White Image"
+      case "Multivariate":
+    }
 
+    return ""
+  }
   const validateWithExplainers = async () => {
 
 
@@ -461,8 +477,7 @@ const Create: React.FC<Params> = (props) => {
   };
 
   const handleFileInputData = (e: any) => {
-
-    if (e.target.files[0].type != "text/csv" && e.target.files[0].type != "application/zip") {
+    if (e?.target.files[0].type != "text/csv" && !ZIP_TYPES.includes(e?.target.files[0].type)) {
       message.error("Invalid Dataset file! Only CSV and Zip Files are accepted");
       return false;
     }
@@ -788,7 +803,7 @@ const Create: React.FC<Params> = (props) => {
                     <Radio.Group>
                       {ontoValues?.DATASET_TYPE.map((option) => (
                         <Radio key={option.key} value={option.key}>
-                          {option.label}
+                          {formatDatasetType(option.label)}
                         </Radio>
                       ))}
                     </Radio.Group>
