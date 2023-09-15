@@ -462,6 +462,9 @@ const Create: React.FC<Params> = (props) => {
 
   const handleFileInputData = (e: any) => {
 
+    // Temporary
+    console.log(e);
+    
     if (e.target.files[0].type != "text/csv" && e.target.files[0].type != "application/zip") {
       message.error("Invalid Dataset file! Only CSV and Zip Files are accepted");
       return false;
