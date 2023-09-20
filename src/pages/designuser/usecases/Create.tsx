@@ -57,6 +57,7 @@ import {
   Popconfirm,
   Popover,
   Radio,
+  RadioChangeEvent,
   Result,
   Row,
   Select,
@@ -117,6 +118,8 @@ const Create: React.FC<Params> = (props) => {
 
   const [modelUploaded, setModelUploaded] = useState<boolean>(false);
 
+  const [normalisationMethod, setNormalisationMethod] = useState('minmax');
+
   const [settingsForm] = Form.useForm();
   const [modelForm] = Form.useForm();
 
@@ -173,6 +176,9 @@ const Create: React.FC<Params> = (props) => {
     })();
 
   }, []);
+
+  const onNormalisationChange = (e: RadioChangeEvent) => setNormalisationMethod(e.target.value);
+
 
   const getExplanation = async () => {
     let formattedExplanation;
@@ -476,6 +482,23 @@ const Create: React.FC<Params> = (props) => {
     setIsModelChanged(true);
   };
 
+  const handleAttributesWithNormalisation = (image: any) => {
+    const tempImage = { ...image }
+    switch (normalisationMethod) {
+      case "minmax":
+        return { ...tempImage, minRaw: "0", maxRaw: "255" }
+
+      case "std":
+        return { ...tempImage, meanRaw: "", stdRaw: "" }
+
+      case "none":
+        return tempImage
+
+      default:
+        return { ...tempImage, minRaw: "0", maxRaw: "255" }
+    }
+  }
+
   const handleFileInputData = (e: any) => {
     if (e?.target.files[0].type != "text/csv" && !ZIP_TYPES.includes(e?.target.files[0].type)) {
       message.error("Invalid Dataset file! Only CSV and Zip Files are accepted");
@@ -492,7 +515,7 @@ const Create: React.FC<Params> = (props) => {
       complete: function (results) {
         // console.log(results.meta.fields);
 
-        const UPLOADED_ATTRIBUTES: { name: string; datatype: string; min: string; max: string; min_raw: string; max_raw: string; target: boolean; values: [any] }[] = [];
+        const UPLOADED_ATTRIBUTES: { name: string; datatype: string; min: string; max: string; target: boolean; values: [any] }[] = [];
 
         // Validate Attributes Based on Dataset Type
         // 1. Image Data
@@ -500,11 +523,15 @@ const Create: React.FC<Params> = (props) => {
 
           // 1.1 Image Data CSV 
           if (e.target.files[0].type == "text/csv") {
-            const image = { name: "image_csv", datatype: "image", min: '', min_raw: '0', max: '', max_raw: '255', target: false, values: [], shape: "", shape_raw: "" }
-            UPLOADED_ATTRIBUTES.push(image)
+            const image = { name: "image_csv", datatype: "image", min: '', max: '', target: false, values: [], shape: "", shape_raw: "" }
+            const imageWithNormalisation = handleAttributesWithNormalisation(image);
+
+            UPLOADED_ATTRIBUTES.push(imageWithNormalisation)
           } else {
-            const image = { name: "image_zip", datatype: "image", min: '', min_raw: '0', max: '', max_raw: '255', target: false, values: [], shape: "", shape_raw: "", mean_raw: "", std_raw: "" }
-            UPLOADED_ATTRIBUTES.push(image)
+            const image = { name: "image_zip", datatype: "image", min: '', max: '', target: false, values: [], shape: "", shape_raw: "" }
+            const imageWithNormalisation = handleAttributesWithNormalisation(image);
+
+            UPLOADED_ATTRIBUTES.push(imageWithNormalisation)
           }
 
           const label = { name: "label", datatype: "categorical", min: '', max: '', max_raw: '', target: true, values: [] }
@@ -661,7 +688,7 @@ const Create: React.FC<Params> = (props) => {
                   Export JSON
                 </Button>{' '}
                 <Popconfirm
-                  title={'Are you sure to delete?'}
+                  title={'Are you sure you want to delete?'}
                   onConfirm={async () => {
                     await api_delete(usecase._id || '');
                     window.location.pathname = '/usecases';
@@ -803,7 +830,7 @@ const Create: React.FC<Params> = (props) => {
                     <Radio.Group>
                       {ontoValues?.DATASET_TYPE.map((option) => (
                         <Radio key={option.key} value={option.key}>
-                          {formatDatasetType(option.label)}
+                          {option.label}
                         </Radio>
                       ))}
                     </Radio.Group>
@@ -1240,6 +1267,23 @@ const Create: React.FC<Params> = (props) => {
                           </Button>
 
                           <Card size='small' title="" >
+                            <Divider orientation="left" plain orientationMargin={0}>
+                              <Tag color="blue" style={{ fontWeight: 'bold' }}>normalisation</Tag>
+                            </Divider>
+                            <Radio.Group defaultValue="minmax" buttonStyle="solid" onChange={onNormalisationChange}>
+
+                              <Radio.Button key="minmax" value="minmax">
+                                Min Max
+                              </Radio.Button>
+                              <Radio.Button key="std" value="std">
+                                Standardisation
+                              </Radio.Button>
+                              <Radio.Button key="none" value="none">
+                                None
+                              </Radio.Button>
+
+                            </Radio.Group>
+
                             <Form.List name="attributes">
                               {(fields, { add, remove }) => (
                                 <>
@@ -1390,7 +1434,7 @@ const Create: React.FC<Params> = (props) => {
                                               label="Max"
                                               rules={[{ required: true, message: 'Missing max' }]}
                                             >
-                                              <Input placeholder="255" />
+                                              <Input placeholder="1" />
                                             </Form.Item>
 
                                             <Form.Item
@@ -1411,7 +1455,24 @@ const Create: React.FC<Params> = (props) => {
                                               <Input placeholder="28,28" />
                                             </Form.Item>
 
-                                            {modelForm.getFieldValue('attributes')[key].name == "image_zip" && (
+                                            {normalisationMethod === "minmax" && <><Form.Item
+                                              label="Raw Min"
+
+                                              {...restField}
+                                              name={[name, 'min_raw']}
+                                              rules={[{ required: true, message: 'Missing raw min' }]}
+                                            >
+                                              <Input placeholder="0" />
+                                            </Form.Item><Form.Item
+                                              {...restField}
+                                              name={[name, 'max_raw']}
+                                              label="Raw Max"
+                                              rules={[{ required: true, message: 'Missing raw max' }]}
+                                            >
+                                                <Input placeholder="255" />
+                                              </Form.Item></>}
+
+                                            {normalisationMethod === "std" && (
                                               <>
 
                                                 <Form.Item
