@@ -1,48 +1,16 @@
 import DataVisualizer from '@/components/iSee/analytics/DataVisualizer';
-import IntentAnalytics from '@/components/iSee/analytics/IntentAnalytics';
+import PersonaAnalytics from '@/components/iSee/analytics/PersonaAnalytics';
 import type { Usecase } from '@/models/usecase';
-import { api_get, api_usecase_stat } from '@/services/isee/usecases';
-import { CopyOutlined, DownloadOutlined, SaveOutlined, UserSwitchOutlined } from '@ant-design/icons';
+import { api_get, api_usecase_analytics } from '@/services/isee/usecases';
+import { UserSwitchOutlined } from '@ant-design/icons';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { Avatar, Button, Card, Col, Collapse, DatePicker, Empty, Form, PageHeader, Row, Table, Tag, message, notification } from 'antd';
+import { Card, Col, Collapse, Empty, Form, PageHeader, Row, Select, Tag } from 'antd';
 import { useEffect, useState } from 'react';
 
-import locale from 'antd/es/date-picker/locale/en_GB';
 import 'moment/locale/en-gb';
-import { api_get_interaction_json, api_get_interactions } from '@/services/isee/dialog';
-import moment from 'moment';
-import Meta from 'antd/lib/card/Meta';
+import { api_get_interactions } from '@/services/isee/dialog';
 import './Analytics.less';
-
-const overall_feedback = {
-  percent: 0.63,
-  type: 'meter',
-  innerRadius: 0.75,
-  range: {
-    ticks: [0, 1 / 3, 2 / 3, 1],
-    color: ['#F4664A', '#FAAD14', '#30BF78'],
-  },
-  indicator: {
-    pointer: {
-      style: {
-        stroke: '#D0D0D0',
-      },
-    },
-    pin: {
-      style: {
-        stroke: '#D0D0D0',
-      },
-    },
-  },
-  statistic: {
-    content: {
-      style: {
-        fontSize: '24px',
-        lineHeight: '24px',
-      },
-    },
-  },
-};
+import { Analytic } from '@/models/analytics';
 
 export type Params = {
   match: {
@@ -56,140 +24,37 @@ const Analytics: React.FC<Params> = (props) => {
   const { Panel } = Collapse;
 
   const [usecase, setUsecase] = useState<Usecase>({ _id: '0', name: '', published: false });
-  const [globalStat, setGlobalStat] = useState<Record<string, any>>({});
-  const [statDate, setStatDate] = useState<string[]>([]);
-  const [interactions, setInteractions] = useState([]);
+  const [analytics, setAnalytics] = useState<Analytic>({});
+  const [versions, setVersions] = useState<string[]>([]);
+  const [version, setVersion] = useState<string>();
 
   useEffect(() => {
     (async () => {
       const res_usecase = await api_get(props.match.params.id);
       const res_usecase_interactions = await api_get_interactions(props.match.params.id);
-      setInteractions(res_usecase_interactions)
       setUsecase(res_usecase);
+      const res_versions = findVersions(res_usecase_interactions);
+      setVersions(res_versions);
+      setVersion(res_versions ? res_versions[0] : '');
     })();
   }, [props.match.params.id]);
 
   useEffect(() => {
     (async () => {
-      const global_stat = await api_usecase_stat(props.match.params.id, statDate);
-      setGlobalStat(global_stat);
+      const res_analytics = await api_usecase_analytics(props.match.params.id, version);
+      setAnalytics(res_analytics);
+      console.log(res_analytics);
     })();
-  }, [props.match.params.id, statDate]);
+  }, [props.match.params.id, version]);
 
-  async function openExport(interaction: any) {
-    const json = await api_get_interaction_json(usecase._id || '', interaction._id || '');
-
-    const json_formatted = JSON.stringify(json.interaction, null, 2);
-
-    notification.open({
-      message: 'Interaction Export',
-      description: (
-        <div>
-          <pre style={{ marginBottom: 0 }}>
-            <code>{json_formatted}</code>
-          </pre>
-          <div
-            style={{
-              display: 'flex',
-              float: 'right',
-            }}
-          >
-            <Button
-              onClick={() => {
-                navigator.clipboard.writeText(json_formatted);
-                message.success('Copied to Clipboard');
-              }}
-              icon={<CopyOutlined />}
-            >
-              Copy
-            </Button>
-            &nbsp;
-            <Button
-              type="primary"
-              onClick={() => {
-                var a = document.createElement('a');
-                a.href = URL.createObjectURL(
-                  new Blob([json_formatted], { type: 'application/json' }),
-                );
-                a.download = 'isee-export-interaction-' + interaction._id + '.json';
-                a.click();
-              }}
-              icon={<DownloadOutlined />}
-            >
-              Download
-            </Button>
-          </div>
-        </div>
-      ),
-      duration: 0,
-      onClick: () => {
-        console.log('Export Clicked!');
-      },
-      style: {
-        width: '80%',
-      },
-      placement: 'top',
-    });
+  function findVersions(data: any[]) {
+    const uniqueVersions = [...new Set(data.map(item => item.usecase_version))];
+    return uniqueVersions;
   }
-  const columns = [
-    {
-      title: 'User',
-      dataIndex: 'user',
-      key: 'user',
-      render: (record: any) => {
-        return (
-          <>
-            <Meta
-              avatar={<Avatar style={{ backgroundColor: '#fde3cf', color: '#f56a00' }}>{record.name[0]}</Avatar>}
-              title={record.name}
-              description={record.email}
-            />
-          </>
-        );
-      },
-    },
-    {
-      title: 'Version',
-      dataIndex: 'usecase_version',
-      key: 'usecase_version',
-    },
-    {
-      title: 'Created At',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      render: (record: string) => {
-        return (
-          <div>
-            <p>{moment(record).locale('en_us').format('LLL')}</p>
-          </div>
-        );
-      },
-    },
-    {
-      title: 'View JSON',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      render: (text: any, obj: any) => {
-        return (
-          <Button
-            type="primary"
-            style={{ margin: '0 1rem' }}
-            onClick={async () => {
-              if (obj) {
-                openExport(obj)
-              }
 
-            }}
-            htmlType="button"
-            icon={<SaveOutlined />}
-          >
-            Export JSON
-          </Button>
-        );
-      },
-    },
-
-  ];
+  function versionChanged(evt: any) {
+    setVersion(evt.replace(/V/g, ''));
+  }
 
   return (
     <PageHeaderWrapper>
@@ -205,93 +70,71 @@ const Analytics: React.FC<Params> = (props) => {
           )
         }
         extra={
-          <DatePicker.RangePicker
-            locale={locale}
-            onCalendarChange={(x) => {
-              const dates: string[] =
-                x?.map((date) => {
-                  return date?.format('DD-MM-YYYY') || '';
-                }) || [];
-              setStatDate(dates);
-            }}
-          />
+          <Select placeholder="Version" value={version ? `V${version}` : ''} onChange={versionChanged}>
+            {versions.map((option) => (
+              <Select.Option key={option} value={`V${option}`} >
+                {`V${option}`}
+              </Select.Option>
+            ))}
+          </Select>
         }
       />
-      <Card>
+      < Card >
         <Row gutter={10}>
           <Col span={8}>
-            <Card title="Overall Usage">
+            <Card title="Overall Interactions">
               <DataVisualizer
-                defaultType="Area"
-                data={globalStat.interactions_per_date}
+                defaultType="Column"
+                data={analytics?.interactions_per_date || []}
                 autorizedType={['Pie', 'Area', 'Column']}
               />
             </Card>
           </Col>
           <Col span={8}>
-            <Card title="Usage by Persona">
+            <Card title="Interactions by Persona">
               <DataVisualizer
                 defaultType="Pie"
-                data={globalStat.usage_per_persona}
+                data={analytics?.interactions_per_persona || []}
                 autorizedType={['Pie', 'Column']}
               />
             </Card>
           </Col>
-          <Col span={8}>
-            <Card title="Overall Feedback">
-              <DataVisualizer
-                defaultType="Gauge"
-                data={overall_feedback.percent}
-                autorizedType={['Gauge']}
-              />
-            </Card>
-          </Col>
+          {analytics?.overall_experience ? (
+            <Col span={8}>
+              <Card title="Overall Feedback">
+                <DataVisualizer
+                  defaultType="Gauge"
+                  data={analytics?.overall_experience}
+                  autorizedType={['Gauge']}
+                />
+              </Card>
+            </Col>
+          ) : <></>}
         </Row>
-      </Card>
-
-      <Card title="All Interactions">
-        <Table dataSource={interactions} columns={columns} />
+      </Card >
 
 
-      </Card>
       <div>
         <Collapse>
-          {usecase.personas?.map((persona) => (
+          {Object.entries(analytics?.personas || {}).map(([persona, content]) => (
+
             <Panel
               header={
                 <div>
                   <h3>
-                    <UserSwitchOutlined /> {persona.details.name}
+                    <UserSwitchOutlined /> {persona}
                   </h3>
                 </div>
               }
-              key={'panel-' + persona._id}
+              key={'panel-' + persona}
             >
-              <Collapse>
-                {persona.intents?.map((intent) => (
-                  <Panel
-                    header={
-                      <div>
-                        <h3>
-                          <UserSwitchOutlined /> {intent.name}
-                        </h3>
-                      </div>
-                    }
-                    key={'panel-' + intent.name}
-                  >
-                    <IntentAnalytics
-                      intent={intent.name}
-                      persona={persona._id || ''}
-                      usecase={props.match.params.id}
-                      statDate={statDate}
-                    />
-                  </Panel>
-                ))}
-              </Collapse>
+              <PersonaAnalytics
+                analytics={content}
+              />
             </Panel>
           ))}
         </Collapse>
-        {usecase.personas?.length == 0 ? (
+        {Object.entries(analytics?.personas || {}).length == 0 ? (
           <Card>
             <Form.Item>
               <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Personas" />
@@ -299,7 +142,7 @@ const Analytics: React.FC<Params> = (props) => {
           </Card>
         ) : null}
       </div>
-    </PageHeaderWrapper>
+    </PageHeaderWrapper >
   );
 };
 
