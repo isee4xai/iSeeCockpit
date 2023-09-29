@@ -1,172 +1,224 @@
-import { Card, Form, Button, Row, Col, Descriptions } from 'antd';
-import { Pie, Column } from '@ant-design/plots';
+import { Button, Card, Col, Collapse, Descriptions, Modal, notification, Row } from 'antd';
+import { Bar } from '@ant-design/plots';
+import DataVisualizer from '@/components/iSee/analytics/DataVisualizer';
 
-import Meta from 'antd/lib/card/Meta';
+import { CopyOutlined, UserSwitchOutlined } from '@ant-design/icons';
+import { useEffect, useState } from 'react';
 
-const pie_config = {
-    appendPadding: 10,
-    angleField: 'value',
-    colorField: 'key',
-    radius: 0.9,
+const PersonaAnalytics: React.FC<{ analytics: any; }> = ({ analytics }) => {
+  const { Panel } = Collapse;
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [currentDiagram, setcurrentDiagram] = useState<Record<string, any>[]>();
+
+  useEffect(() => {
+    console.log(analytics);
+  }, []);
+
+  const barConfig = {
+    isStack: true,
+    xField: 'diff',
+    yField: 'user',
+    seriesField: 'type',
     label: {
-        type: 'inner',
-        offset: '-30%',
-        content: ({ percent }: { percent: any }) => `${(percent * 100).toFixed(0)}%`
+      position: 'middle',
+      layout: [
+        {
+          type: 'interval-adjust-position',
+        },
+        {
+          type: 'interval-hide-overlap',
+        },
+        {
+          type: 'adjust-color',
+        },
+      ],
     },
-    style: {
-        fontSize: 14,
-        textAlign: 'center',
+    meta: {
+      user: {
+        alias: 'User',
+      },
+      diff: {
+        alias: 'Time elapsed',
+      },
+      type: {
+        alias: 'Interaction',
+      }
     },
-    interactions: [
-        {
-            type: 'element-active',
-        },
-    ],
-    legend: {
-        layout: "horizontal",
-        position: "bottom"
-    }
-};
+  };
 
-const evaluation = {
-    id: "987",
-    comment: "",
-    assessment: "",
-    feedback:
-        [{
-            question: 'Are you more confident on the AI models decisions?',
-            category: 'Trust',
-            values:
-                [{
-                    key: "Yes",
-                    value: 12
-                }, {
-                    key: "No",
-                    value: 4
-                },]
-        },
-        {
-            question: 'How satisfied are you with the outcome?',
-            category: 'Satisfaction',
-            values:
-                [{
-                    key: "Satisfied",
-                    value: 12
-                },
-                {
-                    key: "Neutral",
-                    value: 5
-                },
-                {
-                    key: "Not Satisfied",
-                    value: 1
-                },]
-        },
-        {
-            question: 'The explanation of the AI model was sufficiently detailed.',
-            category: 'Curiosity',
-            values:
-                [{
-                    key: "I agree",
-                    value: 2
-                },
-                {
-                    key: "I’m neutral about it",
-                    value: 2
-                },
-                {
-                    key: "I disagree",
-                    value: 10
-                },]
-        },
-        {
-            question: 'The explanation helps me understand how the AI model works.',
-            category: 'Curiosity',
-            values:
-                [{
-                    key: "Yes",
-                    value: 14
-                }, {
-                    key: "No",
-                    value: 4
-                },]
-        },
-        ]
-};
+  const showModal = (jsonData: any) => {
+    setcurrentDiagram(jsonData);
+    setIsModalVisible(true);
+  };
 
-const column_config = {
-    xField: 'key',
-    yField: 'value',
-    label: {
-        position: 'middle',
-        style: {
-            fill: '#FFFFFF',
-            opacity: 1,
-        },
-    },
-    xAxis: {
-        label: {
-            autoHide: true,
-            autoRotate: false,
-        },
-    }
-};
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
 
-const PersonaAnalytics: React.FC = () => {
-    return (
-        <Card>
-            <Row gutter={20}>
-                {evaluation.feedback.map((item, index) => (
-                    <Col
-                        key={index}
-                        span={8}
-                        xs={{ order: 1 }}
-                        sm={{ order: 2 }}
-                        md={{ order: 3 }}
-                        lg={{ order: 4 }}
-                    >
-                        <Card
-                            title={"Question " + (index + 1)}
-                        >
-                            <Descriptions.Item label={item.question}>{item.question}</Descriptions.Item>
-                            <Meta description={"(" + item.category + ")"} />
-                            {item.values.length > 2 ?
-                                (<Column
-                                    {...column_config}
-                                    height={200}
-                                    data={item.values} />) :
-                                (<Pie
-                                    {...pie_config}
-                                    height={200}
-                                    data={item.values} />)
-                            }
-                        </Card>
+  const diagramToCSV = () => {
+    if (!currentDiagram) return '';
+    if (currentDiagram.length <= 0) return '';
 
-                        <br />
-                    </Col>
-                ))}
-            </Row>
-            <Form
-                name="basic"
-                labelCol={{ span: 8 }}
-                wrapperCol={{ span: 16 }}
-            // initialValues={questions}
-            // onFinish={onFinish}
-            // onChange={onChange}
-            >
+    let csv = '';
+    csv += Object.keys(currentDiagram[0]) + '\r\n';
 
-                <Row gutter={10}>
-                    <Col span={24} style={{ textAlign: 'center' }}>
-                        <Button
-                            type="primary"
-                            htmlType="submit">
-                            Save
-                        </Button>
-                    </Col>
-                </Row>
-            </Form>
-        </Card >
+    currentDiagram?.forEach((item) => {
+      csv +=
+        Object.entries(item)
+          .map((i) => i[1])
+          .join(',') + '\r\n';
+    });
+    return csv;
+  };
+
+  const addToClipboard = () => {
+    navigator.clipboard.writeText(diagramToCSV()).then(
+      () => {
+        notification.success({
+          message: `Success`,
+          duration: 3,
+          description: 'The questionnaire json has been added to the clipboard',
+          placement: 'bottomRight',
+        });
+      },
+      () => {
+        notification.error({
+          message: `Error`,
+          duration: 3,
+          description: 'An error occured, the json was not added to the clipboard',
+          placement: 'bottomRight',
+        });
+      },
     );
+  };
+
+  return (
+    <div>
+      <Row gutter={10}>
+        <Card title="Intents and Explainers" style={{ width: '100%' }}>
+          <Row>
+            <Col
+              key='intents'
+              span={8}
+              xs={{ order: 1 }}
+              sm={{ order: 2 }}
+              md={{ order: 3 }}
+              lg={{ order: 4 }}
+            >
+              <Card title='Intent Questions'
+              // extra={<Button onClick={() => showModal(values)}>Export CSV</Button>}
+              >
+
+                <DataVisualizer
+                  defaultType="Column"
+                  data={analytics.intents}
+                  autorizedType={['Column', 'Pie']}
+                />
+              </Card>
+
+              <br />
+            </Col>
+            <Col
+              key={'explainers'}
+              span={8}
+              xs={{ order: 1 }}
+              sm={{ order: 2 }}
+              md={{ order: 3 }}
+              lg={{ order: 4 }}
+            >
+              <Card title='Explanation Techniques'
+              // extra={<Button onClick={() => showModal(values)}>Export CSV</Button>}
+              >
+                <DataVisualizer
+                  defaultType="Column"
+                  data={analytics.explainers}
+                  autorizedType={['Column', 'Pie']}
+                />
+              </Card>
+            </Col>
+          </Row>
+        </Card>
+      </Row>
+      <Row gutter={10}>
+        <Card title="Evaluation Strategy Outcomes" style={{ width: '100%' }}>
+          <Collapse defaultActiveKey={0}>
+            {Object.entries(analytics?.evaluations || {}).map(([dimension, content], index) => (
+              <Panel
+                header={
+                  <div>
+                    <h4>
+                      {dimension}
+                    </h4>
+                  </div>
+                }
+                key={index}
+              >
+                <Row>
+                  {(content || []).map((q) => (
+                    <Col
+                      key={q.question}
+                      span={8}
+                      xs={{ order: 1 }}
+                      sm={{ order: 2 }}
+                      md={{ order: 3 }}
+                      lg={{ order: 4 }}
+                    >
+                      <Card
+                      // extra={<Button onClick={() => showModal(values)}>Export CSV</Button>}
+                      >
+                        <Descriptions.Item label={q.question}>{q.question}</Descriptions.Item>
+
+                        <DataVisualizer
+                          defaultType=
+                          {q.type === 'Free-Text'
+                            ? 'Wordcloud'
+                            : q.type === 'Number'
+                              ? 'Gauge'
+                              : q.type === 'Radio'
+                                ? 'Column'
+                                : q.type === 'Checkbox'
+                                  ? 'Column'
+                                  : q.type === 'Likert'
+                                    ? 'Column'
+                                    : 'Pie'}
+                          data={q.values}
+                          autorizedType={
+                            q.type === 'Free-Text'
+                              ? ['Wordcloud']
+                              : q.type === 'Number'
+                                ? ['Column', 'Gauge', 'pie']
+                                : q.type === 'Radio'
+                                  ? ['Pie', 'Column']
+                                  : q.type === 'Checkbox'
+                                    ? ['Pie', 'Column']
+                                    : q.type === 'Likert'
+                                      ? ['Column', 'Pie']
+                                      : ['Pie', 'Column', 'Gauge', 'Area']
+                          }
+                        />
+                      </Card>
+
+                      <br />
+                    </Col>
+
+                  ))}
+                </Row>
+              </Panel>
+            ))}
+          </Collapse>
+        </Card>
+      </Row>
+      <Row gutter={10}>
+        <Card title="Individual Experiences" style={{ width: '100%' }}>
+          <Bar {...barConfig} data={analytics.experiences} />
+        </Card>
+      </Row>
+    </div >
+
+  );
 };
 
-export default PersonaAnalytics;    
+export default PersonaAnalytics;

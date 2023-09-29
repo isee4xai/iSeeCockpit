@@ -45,13 +45,13 @@
     component: './enduser/Invite',
     exact: false,
   },
-  {
-    path: '/usecase/analytics',
-    name: 'Usecase Analytics',
-    access: 'designUser',
-    icon: 'LineChartOutlined',
-    component: './designuser/usecases/CreateAnalytics',
-  },
+  // {
+  //   path: '/usecase/analytics',
+  //   name: 'Usecase Analytics',
+  //   access: 'designUser',
+  //   icon: 'LineChartOutlined',
+  //   component: './designuser/usecases/CreateAnalytics',
+  // },
   {
     path: '/usecase/analytics/:id',
     hideInMenu: true,
