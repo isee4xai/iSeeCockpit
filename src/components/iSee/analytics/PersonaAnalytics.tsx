@@ -176,7 +176,7 @@ const PersonaAnalytics: React.FC<{ analytics: any; }> = ({ analytics }) => {
                           {q.type === 'Free-Text'
                             ? 'Wordcloud'
                             : q.type === 'Number'
-                              ? 'Gauge'
+                              ? 'Column'
                               : q.type === 'Radio'
                                 ? 'Column'
                                 : q.type === 'Checkbox'
@@ -189,7 +189,7 @@ const PersonaAnalytics: React.FC<{ analytics: any; }> = ({ analytics }) => {
                             q.type === 'Free-Text'
                               ? ['Wordcloud']
                               : q.type === 'Number'
-                                ? ['Column', 'Gauge', 'pie']
+                                ? ['Column']
                                 : q.type === 'Radio'
                                   ? ['Pie', 'Column']
                                   : q.type === 'Checkbox'
