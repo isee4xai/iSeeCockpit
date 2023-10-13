@@ -53,6 +53,7 @@ declare namespace API {
     AIMethod: OntoOption[],
     AITask: OntoOption[],
     Implementation_Framework: OntoOption[],
+    ModelAccess: OntoOption[]
   }
 
   type LoginResult = {

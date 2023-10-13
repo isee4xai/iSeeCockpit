@@ -16,4 +16,6 @@ export interface Explainer {
     ai_tasks?: string[];
     implementation?: string[];
     metadata?: string;
+    needs_training_data: boolean;
+    model_access: string;
 }
