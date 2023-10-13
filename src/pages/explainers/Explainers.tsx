@@ -1,5 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 import {
+  CheckOutlined,
+  CloseOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
@@ -15,7 +17,8 @@ import {
   Tag,
   Table,
   Typography,
-  Cascader
+  Cascader,
+  Switch
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 
@@ -186,6 +189,18 @@ const Explainers: React.FC = () => {
         </>
       )
     },
+    {
+      title: 'Needs Training Data',
+      dataIndex: 'needs_training_data',
+      key: 'needs_training_data',
+      render: text => <code>{text}</code>
+    },
+    {
+      title: 'Model Access Type',
+      dataIndex: 'model_access',
+      key: 'model_access',
+      render: text => <code>{text}</code>
+    },
     // {
     //   title: 'Metadata',
     //   dataIndex: 'metadata',
@@ -211,7 +226,7 @@ const Explainers: React.FC = () => {
       const fields_flat = await get_explainer_fields_flat()
       setOntoValues(fields)
       setOntoValuesFlat(fields_flat)
-      console.log(fields)
+      console.log("onto vals: ", fields)
 
       const data = await api_get_all();
       console.log(data)
@@ -306,7 +321,9 @@ const Explainers: React.FC = () => {
       ai_methods: values.ai_methods,
       ai_tasks: values.ai_tasks,
       implementation: values.implementation,
-      metadata: values.metadata
+      metadata: values.metadata,
+      needs_training_data: values.needs_training_data ?? false,
+      model_access: values.model_access
     };
     create(_obj);
   };
@@ -572,6 +589,33 @@ const Explainers: React.FC = () => {
           </Form.Item>
 
           <Form.Item
+            label="Model Access"
+            name="model_access"
+            tooltip="How will we be able to access the model?"
+            rules={[{ required: true, message: 'Input is required!' }]}
+          >
+            <Select placeholder="Model Access">
+              {ontoValues?.ModelAccess.map((option) => (
+                <Select.Option key={option.key} value={option.key}>
+                  {option.label}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Needs Training Data"
+            name="needs_training_data"
+            tooltip="Does the XAI method require background samples to train on?"
+          >
+            <Switch
+              checkedChildren={<CheckOutlined />}
+              unCheckedChildren={<CloseOutlined />}
+            />
+          </Form.Item>
+
+
+          {/* <Form.Item
             label="Metadata"
             name="metadata"
             tooltip="Metadata derived from GitHub"
@@ -583,7 +627,7 @@ const Explainers: React.FC = () => {
               size="large"
               disabled
             />
-          </Form.Item>
+          </Form.Item> */}
 
         </Form>
 

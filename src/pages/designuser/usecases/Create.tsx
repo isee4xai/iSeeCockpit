@@ -26,6 +26,7 @@ import {
   CopyOutlined,
   DeleteOutlined,
   DownloadOutlined,
+  EuroCircleFilled,
   ExperimentOutlined,
   ExportOutlined,
   FileTextOutlined,
@@ -75,6 +76,8 @@ import { api_get_all } from '@/services/isee/explainers';
 import Papa from "papaparse";
 const { Text } = Typography;
 import CollapsePanel from 'antd/lib/collapse/CollapsePanel';
+import { updateUser } from '@/services/swagger/user';
+import { update } from 'lodash';
 
 const { Option } = Select;
 
@@ -177,7 +180,23 @@ const Create: React.FC<Params> = (props) => {
 
   }, []);
 
-  const onNormalisationChange = (e: RadioChangeEvent) => setNormalisationMethod(e.target.value);
+  const onNormalisationChange = (e: RadioChangeEvent) => {
+    const oldModel = modelForm.getFieldsValue();
+    let updatedAttrs = oldModel.attributes[0];
+    if (normalisationMethod === "std") {
+      updatedAttrs = { ...updatedAttrs, "min_raw": undefined, "max_raw": undefined };
+    } else if (normalisationMethod === "minmax") {
+      updatedAttrs = { ...updatedAttrs, "std_raw": undefined, "mean_raw": undefined };
+    } else if (normalisationMethod === "none") {
+      updatedAttrs = { ...updatedAttrs, "min_raw": undefined, "max_raw": undefined, "mean_raw": undefined, "std_raw": undefined };
+    }
+
+    oldModel.attributes[0] = updatedAttrs;
+    modelForm.setFieldsValue(oldModel)
+
+    setNormalisationMethod(e.target.value);
+
+  };
 
 
   const getExplanation = async () => {
@@ -234,16 +253,6 @@ const Create: React.FC<Params> = (props) => {
     return EXPLAINER_OPTIONS;
   }
 
-
-  const formatDatasetType = (label: string) => {
-    switch (label) {
-      case "BW Image":
-        return "Black and White Image"
-      case "Multivariate":
-    }
-
-    return ""
-  }
   const validateWithExplainers = async () => {
 
 
@@ -378,14 +387,59 @@ const Create: React.FC<Params> = (props) => {
     }
   }
 
+  const removeNormalisationFields = (attributes: any) => {
+
+    attributes?.forEach((x, i) => {
+      if (normalisationMethod === 'std') {
+        delete attributes[i].min_raw;
+        delete attributes[i].max_raw
+      }
+
+      if (normalisationMethod === 'minmax') {
+        delete attributes[i].mean_raw;
+        delete attributes[i].std_raw
+      }
+
+      if (normalisationMethod === 'none') {
+        delete attributes[i].min_raw;
+        delete attributes[i].max_raw
+        delete attributes[i].mean_raw;
+        delete attributes[i].std_raw
+      }
+
+    })
+
+    return attributes;
+  }
+
+  const handleAttributesWithNormalisation = (image: any) => {
+    const tempImage = { ...image }
+    switch (normalisationMethod) {
+      case "minmax":
+        return { ...tempImage, min_raw: "0", max_raw: "255" }
+
+      case "std":
+        return { ...tempImage, mean_raw: "", std_raw: "" }
+
+      case "none":
+        return tempImage
+
+      default:
+        return { ...tempImage, min_raw: "0", max_raw: "255" }
+    }
+  }
+
   async function saveDataset() {
     const updateModel: UsecaseModel = modelForm.getFieldsValue();
+    updateModel.attributes = removeNormalisationFields(updateModel.attributes);
 
     console.log(updateModel);
     // return false;
     if (!updateModel.backend || !modelData) {
       message.error("Model file and Framework Required Before!");
       return;
+    } else if (!updateModel.attributes) {
+      message.error("Missing model attributes!");
     } else {
       updateModel.dataset_file = modelData;
       const loading = message.loading('Uploading data file. Please wait...', 0);
@@ -482,22 +536,6 @@ const Create: React.FC<Params> = (props) => {
     setIsModelChanged(true);
   };
 
-  const handleAttributesWithNormalisation = (image: any) => {
-    const tempImage = { ...image }
-    switch (normalisationMethod) {
-      case "minmax":
-        return { ...tempImage, minRaw: "0", maxRaw: "255" }
-
-      case "std":
-        return { ...tempImage, meanRaw: "", stdRaw: "" }
-
-      case "none":
-        return tempImage
-
-      default:
-        return { ...tempImage, minRaw: "0", maxRaw: "255" }
-    }
-  }
 
   const handleFileInputData = (e: any) => {
     if (e?.target.files[0].type != "text/csv" && !ZIP_TYPES.includes(e?.target.files[0].type)) {
@@ -516,11 +554,10 @@ const Create: React.FC<Params> = (props) => {
         // console.log(results.meta.fields);
 
         const UPLOADED_ATTRIBUTES: { name: string; datatype: string; min: string; max: string; target: boolean; values: [any] }[] = [];
-
+        console.log(settings?.dataset_type)
         // Validate Attributes Based on Dataset Type
         // 1. Image Data
         if (settings?.dataset_type == "http://www.w3id.org/iSeeOnto/explainer#image") {
-
           // 1.1 Image Data CSV 
           if (e.target.files[0].type == "text/csv") {
             const image = { name: "image_csv", datatype: "image", min: '', max: '', target: false, values: [], shape: "", shape_raw: "" }
@@ -548,7 +585,9 @@ const Create: React.FC<Params> = (props) => {
 
 
         let modelres = modelForm.getFieldsValue()
+
         modelres.attributes = UPLOADED_ATTRIBUTES;
+
         modelForm.setFieldsValue(modelres)
 
         console.log(modelForm.getFieldValue('attributes')[0])
@@ -983,6 +1022,7 @@ const Create: React.FC<Params> = (props) => {
               onFieldsChange={() => {
                 setIsModelChanged(true);
                 const updateModel: UsecaseModel = modelForm.getFieldsValue();
+
                 setModel(updateModel);
               }}
               form={modelForm}
@@ -1142,7 +1182,10 @@ const Create: React.FC<Params> = (props) => {
                             style={{ marginBottom: 10 }}
                             onClick={async () => {
                               console.log(model.attributes)
-                              const exp = JSON.stringify(model.attributes, null, 2);
+                              const fields = modelForm.getFieldsValue().attributes;
+                              const fieldsUpdated = removeNormalisationFields(fields);
+                              const exp = JSON.stringify(fieldsUpdated, null, 2);
+
                               if (exp) {
                                 notification.open({
                                   message: 'iSee Dataset Attributes Export',
@@ -1233,6 +1276,7 @@ const Create: React.FC<Params> = (props) => {
                                           try {
                                             const parsed = JSON.parse(importAttributes.current.value);
                                             const updateModel: UsecaseModel = modelForm.getFieldsValue();
+
                                             updateModel.attributes = parsed;
                                             modelForm.setFieldsValue(updateModel)
                                             message.success("Loaded Attributes");
@@ -1268,7 +1312,7 @@ const Create: React.FC<Params> = (props) => {
 
                           <Card size='small' title="" >
                             <Divider orientation="left" plain orientationMargin={0}>
-                              <Tag color="blue" style={{ fontWeight: 'bold' }}>normalisation</Tag>
+                              <Tag color="blue" style={{ fontWeight: 'bold' }}>Normalisation</Tag>
                             </Divider>
                             <Radio.Group defaultValue="minmax" buttonStyle="solid" onChange={onNormalisationChange}>
 
@@ -1460,14 +1504,14 @@ const Create: React.FC<Params> = (props) => {
 
                                               {...restField}
                                               name={[name, 'min_raw']}
-                                              rules={[{ required: true, message: 'Missing raw min' }]}
+                                              rules={[{ required: normalisationMethod === 'minmax', message: 'Missing raw min' }]}
                                             >
                                               <Input placeholder="0" />
                                             </Form.Item><Form.Item
                                               {...restField}
                                               name={[name, 'max_raw']}
                                               label="Raw Max"
-                                              rules={[{ required: true, message: 'Missing raw max' }]}
+                                              rules={[{ required: normalisationMethod === 'minmax', message: 'Missing raw max' }]}
                                             >
                                                 <Input placeholder="255" />
                                               </Form.Item></>}
@@ -1479,7 +1523,7 @@ const Create: React.FC<Params> = (props) => {
                                                   {...restField}
                                                   name={[name, 'mean_raw']}
                                                   label="Mean"
-                                                  rules={[{ required: true, message: 'Missing Mean raw' }]}
+                                                  rules={[{ required: normalisationMethod === 'std', message: 'Missing Mean raw' }]}
                                                 >
                                                   <Input placeholder="45.01" />
                                                 </Form.Item>
@@ -1487,7 +1531,7 @@ const Create: React.FC<Params> = (props) => {
                                                   {...restField}
                                                   name={[name, 'std_raw']}
                                                   label="STD"
-                                                  rules={[{ required: true, message: 'Missing std_raw raw' }]}
+                                                  rules={[{ required: normalisationMethod === 'std', message: 'Missing std_raw raw' }]}
                                                 >
                                                   <Input placeholder="45.01" />
                                                 </Form.Item>
