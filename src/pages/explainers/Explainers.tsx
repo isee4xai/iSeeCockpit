@@ -199,7 +199,7 @@ const Explainers: React.FC = () => {
       title: 'Model Access Type',
       dataIndex: 'model_access',
       key: 'model_access',
-      render: text => <code>{text}</code>
+      render: text => <code>{ontoValuesFlat["ModelAccess"][text]}</code>
     },
     // {
     //   title: 'Metadata',
@@ -227,6 +227,7 @@ const Explainers: React.FC = () => {
       setOntoValues(fields)
       setOntoValuesFlat(fields_flat)
       console.log("onto vals: ", fields)
+      console.log("onto vals: ", fields_flat)
 
       const data = await api_get_all();
       console.log(data)
