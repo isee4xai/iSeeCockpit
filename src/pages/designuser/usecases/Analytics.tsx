@@ -4,7 +4,7 @@ import type { Usecase } from '@/models/usecase';
 import { api_get, api_usecase_analytics } from '@/services/isee/usecases';
 import { UserSwitchOutlined } from '@ant-design/icons';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { Card, Col, Collapse, Empty, Form, PageHeader, Row, Select, Tag } from 'antd';
+import { Card, Col, Collapse, Empty, Form, PageHeader, Row, Select, Tag, message } from 'antd';
 import { useEffect, useState } from 'react';
 
 import 'moment/locale/en-gb';
@@ -41,9 +41,16 @@ const Analytics: React.FC<Params> = (props) => {
 
   useEffect(() => {
     (async () => {
+      message.config({
+        top: 400,
+      });
+      const hide = message.loading(
+        'Please wait.. Retrieving analytics...',
+        0,
+      );
       const res_analytics = await api_usecase_analytics(props.match.params.id, version);
       setAnalytics(res_analytics);
-      console.log(res_analytics);
+      hide();
     })();
   }, [props.match.params.id, version]);
 
