@@ -198,6 +198,14 @@ const Create: React.FC<Params> = (props) => {
 
   };
 
+  const titleCase = (str: string): string => {
+    const splitStr = str.toLowerCase().split(' ');
+    for (let i = 0; i < splitStr.length; i++) {
+      splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+    }
+    return splitStr.join(' ');
+  }
+
 
   const getExplanation = async () => {
     let formattedExplanation;
@@ -869,7 +877,7 @@ const Create: React.FC<Params> = (props) => {
                     <Radio.Group>
                       {ontoValues?.DATASET_TYPE.map((option) => (
                         <Radio key={option.key} value={option.key}>
-                          {option.label}
+                          {titleCase(option.label ?? "")}
                         </Radio>
                       ))}
                     </Radio.Group>
