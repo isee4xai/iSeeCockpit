@@ -39,6 +39,7 @@ import QuestionnaireTab from '../question/QuestionnaireTab';
 import DATA_FILEDS from '@/models/common';
 import { IntentQuestion } from '@/models/questionnaire';
 import TOOL_TIPS from '@/models/tooltips';
+import { open_editor_with_token } from '@/services/isee/editor';
 
 const { Panel } = Collapse;
 const { Option, OptGroup } = Select;
@@ -268,6 +269,10 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
     }
   };
 
+  const openEditor = (strategy: string, useCaseId: string) => {
+    open_editor_with_token(strategy, useCaseId)
+  }
+
   const onFinishNewIntent = async (values: any) => {
     const newintent = JSON.parse(values.name)
     const intent_cat = newintent.category;
@@ -418,7 +423,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
           </Button>
         </p>
           <p style={{ marginTop: -10 }}>
-            <Button block href={"https://editor-dev.isee4xai.com/#/id/" + strategy.tree + "?usecaseId=" + usecaseId} target="_blank" type="dashed" shape="round" icon={<EditOutlined />} >
+            <Button block onClick={() => openEditor(strategy.tree, usecaseId)} target="_blank" type="dashed" shape="round" icon={<EditOutlined />} >
               Edit
             </Button>
           </p></>

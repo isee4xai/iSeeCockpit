@@ -7,16 +7,16 @@ const KEY = 'explainers';
 
 export async function api_create(explainer: Explainer) {
     try {
-        const data = await fetch(`${BASE_URL}/${KEY}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(explainer),
-        });
-
-        const result = await data.json();
-        return result || [];
+        // const data = await fetch(`${BASE_URL}/${KEY}`, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify(explainer)
+        // });
+        console.log("DATA TO SERVER ", explainer)
+        //const result = await data.json();
+        //return result || [];
     } catch (error) {
         return [];
     }
