@@ -59,6 +59,7 @@
     "classnames": "^2.3.0",
     "dotenv": "^16.0.1",
     "html-react-parser": "^2.0.0",
+    "js-cookie": "^3.0.5",
     "lodash": "^4.17.0",
     "moment": "^2.29.0",
     "omit.js": "^2.0.2",
