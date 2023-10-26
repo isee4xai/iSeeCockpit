@@ -39,7 +39,7 @@ import QuestionnaireTab from '../question/QuestionnaireTab';
 import DATA_FILEDS from '@/models/common';
 import { IntentQuestion } from '@/models/questionnaire';
 import TOOL_TIPS from '@/models/tooltips';
-import { open_editor_with_token } from '@/services/isee/editor';
+import { open_editor_with_token, refresh_reuse_cases } from '@/services/isee/editor';
 
 const { Panel } = Collapse;
 const { Option, OptGroup } = Select;
@@ -50,23 +50,25 @@ export type PersonaType = {
   updatePersona: any;
   ontoExplainers: any;
   ontoValues?: API.OntoParams
+  personas: Persona[];
 
 };
 
 const PersonaIntents: React.FC<PersonaType> = (props) => {
-  const { persona, updatePersona, usecaseId } = props;
+  const { persona, updatePersona, usecaseId, personas } = props;
   const [personaState, setPersonaState] = useState(persona);
+  const [chosenStrategy, setChosenStrategy] = useState<any>();
 
   const genIntentStatus = (intent: PersonaIntent) => {
     let intent_status = intent.strategy_selected && (intent?.evaluation?.questions && intent?.evaluation?.questions?.length > 0) || false;
 
-    console.log("genIntentStatus", intent_status)
+    console.log("genIntentStatus", intent_status);
     return (<div>
       {!intent_status && <Tag color="red">Incomplete Intent</Tag>}
       {intent_status && <Tag color="success">Completed Intent</Tag>}
 
       <Popconfirm
-        title={'Are you sure to delete?'}
+        title={'Are you sure that you want to delete?'}
         onConfirm={async () => {
           const temp = personaState.intents?.filter((i) => i.id !== intent.id);
 
@@ -170,6 +172,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
     const strategies = await api_persona_query_strategies(usecaseId, personaState._id, intent.id, loadMore);
     intent.strategies = strategies
     intent.strategy_selected = false
+
     hide();
 
     if (strategies.length > 0) {
@@ -222,6 +225,63 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
     }));
   };
 
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && chosenStrategy?.tree !== "" && chosenStrategy?.tree !== undefined) {
+
+        refresh_reuse_cases(chosenStrategy.tree).then(methods => {
+
+
+          let selectedIntent: PersonaIntent = {
+            id: "",
+            completed: false,
+            name: "",
+            evaluation: {}
+          };
+
+          let intent_idx = 0;
+          personaState?.intents?.forEach((intent_, i) => {
+            intent_.strategies?.forEach((strat) => {
+              if (strat.id == chosenStrategy?.id) {
+                selectedIntent = intent_;
+                intent_idx = i;
+              }
+            })
+          });
+
+          const UPDATED_STRATEGIES = personaState.intents?.[intent_idx].strategies?.map((s) => {
+            if (s.tree === chosenStrategy.tree) {
+              s.methods = methods;
+            }
+            return s;
+          });
+
+          const UPDATED_INTENTS = personaState.intents;
+
+          if (typeof UPDATED_INTENTS !== "undefined") {
+            UPDATED_INTENTS[intent_idx].strategies = UPDATED_STRATEGIES;
+          }
+
+          selectedIntent.strategies = UPDATED_STRATEGIES;
+
+          api_persona_update_intent(usecaseId, personaState._id, selectedIntent.id, selectedIntent).then(res => {
+
+            const PERSONA_IDX = personas.findIndex(p => p._id === persona._id);
+            setPersonaState(res.personas[PERSONA_IDX]);
+          });
+
+        });
+
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [chosenStrategy, personaState, updatePersona, usecaseId]);
+
   const setSelectedStrategy = async (event: any, strategy: any) => {
 
     message.config({
@@ -269,8 +329,9 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
     }
   };
 
-  const openEditor = (strategy: string, useCaseId: string) => {
-    open_editor_with_token(strategy, useCaseId)
+  const openEditor = (strategy: any, useCaseId: string) => {
+    setChosenStrategy(strategy);
+    open_editor_with_token(strategy.tree, useCaseId)
   }
 
   const onFinishNewIntent = async (values: any) => {
@@ -423,7 +484,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
           </Button>
         </p>
           <p style={{ marginTop: -10 }}>
-            <Button block onClick={() => openEditor(strategy.tree, usecaseId)} target="_blank" type="dashed" shape="round" icon={<EditOutlined />} >
+            <Button block onClick={() => openEditor(strategy, usecaseId)} target="_blank" type="dashed" shape="round" icon={<EditOutlined />} >
               Edit
             </Button>
           </p></>
