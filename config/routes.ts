@@ -104,13 +104,13 @@
     access: 'designUser',
     component: './explainers/Explainers',
   },
-  {
-    path: 'https://editor-dev.isee4xai.com/',
-    name: 'Strategy Editor',
-    icon: 'EditOutlined',
-    access: 'designUser',
-    component: './404',
-  },
+  // {
+  //   path: 'https://editor-dev.isee4xai.com/',
+  //   name: 'Strategy Editor',
+  //   icon: 'EditOutlined',
+  //   access: 'designUser',
+  //   component: './404',
+  // },
 
   {
     path: '/admin/companies',
