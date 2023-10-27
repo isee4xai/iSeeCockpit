@@ -1,6 +1,6 @@
 // @ts-ignore
 
-import { EDITOR_URL } from './api.config';
+import { EDITOR_URL, BASE_URL } from './api.config';
 import { getToken } from './user';
 
 import Cookies from 'js-cookie';
@@ -16,6 +16,23 @@ export const open_editor_with_token = async (strategy: string, usecaseId: string
 
     } catch (error) {
         console.log(error)
+        return [];
+    }
+};
+
+export const refresh_reuse_cases = async (strategy: string) => {
+    try {
+        const STRATEGY_URL = `${BASE_URL}/trees/Projects/${strategy}/methods`;
+        const data = await fetch(STRATEGY_URL, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': getToken()
+            },
+        });
+        const result = await data.json();
+        return result || [];
+    } catch (error) {
         return [];
     }
 };

@@ -84,6 +84,7 @@ const PersonaTabs: React.FC<PersonaType> = (props) => {
                 key={'pi-' + persona._id}
                 usecaseId={usecaseId}
                 persona={persona}
+                personas={personas}
                 updatePersona={updatePersona}
               />
             </Panel>

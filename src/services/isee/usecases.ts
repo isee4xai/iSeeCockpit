@@ -383,7 +383,7 @@ export async function api_persona_update_intent(
   if (!usecaseId || !personaId || !intentId) return usecaseId;
 
   try {
-    await fetch(`${BASE_URL}/${KEY}/${usecaseId}/persona/${personaId}/intent/${intentId}`, {
+    const UPDATED_PERSONA = await fetch(`${BASE_URL}/${KEY}/${usecaseId}/persona/${personaId}/intent/${intentId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -391,7 +391,7 @@ export async function api_persona_update_intent(
       },
       body: JSON.stringify(intent),
     });
-    return usecaseId;
+    return UPDATED_PERSONA.json();
   } catch (error) {
     return usecaseId;
   }
