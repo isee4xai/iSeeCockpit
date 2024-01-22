@@ -480,6 +480,27 @@ export async function api_persona_query_set_default(
   }
 }
 
+export async function api_retain(usecaseId: string) {
+  if (!usecaseId) return usecaseId;
+
+  try {
+    const data = await fetch(`${BASE_URL}/cbr/${usecaseId}/retain`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': getToken(),
+      },
+    });
+    const result = await data.json();
+    if (result.message) {
+      message.error("Case retain Failed! Make sure you have a completed the use case.")
+      return []
+    };
+    return result;
+  } catch (error) {
+    return [];
+  }
+}
 
 export async function api_usecase_analytics(usecaseId: string | undefined, version: string | undefined) {
   if (!usecaseId || !version) return usecaseId;

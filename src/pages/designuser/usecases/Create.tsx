@@ -9,6 +9,7 @@ import {
   api_dataset_upload,
   api_delete,
   api_get,
+  api_retain,
   api_get_casestructure,
   api_get_model_instance_count,
   api_get_model_prediction,
@@ -669,6 +670,18 @@ const Create: React.FC<Params> = (props) => {
                   defaultChecked={usecase.published}
                   checked={usecase.published}
                 />
+                <Button
+                  type="primary"
+                  style={{ margin: '0 1rem' }}
+                  onClick={async () => {
+                    console.log('Retain Started!');
+                    await api_retain(usecase._id || '');
+                  }}
+                  htmlType="button"
+                  icon={<SaveOutlined />}
+                >
+                  Retain
+                </Button>
                 <Button
                   type="primary"
                   style={{ margin: '0 1rem' }}
