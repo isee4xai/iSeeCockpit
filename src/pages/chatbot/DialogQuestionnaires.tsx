@@ -2,7 +2,7 @@ import { w3cwebsocket as W3CWebSocket } from "websocket";
 
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { Avatar, Button, Input, Layout, PageHeader, Space } from 'antd';
+import { Avatar, Button, Input, Layout, PageHeader, Space, message } from 'antd';
 
 import { EllipsisOutlined, ReloadOutlined, SendOutlined } from '@ant-design/icons';
 
@@ -46,6 +46,10 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
   const [user, setUser] = useState({});
   const [promise, setPromise] = useState(false);
 
+  message.config({
+    top: 400,
+  });
+
   const usecaseId = props.match.params.id;
 
   useEffect(() => {
@@ -73,7 +77,7 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
       }
 
       client.onclose = () => {
-        // on disconnecting
+        message.error('Chatbot is now disconnected. Please restart if you wish to start another session.');
         console.log('disconnected');
       }
     }
