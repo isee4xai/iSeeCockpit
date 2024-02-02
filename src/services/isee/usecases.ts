@@ -492,9 +492,11 @@ export async function api_retain(usecaseId: string) {
       },
     });
     const result = await data.json();
+    console.log("Use case retained.", usecaseId);
+    message.success("Case(s) retained!");
     if (result.message) {
-      message.error("Case retain Failed! Make sure you have a completed the use case.")
-      return []
+      message.error("Retain Failed!")
+      return [];
     };
     return result;
   } catch (error) {

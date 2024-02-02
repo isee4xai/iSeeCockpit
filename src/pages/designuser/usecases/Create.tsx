@@ -674,8 +674,56 @@ const Create: React.FC<Params> = (props) => {
                   type="primary"
                   style={{ margin: '0 1rem' }}
                   onClick={async () => {
-                    console.log('Retain Started!');
-                    await api_retain(usecase._id || '');
+                    const json = await api_get_casestructure(usecase._id || '');
+                    if (json) {
+                      notification.open({
+                        message: 'Case Retention',
+                        description: (
+                          <div>
+                            <p>A representation of your user case will be captured to inform recommendations of future explanation strategies. Are you ready to continue?</p>
+                            <div
+                              style={{
+                                display: 'flex',
+                                float: 'right',
+                              }}
+                            >
+                              <Button
+                                onClick={async () => {
+                                  console.log('Retain Started!');
+                                  await api_retain(usecase._id || '');
+                                  notification.destroy();
+                                }}
+                                icon={<DownloadOutlined />}
+                              >
+                                Yes
+                              </Button>
+                              &nbsp;
+                              <Button
+                                type="primary"
+                                onClick={() => {
+                                  notification.destroy();
+                                  message.success('Retain cancelled!');
+                                }}
+                                icon={<CloseOutlined />}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </div>
+                        ),
+                        duration: 0,
+                        onClick: () => {
+                          console.log('Retain Clicked!');
+                        },
+                        onClose: () => {
+                          console.log('Retain Closed!');
+                        },
+                        style: {
+                          width: '80%',
+                        },
+                        placement: 'top',
+                      });
+                    }
                   }}
                   htmlType="button"
                   icon={<SaveOutlined />}
