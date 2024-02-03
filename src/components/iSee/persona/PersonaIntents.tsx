@@ -442,7 +442,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
       render: (_: any, strategy: any) =>
         <>{strategy.methods.map((m: string) => (
           <p>
-            <Tag color={strategy.applicabilities[m].flag ? "blue" : "red"}>{m}</Tag>
+            <Tag color={strategy.applicabilities ? strategy.applicabilities[m].flag ? "blue" : "red" : "blue"}>{m}</Tag>
             <Popover placement='right' content={
               <>
                 <table style={{ width: 400 }}>
@@ -453,12 +453,12 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
                         <hr></hr>
                       </td>
                     </tr>
-                    {strategy.applicabilities[m].message ? (<tr>
+                    {strategy.applicabilities ? strategy.applicabilities[m].message ? (<tr>
                       <td style={{ paddingRight: 5 }}><strong>Explainer Applicability</strong></td>
                       <td>{strategy.applicabilities[m].message}
                         <hr></hr>
                       </td>
-                    </tr>) : null}
+                    </tr>) : null : null}
                     <tr>
                       <td style={{ paddingRight: 5 }}><strong>Explanation Description</strong></td>
                       <td>{props.ontoExplainers[m]?.explanation_description}
