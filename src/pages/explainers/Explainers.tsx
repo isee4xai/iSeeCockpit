@@ -2,6 +2,7 @@
 import {
   CheckOutlined,
   CloseOutlined,
+  MinusOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
@@ -18,12 +19,13 @@ import {
   Table,
   Typography,
   Cascader,
-  Switch
+  Switch,
+  Popconfirm
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 import type { Explainer } from '@/models/explainer';
-import { api_create, api_get_all, api_get_explainers_lib, api_get_explainers_lib_single } from '@/services/isee/explainers';
+import { api_create, api_get_all, api_get_explainers_lib, api_get_explainers_lib_single, api_delete_single } from '@/services/isee/explainers';
 import { get_explainer_fields, get_explainer_fields_flat } from '@/services/isee/ontology';
 
 
@@ -36,8 +38,12 @@ const Explainers: React.FC = () => {
   const [ontoValues, setOntoValues] = useState<API.OntoExplainerParams>();
   const [ontoValuesFlat, setOntoValuesFlat] = useState([]);
   const [explainersLib, setExplainersLib] = useState([])
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [selectedExplainers, setSelectedExplainers] = useState<Explainer[]>([]);
+  const [hasSelected, setSelected] = useState(false);
 
   const [form] = Form.useForm();
+  const selectionType = 'radio';
 
 
   const columns: ColumnsType<Explainer> = [
@@ -232,6 +238,9 @@ const Explainers: React.FC = () => {
       const data = await api_get_all();
       console.log(data)
       setExplainers(data);
+      setSelectedRowKeys([]);
+      setSelected(false);
+      setSelectedExplainers([]);
       hide();
 
     })();
@@ -271,6 +280,9 @@ const Explainers: React.FC = () => {
     );
     const data = await api_get_all();
     setExplainers(data);
+    setSelectedRowKeys([]);
+    setSelected(false);
+    setSelectedExplainers([]);
     hide();
   }
 
@@ -327,6 +339,18 @@ const Explainers: React.FC = () => {
       model_access: values.model_access
     };
     create(_obj);
+  };
+
+  const rowSelection = {
+    onChange: (selectedRowKeys: React.Key[], selectedRows: Explainer[]) => {
+      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+      setSelected(selectedRowKeys.length > 0);
+      setSelectedExplainers(selectedRows);
+    },
+    getCheckboxProps: (record: Explainer) => ({
+      disabled: record.name === 'Disabled User', // Column configuration not to be checked
+      name: record.name,
+    }),
   };
 
   return (
@@ -645,14 +669,30 @@ const Explainers: React.FC = () => {
           <Button key={'create-btn'} type="primary" onClick={showModal} style={{ width: '100%' }}>
             <PlusOutlined /> Add New
           </Button>,
+          <Popconfirm
+            title={'Are you sure to delete?'}
+            onConfirm={async () => {
+              await api_delete_single(selectedExplainers[0].name || '');
+              await get_all();
+            }}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button key={'delete-btn'} danger type="primary" disabled={!hasSelected} style={{ width: '100%' }}>
+              <MinusOutlined /> Delete Selected
+            </Button>
+          </Popconfirm>
         ]}
       />
       {/* <Card> */}
       {/* <Row gutter={20}> */}
-      <Table columns={columns} dataSource={explainers} scroll={{ x: 3000 }}
+      <Table rowSelection={{
+        type: selectionType,
+        ...rowSelection,
+      }} columns={columns} dataSource={explainers} scroll={{ x: 3000 }}
 
         expandable={{
-          expandedRowRender: (record) => <p>Metadata:<br></br><code>{record.metadata}</code></p>,
+          // expandedRowRender: (record) => <p>Metadata:<br></br><code>{record.metadata}</code></p>,
           rowExpandable: (record) => record.name !== 'Not Expandable',
         }}
       />

@@ -74,3 +74,20 @@ export async function api_get_explainers_lib_single(id: string) {
         return false;
     }
 }
+
+export async function api_delete_single(id: string) {
+    try {
+        const data = await fetch(`${BASE_URL}/${KEY}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 'id': id })
+        });
+        const result = await data.json();
+        if (result.message) return false;
+        return result || false;
+    } catch (error) {
+        return false;
+    }
+}
