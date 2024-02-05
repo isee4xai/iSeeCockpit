@@ -672,7 +672,7 @@ const Explainers: React.FC = () => {
           <Popconfirm
             title={'Are you sure to delete?'}
             onConfirm={async () => {
-              await api_delete_single(selectedExplainers[0].key || '');
+              await api_delete_single(selectedExplainers[0].name || '');
               await get_all();
             }}
             okText="Yes"
