@@ -232,11 +232,11 @@ const Explainers: React.FC = () => {
       const fields_flat = await get_explainer_fields_flat()
       setOntoValues(fields)
       setOntoValuesFlat(fields_flat)
-      console.log("onto vals: ", fields)
-      console.log("onto vals: ", fields_flat)
+      // console.log("onto vals: ", fields)
+      // console.log("onto vals: ", fields_flat)
 
       const data = await api_get_all();
-      console.log(data)
+      // console.log(data)
       setExplainers(data);
       setSelectedRowKeys([]);
       setSelected(false);
@@ -251,7 +251,10 @@ const Explainers: React.FC = () => {
     api_get_explainers_lib()
       .then((response) => {
         if (response) {
-          setExplainersLib(response)
+          const filtered = response.filter((name: string) => {
+            return !explainers.some(obj => obj.name === name);
+          });
+          setExplainersLib(filtered);
         }
       })
       .catch((error) => {
@@ -343,7 +346,7 @@ const Explainers: React.FC = () => {
 
   const rowSelection = {
     onChange: (selectedRowKeys: React.Key[], selectedRows: Explainer[]) => {
-      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+      // console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
       setSelected(selectedRowKeys.length > 0);
       setSelectedExplainers(selectedRows);
     },
