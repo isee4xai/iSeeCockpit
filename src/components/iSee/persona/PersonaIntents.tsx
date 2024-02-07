@@ -235,52 +235,56 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
   };
 
   useEffect(() => {
-    const handleVisibilityChange = () => {
+    const handleVisibilityChange = async () => {
       if (document.visibilityState === 'visible' && chosenStrategy?.tree !== "" && chosenStrategy?.tree !== undefined) {
+        const hide = message.loading(
+          'Updating explanation strategies from the Explanation Experience Editor!',
+          0,
+        );
+        const data = await refresh_reuse_cases(usecaseId, chosenStrategy.tree);
 
-        refresh_reuse_cases(chosenStrategy.tree).then(methods => {
+        const methods = data.methods;
+        const applicabilities = data.applicabilities;
+        let selectedIntent: PersonaIntent = {
+          id: "",
+          completed: false,
+          name: "",
+          evaluation: {}
+        };
 
-
-          let selectedIntent: PersonaIntent = {
-            id: "",
-            completed: false,
-            name: "",
-            evaluation: {}
-          };
-
-          let intent_idx = 0;
-          personaState?.intents?.forEach((intent_, i) => {
-            intent_.strategies?.forEach((strat) => {
-              if (strat.id == chosenStrategy?.id) {
-                selectedIntent = intent_;
-                intent_idx = i;
-              }
-            })
-          });
-
-          const UPDATED_STRATEGIES = personaState.intents?.[intent_idx].strategies?.map((s) => {
-            if (s.tree === chosenStrategy.tree) {
-              s.methods = methods;
+        let intent_idx = 0;
+        personaState?.intents?.forEach((intent_, i) => {
+          intent_.strategies?.forEach((strat) => {
+            if (strat.id == chosenStrategy?.id) {
+              selectedIntent = intent_;
+              intent_idx = i;
             }
-            return s;
-          });
-
-          const UPDATED_INTENTS = personaState.intents;
-
-          if (typeof UPDATED_INTENTS !== "undefined") {
-            UPDATED_INTENTS[intent_idx].strategies = UPDATED_STRATEGIES;
-          }
-
-          selectedIntent.strategies = UPDATED_STRATEGIES;
-
-          api_persona_update_intent(usecaseId, personaState._id, selectedIntent.id, selectedIntent).then(res => {
-
-            const PERSONA_IDX = personas.findIndex(p => p._id === persona._id);
-            setPersonaState(res.personas[PERSONA_IDX]);
-          });
-
+          })
         });
 
+        const UPDATED_STRATEGIES = personaState.intents?.[intent_idx].strategies?.map((s) => {
+          if (s.tree === chosenStrategy.tree) {
+            s.methods = methods;
+            s.applicabilities = applicabilities;
+          }
+          return s;
+        });
+
+        const UPDATED_INTENTS = personaState.intents;
+
+        if (typeof UPDATED_INTENTS !== "undefined") {
+          UPDATED_INTENTS[intent_idx].strategies = UPDATED_STRATEGIES;
+        }
+
+        selectedIntent.strategies = UPDATED_STRATEGIES;
+
+        api_persona_update_intent(usecaseId, personaState._id, selectedIntent.id, selectedIntent).then(res => {
+
+          const PERSONA_IDX = personas.findIndex(p => p._id === persona._id);
+          setPersonaState(res.personas[PERSONA_IDX]);
+        });
+
+        hide();
       }
     };
 
@@ -401,7 +405,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
       key: 'select',
       render: (_: any, strategy: any) =>
       (<Switch
-        disabled={isDisabled(strategy.applicabilities)}
+        disabled={isDisabled(strategy.applicabilities || {})}
         checked={strategy.selected}
         onClick={(event) => setSelectedStrategy(event, strategy)}
         checkedChildren={<CheckOutlined />}
@@ -500,7 +504,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
           </Button>
         </p>
           <p style={{ marginTop: -10 }}>
-            <Button block onClick={() => openEditor(strategy, usecaseId)} target="_blank" type="dashed" shape="round" icon={<EditOutlined />} >
+            <Button block danger={isDisabled(strategy.applicabilities || {})} onClick={() => openEditor(strategy, usecaseId)} target="_blank" type="dashed" shape="round" icon={<EditOutlined />} >
               Edit
             </Button>
           </p></>

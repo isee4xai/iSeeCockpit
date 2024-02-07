@@ -476,7 +476,7 @@ const DialogQuestionnaires: React.FC<Params> = (props) => {
               onClick={sendAndReceive}
               disabled={
                 (text == '' && responseType == ResponseType.NUMBER) ||
-                (words(text) < 100 && responseType == ResponseType.OPEN) ||
+                (words(text) < 1 && responseType == ResponseType.OPEN) ||
                 (!check && responseType == ResponseType.CHECK) ||
                 (!radio && responseType == ResponseType.RADIO) ||
                 (!likert && responseType == ResponseType.LIKERT) ||
