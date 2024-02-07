@@ -20,15 +20,19 @@ export const open_editor_with_token = async (strategy: string, usecaseId: string
     }
 };
 
-export const refresh_reuse_cases = async (strategy: string) => {
+export const refresh_reuse_cases = async (usecase: string, strategy: string) => {
     try {
-        const STRATEGY_URL = `${BASE_URL}/trees/Projects/${strategy}/methods`;
+        const STRATEGY_URL = `${BASE_URL}/trees/Projects/methods`;
         const data = await fetch(STRATEGY_URL, {
-            method: 'GET',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'x-access-token': getToken()
             },
+            body: JSON.stringify({
+                usecaseId: usecase,
+                treeId: strategy
+            })
         });
         const result = await data.json();
         return result || [];
