@@ -79,12 +79,10 @@ const QuestionnaireTab: React.FC<PersonaType> = ({
   };
 
   async function saveQuestionnaire() {
-    console.log('%c Saving.... ', 'font-size: 20px; color: orange;');
     const errors = questions.map((q) => isQuestionValid(q) as string[]);
     setIsChangedQuestion(false);
 
     if (errors.reduce((prev, curr) => [...prev, ...curr], []).length === 0) {
-      console.log('%c Valid ! ', 'font-size: 20px; color: green;');
       const intent = persona.intents?.find((i) => i.name === intent_cat);
       if (intent) {
         await api_persona_update_intent(usecaseId, persona._id, intent.id, {
