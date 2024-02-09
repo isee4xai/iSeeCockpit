@@ -444,7 +444,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
       dataIndex: 'methods',
       key: 'methods',
       render: (_: any, strategy: any) =>
-        <>{strategy.methods.map((m: string) => (
+        <>{strategy.methods?.map((m: string) => (
           <p>
             <Tag color={strategy.applicabilities ? strategy.applicabilities[m].flag ? "blue" : "red" : "blue"}>{m}</Tag>
             <Popover placement='right' content={
