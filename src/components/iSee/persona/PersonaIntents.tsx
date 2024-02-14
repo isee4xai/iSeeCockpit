@@ -58,6 +58,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
   const { persona, updatePersona, usecaseId, personas } = props;
   const [personaState, setPersonaState] = useState(persona);
   const [chosenStrategy, setChosenStrategy] = useState<any>();
+  const [editorOpened, setEditorOpened] = useState<Boolean>(false);
 
   const genIntentStatus = (intent: PersonaIntent) => {
     let intent_status = intent.strategy_selected && (intent?.evaluation?.questions && intent?.evaluation?.questions?.length > 0) || false;
@@ -94,7 +95,6 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
 
   // New Persona Popup Functions
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [loadStrat, setLoadStrat] = useState(false);
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -236,9 +236,9 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
 
   useEffect(() => {
     const handleVisibilityChange = async () => {
-      if (document.visibilityState === 'visible' && chosenStrategy?.tree !== "" && chosenStrategy?.tree !== undefined) {
+      if (document.visibilityState === 'visible' && chosenStrategy?.tree !== "" && chosenStrategy?.tree !== undefined && editorOpened) {
         const hide = message.loading(
-          'Updating explanation strategies from the Explanation Experience Editor!',
+          'Updating Explanation Strategies from the Explanation Experience Editor!\n Do not navigate away from this page until the process is complete.',
           0,
         );
         const data = await refresh_reuse_cases(usecaseId, chosenStrategy.tree);
@@ -285,6 +285,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
         });
 
         hide();
+        setEditorOpened(false);
       }
     };
 
@@ -343,6 +344,7 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
   };
 
   const openEditor = (strategy: any, useCaseId: string) => {
+    setEditorOpened(true);
     setChosenStrategy(strategy);
     open_editor_with_token(strategy.tree, useCaseId)
   }
@@ -504,9 +506,17 @@ const PersonaIntents: React.FC<PersonaType> = (props) => {
           </Button>
         </p>
           <p style={{ marginTop: -10 }}>
-            <Button block danger={isDisabled(strategy.applicabilities || {})} onClick={() => openEditor(strategy, usecaseId)} target="_blank" type="dashed" shape="round" icon={<EditOutlined />} >
-              Edit
-            </Button>
+            <Popconfirm
+              key={'open-editor-edit' + strategy._id}
+              title={'This will open the Explanation Experience Editor on a new page. Are you sure you want to proceed?'}
+              onConfirm={() => openEditor(strategy, usecaseId)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button block danger={isDisabled(strategy.applicabilities || {})} target="_blank" type="dashed" shape="round" icon={<EditOutlined />} >
+                Edit
+              </Button>
+            </Popconfirm>
           </p></>
       ),
     },
