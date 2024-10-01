@@ -22,10 +22,10 @@ jobs:
           file: Dockerfile.dev
           tags: isee4xai/cockpit:dev
           build-args: |
-                UMI_APP_API_URL="https://api-dev.isee4xai.com/api"
-                UMI_APP_ONTOAPI_URL="https://api-onto-dev.isee4xai.com/api"
-                UMI_APP_WS_URL="wss://dialog-dev.isee4xai.com/ws/"
-                UMI_APP_EDITOR_URL="https://editor-dev.isee4xai.com/"
+                UMI_APP_API_URL=https://api-dev.isee4xai.com/api
+                UMI_APP_ONTOAPI_URL=https://api-onto-dev.isee4xai.com/api
+                UMI_APP_WS_URL=wss://dialog-dev.isee4xai.com/ws/
+                UMI_APP_EDITOR_URL="https://editor-dev.isee4xai.com/
 
     - name: Build and push the Docker image (with LLM-enabled Dialog Manager)
       uses: docker/build-push-action@v2
@@ -34,10 +34,10 @@ jobs:
           file: Dockerfile.dev
           tags: isee4xai/cockpit-llm:dev
           build-args: |
-                UMI_APP_API_URL="https://api-dev.isee4xai.com/api"
-                UMI_APP_ONTOAPI_URL="https://api-onto-dev.isee4xai.com/api"
-                UMI_APP_WS_URL="wss://dialog-llm-dev.isee4xai.com/ws/"
-                UMI_APP_EDITOR_URL="https://editor-dev.isee4xai.com/"
+                UMI_APP_API_URL=https://api-dev.isee4xai.com/api
+                UMI_APP_ONTOAPI_URL=https://api-onto-dev.isee4xai.com/api
+                UMI_APP_WS_URL=wss://dialog-llm-dev.isee4xai.com/ws/
+                UMI_APP_EDITOR_URL=https://editor-dev.isee4xai.com/
       
           
   deploy:
