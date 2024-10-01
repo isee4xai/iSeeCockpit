@@ -17,27 +17,41 @@ jobs:
         
     - name: Build and push  the Docker image
       uses: docker/build-push-action@v2
-      env:
-        REACT_APP_ISEE_API: https://api-dev.isee4xai.com/api
-        REACT_APP_ISEE_ONTOAPI: https://api-onto-dev.isee4xai.com/api
       with:
           push: true
           file: Dockerfile.dev
           tags: isee4xai/cockpit:dev
           build-args: |
-                REACT_APP_ISEE_API=https://api-dev.isee4xai.com/api
-                REACT_APP_ISEE_ONTOAPI= https://api-onto-dev.isee4xai.com/api
+                UMI_APP_API_URL="https://api-dev.isee4xai.com/api"
+                UMI_APP_ONTOAPI_URL="https://api-onto-dev.isee4xai.com/api"
+                UMI_APP_WS_URL="wss://dialog-dev.isee4xai.com/ws/"
+                UMI_APP_EDITOR_URL="https://editor-dev.isee4xai.com/"
+
+    - name: Build and push the Docker image (with LLM-enabled Dialog Manager)
+      uses: docker/build-push-action@v2
+      with:
+          push: true
+          file: Dockerfile.dev
+          tags: isee4xai/cockpit-llm:dev
+          build-args: |
+                UMI_APP_API_URL="https://api-dev.isee4xai.com/api"
+                UMI_APP_ONTOAPI_URL="https://api-onto-dev.isee4xai.com/api"
+                UMI_APP_WS_URL="wss://dialog-llm-dev.isee4xai.com/ws/"
+                UMI_APP_EDITOR_URL="https://editor-dev.isee4xai.com/"
+      
           
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    name: Deploy on dev platform 
+
     steps:
-      - uses: distributhor/workflow-webhook@v2
-        env:
-          webhook_url: ${{ secrets.WEBHOOK_URL_DEV }}
-          webhook_secret: ${{ secrets.WEBHOOK_TOKEN_DEV }}
-          data: '{"DOCKER_SERVICE":"cockpit"}'
-          webhook_type: 'json-extended'
-          
+      - name: Deploy on dev platform 
+        uses: distributhor/workflow-webhook@v2
+        with:
+          env:
+            webhook_url: ${{ secrets.WEBHOOK_URL_DEV }}
+            webhook_secret: ${{ secrets.WEBHOOK_TOKEN_DEV }}
+            data: '{"DOCKER_SERVICE":"cockpit cockpit-llm"}'
+            webhook_type: 'json-extended'
+            
           

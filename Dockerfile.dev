@@ -3,16 +3,15 @@ FROM node:16-alpine as builder
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 
-#ARG REACT_APP_ISEE_API
-ENV REACT_APP_ISEE_API=https://api-dev.isee4xai.com/api
-
-#ARG REACT_APP_ISEE_ONTOAPI
-ENV REACT_APP_ISEE_ONTOAPI=https://api-onto-dev.isee4xai.com/api 
+ARG UMI_APP_API_URL="https://api-dev.isee4xai.com/api"
+ARG UMI_APP_ONTOAPI_URL="https://api-onto-dev.isee4xai.com/api"
+ARG UMI_APP_WS_URL="wss://dialog-dev.isee4xai.com/ws/"
+ARG UMI_APP_EDITOR_URL="https://editor-dev.isee4xai.com/"
 
 COPY package.json ./
 RUN npm i
 COPY . ./
-RUN cross-env REACT_APP_ISEE_API=https://api-dev.isee4xai.com/api  REACT_APP_ISEE_ONTOAPI=https://api-onto-dev.isee4xai.com/api  npm run build
+RUN npm run build
 
 # production environment
 FROM nginx:stable-alpine
